@@ -4,6 +4,7 @@ import 'dart:math';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:ui' as ui;
+import 'package:flutter_user/pages/profile/profile_screen.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:uuid/uuid.dart';
 import '../login/login.dart';
@@ -1493,8 +1494,9 @@ class _MapsState extends State<Maps>
                                                                     return InkWell(
                                                                       onTap:
                                                                           () {
-                                                                        Scaffold.of(context)
-                                                                            .openDrawer();
+                                                                       Navigator.push(context, MaterialPageRoute(builder: (context)=>EditProfile()));
+                                                                        // Scaffold.of(context)
+                                                                        //     .openDrawer();
                                                                       },
                                                                       child:
                                                                           Container(
