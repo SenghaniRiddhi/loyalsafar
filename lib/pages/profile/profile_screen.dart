@@ -307,6 +307,8 @@
 
 
 import 'package:flutter/material.dart';
+import 'package:flutter_user/pages/profile/adresses_screen.dart';
+import 'package:flutter_user/pages/profile/setting_screen.dart';
 
 class EditProfile extends StatelessWidget {
   const EditProfile({Key? key}) : super(key: key);
@@ -441,32 +443,23 @@ class EditProfile extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Container(
-                        padding: const EdgeInsets.all(16.0),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                           Icon(Icons.location_on),
-                            Text("Addresses"),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.all(16.0),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Icon(Icons.location_on),
-                            Text("Addresses"),
-                          ],
+                      GestureDetector(
+                        onTap:(){
+                          Navigator.push(context, MaterialPageRoute(builder: (context)=>AddressesScreen()));
+                          },
+                        child: Container(
+                          padding: const EdgeInsets.all(16.0),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                             Icon(Icons.location_on),
+                              Text("Addresses"),
+                            ],
+                          ),
                         ),
                       ),
                       Container(
@@ -478,9 +471,28 @@ class EditProfile extends StatelessWidget {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Icon(Icons.location_on),
-                            Text("Addresses"),
+                            Icon(Icons.payment),
+                            Text("Payment"),
                           ],
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: (){
+                          Navigator.push(context, MaterialPageRoute(builder: (context)=>SettingsScreen()));
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(16.0),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Icon(Icons.settings),
+                              Text("Setting"),
+                            ],
+                          ),
                         ),
                       ),
                     ],
