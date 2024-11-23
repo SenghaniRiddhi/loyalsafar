@@ -308,6 +308,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_user/pages/profile/adresses_screen.dart';
+import 'package:flutter_user/pages/profile/payment_screen.dart';
 import 'package:flutter_user/pages/profile/setting_screen.dart';
 
 class EditProfile extends StatelessWidget {
@@ -462,18 +463,23 @@ class EditProfile extends StatelessWidget {
                           ),
                         ),
                       ),
-                      Container(
-                        padding: const EdgeInsets.all(16.0),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Icon(Icons.payment),
-                            Text("Payment"),
-                          ],
+                      GestureDetector(
+                        onTap: (){
+                          Navigator.push(context, MaterialPageRoute(builder: (context)=> PaymentMethodsScreen()));
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(16.0),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Icon(Icons.payment),
+                              Text("Payment"),
+                            ],
+                          ),
                         ),
                       ),
                       GestureDetector(
