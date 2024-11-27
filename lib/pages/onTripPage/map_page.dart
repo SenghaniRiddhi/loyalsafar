@@ -1491,45 +1491,89 @@ class _MapsState extends State<Maps>
                                                                 StatefulBuilder(
                                                                   builder: (context,
                                                                       setState) {
-                                                                    return InkWell(
-                                                                      onTap:
-                                                                          () {
-                                                                       Navigator.push(context, MaterialPageRoute(builder: (context)=>EditProfile()));
-                                                                        // Scaffold.of(context)
-                                                                        //     .openDrawer();
-                                                                      },
-                                                                      child:
-                                                                          Container(
-                                                                        height: media.width *
-                                                                            0.1,
-                                                                        width: media.width *
-                                                                            0.1,
-                                                                        decoration:
-                                                                            BoxDecoration(
-                                                                          boxShadow: [
-                                                                            (_bottom == 0)
-                                                                                ? BoxShadow(
-                                                                                    blurRadius: (_bottom == 0) ? 2 : 0,
-                                                                                    color: (_bottom == 0) ? Colors.black.withOpacity(0.2) : Colors.transparent,
-                                                                                    spreadRadius: (_bottom == 0) ? 2 : 0,
-                                                                                  )
-                                                                                : const BoxShadow(),
-                                                                          ],
-                                                                          color:
-                                                                              page,
-                                                                          borderRadius:
-                                                                              BorderRadius.circular(4),
+                                                                    return Column(
+                                                                      children: [
+                                                                        InkWell(
+                                                                          onTap:
+                                                                              () {
+                                                                          // Navigator.push(context, MaterialPageRoute(builder: (context)=>EditProfile()));
+                                                                            Scaffold.of(context)
+                                                                                .openDrawer();
+                                                                          },
+                                                                          child:
+                                                                              Container(
+                                                                            height: media.width *
+                                                                                0.1,
+                                                                            width: media.width *
+                                                                                0.1,
+                                                                            decoration:
+                                                                                BoxDecoration(
+                                                                              boxShadow: [
+                                                                                (_bottom == 0)
+                                                                                    ? BoxShadow(
+                                                                                        blurRadius: (_bottom == 0) ? 2 : 0,
+                                                                                        color: (_bottom == 0) ? Colors.black.withOpacity(0.2) : Colors.transparent,
+                                                                                        spreadRadius: (_bottom == 0) ? 2 : 0,
+                                                                                      )
+                                                                                    : const BoxShadow(),
+                                                                              ],
+                                                                              color:
+                                                                                  page,
+                                                                              borderRadius:
+                                                                                  BorderRadius.circular(4),
+                                                                            ),
+                                                                            alignment:
+                                                                                Alignment.center,
+                                                                            child: Icon(
+                                                                                Icons
+                                                                                    .menu,
+                                                                                size: media.width *
+                                                                                    0.05,
+                                                                                color:
+                                                                                    textColor),
+                                                                          ),
                                                                         ),
-                                                                        alignment:
+                                                                        SizedBox(height: 12,),
+                                                                        InkWell(
+                                                                          onTap:
+                                                                              () {
+                                                                             Navigator.push(context, MaterialPageRoute(builder: (context)=>ProfileScreen()));
+
+                                                                          },
+                                                                          child:
+                                                                          Container(
+                                                                            height: media.width *
+                                                                                0.1,
+                                                                            width: media.width *
+                                                                                0.1,
+                                                                            decoration:
+                                                                            BoxDecoration(
+                                                                              boxShadow: [
+                                                                                (_bottom == 0)
+                                                                                    ? BoxShadow(
+                                                                                  blurRadius: (_bottom == 0) ? 2 : 0,
+                                                                                  color: (_bottom == 0) ? Colors.black.withOpacity(0.2) : Colors.transparent,
+                                                                                  spreadRadius: (_bottom == 0) ? 2 : 0,
+                                                                                )
+                                                                                    : const BoxShadow(),
+                                                                              ],
+                                                                              color:
+                                                                              page,
+                                                                              borderRadius:
+                                                                              BorderRadius.circular(4),
+                                                                            ),
+                                                                            alignment:
                                                                             Alignment.center,
-                                                                        child: Icon(
-                                                                            Icons
-                                                                                .menu,
-                                                                            size: media.width *
-                                                                                0.05,
-                                                                            color:
+                                                                            child: Icon(
+                                                                                Icons
+                                                                                    .do_not_disturb_on_total_silence,
+                                                                                size: media.width *
+                                                                                    0.05,
+                                                                                color:
                                                                                 textColor),
-                                                                      ),
+                                                                          ),
+                                                                        ),
+                                                                      ],
                                                                     );
                                                                   },
                                                                 ),

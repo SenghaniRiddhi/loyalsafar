@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_user/pages/NavigatorPages/fav_address.dart';
 import 'package:flutter_user/pages/NavigatorPages/makecomplaint.dart';
 import 'package:flutter_user/pages/NavigatorPages/outstation.dart';
+import 'package:flutter_user/pages/profile/edit_profile_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../functions/functions.dart';
 import '../../styles/styles.dart';
@@ -57,6 +58,10 @@ class _NavDrawerState extends State<NavDrawer> {
                           if (val) {
                             setState(() {});
                           }
+                          // Navigator.push(
+                          //         context,
+                          //         MaterialPageRoute(
+                          //             builder: (context) => EditProfileScreen()));
                         },
                         child: Container(
                           padding: EdgeInsets.all(media.width * 0.025),

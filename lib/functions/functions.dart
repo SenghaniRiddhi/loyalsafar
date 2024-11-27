@@ -198,7 +198,7 @@ List languagesCode = [
   {'name': 'Czech', 'code': 'cs'},
   {'name': 'Danish', 'code': 'da'},
   {'name': 'Dutch', 'code': 'nl'},
-  {'name': 'English (US)', 'code': 'en'},
+  {'name': 'English', 'code': 'en'},
   {'name': 'Estonian', 'code': 'et'},
   {'name': 'Filipino', 'code': 'fil'},
   {'name': 'Finnish', 'code': 'fi'},
@@ -223,7 +223,7 @@ List languagesCode = [
   {'name': 'Norwegian', 'code': 'no'},
   {'name': 'Polish', 'code': 'pl'},
   {
-    'name': 'Portuguese (Portugal)',
+    'name': 'Portuguese',
     'code': 'pt' //pt-PT
   },
   {'name': 'Romanian', 'code': 'ro'},

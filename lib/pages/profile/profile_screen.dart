@@ -305,20 +305,26 @@
 //   }
 // }
 
-
 import 'package:flutter/material.dart';
 import 'package:flutter_user/pages/profile/adresses_screen.dart';
+import 'package:flutter_user/pages/profile/edit_profile_screen.dart';
 import 'package:flutter_user/pages/profile/payment_screen.dart';
+import 'package:flutter_user/pages/profile/raise_complaints_screen.dart';
 import 'package:flutter_user/pages/profile/setting_screen.dart';
+import 'package:flutter_user/styles/styles.dart';
+import 'package:flutter_user/widgets/appbar.dart';
 
-class EditProfile extends StatelessWidget {
-  const EditProfile({Key? key}) : super(key: key);
+import '../language/languages.dart';
+
+class ProfileScreen extends StatelessWidget {
+  const ProfileScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     var media = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: Colors.grey[200],
+
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -335,25 +341,35 @@ class EditProfile extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Container(
-                      width: media.width * 0.1, // Set width
-                      height: media.width * 0.1,
-                      decoration: BoxDecoration(
-                        color: Colors.grey[200], // Background color
-                        shape: BoxShape.circle, // Makes the container circular
+                    GestureDetector(
+                      onTap:(){
+                       Navigator.pop(context);
+    },
+                      child: Container(
+                        width: media.width * 0.1, // Set width
+                        height: media.width * 0.1,
+                        decoration: BoxDecoration(
+                          color: Colors.grey[200], // Background color
+                          shape: BoxShape.circle, // Makes the container circular
+                        ),
+                        child: const Icon(Icons.close, color: Colors.black),
+                        // onPressed: () {},
                       ),
-                      child: const Icon(Icons.close, color: Colors.black),
-                      // onPressed: () {},
                     ),
-                    Container(
-                      width: media.width * 0.1, // Set width
-                      height: media.width * 0.1,
-                      decoration: BoxDecoration(
-                        color: Colors.grey[200], // Background color
-                        shape: BoxShape.circle, // Makes the container circular
+                    GestureDetector(
+                      onTap: (){
+                        Navigator.push(context,MaterialPageRoute(builder: (context)=>EditProfileScreen()));
+                      },
+                      child: Container(
+                        width: media.width * 0.1, // Set width
+                        height: media.width * 0.1,
+                        decoration: BoxDecoration(
+                          color: Colors.grey[200], // Background color
+                          shape: BoxShape.circle, // Makes the container circular
+                        ),
+                        child: const Icon(Icons.edit, color: Colors.black),
+
                       ),
-                      child: const Icon(Icons.edit, color: Colors.black),
-                      // onPressed: () {},
                     ),
 
 
@@ -363,9 +379,10 @@ class EditProfile extends StatelessWidget {
 
                 Row(
                   children: [
-                    const CircleAvatar(
+                     CircleAvatar(
                       radius: 40,
-                      backgroundImage: AssetImage('assets/profile.jpg'), // Add your profile image here
+                      backgroundColor: Colors.grey[200],
+                      backgroundImage: AssetImage('assets/icons/userIcon.png'), // Add your profile image here
                     ),
                     const SizedBox(width: 16),
                     Column(
@@ -384,7 +401,7 @@ class EditProfile extends StatelessWidget {
                   ],
                 ),
 
-                SizedBox(height: media.width*0.06,),
+                SizedBox(height: media.width*0.01,),
 
               ],
             ),
@@ -393,7 +410,7 @@ class EditProfile extends StatelessWidget {
 
 
           Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding:  EdgeInsets.symmetric(vertical: 10,horizontal: 16),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -402,7 +419,7 @@ class EditProfile extends StatelessWidget {
                 const SizedBox(height: 20),
                 // Wallet Balance Section
                 Container(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(12),
@@ -425,13 +442,18 @@ class EditProfile extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(
                             vertical: 8, horizontal: 16),
                         decoration: BoxDecoration(
-                          color: Colors.green,
-                          borderRadius: BorderRadius.circular(8),
+                          color: buttonColors,
+                          borderRadius: BorderRadius.circular(18),
                         ),
-                        child: const Text(
-                          "\$420",
-                          style: TextStyle(
-                              color: Colors.white, fontWeight: FontWeight.bold),
+                        child: Row(
+                          children: [
+                            const Text(
+                              "\$420",
+                              style: TextStyle(
+                                  color: Colors.black, fontWeight: FontWeight.bold),
+                            ),
+                            Icon(Icons.arrow_forward_ios_outlined,color: Colors.black,size: 20,)
+                          ],
                         ),
                       ),
                     ],
@@ -440,7 +462,7 @@ class EditProfile extends StatelessWidget {
                 const SizedBox(height: 20),
 
                 Padding(
-                  padding: const EdgeInsets.all(08.0),
+                  padding: const EdgeInsets.all(04.0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -449,7 +471,8 @@ class EditProfile extends StatelessWidget {
                           Navigator.push(context, MaterialPageRoute(builder: (context)=>AddressesScreen()));
                           },
                         child: Container(
-                          padding: const EdgeInsets.all(16.0),
+                          width: media.width*0.27,
+                          padding: const EdgeInsets.symmetric(vertical: 16,horizontal: 05),
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(12),
@@ -458,6 +481,7 @@ class EditProfile extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                              Icon(Icons.location_on),
+                              SizedBox(height: 04,),
                               Text("Addresses"),
                             ],
                           ),
@@ -468,7 +492,8 @@ class EditProfile extends StatelessWidget {
                           Navigator.push(context, MaterialPageRoute(builder: (context)=> PaymentMethodsScreen()));
                         },
                         child: Container(
-                          padding: const EdgeInsets.all(16.0),
+                          width: media.width*0.27,
+                          padding: const EdgeInsets.symmetric(vertical: 16,horizontal: 05),
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(12),
@@ -476,7 +501,8 @@ class EditProfile extends StatelessWidget {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Icon(Icons.payment),
+                              Icon(Icons.payment_outlined),
+                              SizedBox(height: 04,),
                               Text("Payment"),
                             ],
                           ),
@@ -487,7 +513,8 @@ class EditProfile extends StatelessWidget {
                           Navigator.push(context, MaterialPageRoute(builder: (context)=>SettingsScreen()));
                         },
                         child: Container(
-                          padding: const EdgeInsets.all(16.0),
+                          width: media.width*0.27,
+                          padding: const EdgeInsets.symmetric(vertical: 16,horizontal: 05),
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(12),
@@ -496,6 +523,7 @@ class EditProfile extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Icon(Icons.settings),
+                              SizedBox(height: 04,),
                               Text("Setting"),
                             ],
                           ),
@@ -510,20 +538,35 @@ class EditProfile extends StatelessWidget {
                 const Text(
                   "Account Settings",
                   style: TextStyle(
-                      fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey),
+                      fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),
                 ),
                 const SizedBox(height: 10),
                 Container(
+                  width: media.width,
+                  padding: EdgeInsets.symmetric(horizontal: 05,vertical: 05),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Column(
                     children: [
-                      _buildAccountOption(Icons.language, "Change Language"),
-                      _buildAccountOption(Icons.group_add, "Invite Friends"),
-                      _buildAccountOption(Icons.contacts, "SOS Contacts"),
-                      _buildAccountOption(Icons.report, "Raise Complaints"),
+                      _buildAccountOption(Icons.language, "Change Language",1,context),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 14,vertical: 03),
+                        child: const Divider(height: 1),
+                      ),
+                      _buildAccountOption(Icons.lock_outline, "Invite Friends",2,context),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 14,vertical: 03),
+                        child: const Divider(height: 1),
+                      ),
+
+                      _buildAccountOption(Icons.car_crash_outlined, "SOS Contacts",3,context),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 14,vertical: 03),
+                        child: const Divider(height: 1),
+                      ),
+                      _buildAccountOption(Icons.report, "Raise Complaints",4,context),
                     ],
                   ),
                 ),
@@ -533,21 +576,21 @@ class EditProfile extends StatelessWidget {
                 const Text(
                   "Notification Settings",
                   style: TextStyle(
-                      fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey),
+                      fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),
                 ),
                 const SizedBox(height: 10),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  padding: const EdgeInsets.symmetric(horizontal: 16,vertical: 08),
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(10),
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Row(
                         children: const [
-                          Icon(Icons.notifications, color: Colors.black),
+                          Icon(Icons.notifications_none_outlined, color: Colors.black),
                           SizedBox(width: 8),
                           Text(
                             "Push Notifications",
@@ -572,16 +615,32 @@ class EditProfile extends StatelessWidget {
     );
   }
 
-  Widget _buildAccountOption(IconData icon, String title) {
+  Widget _buildAccountOption(IconData icon, String title ,int index, BuildContext context) {
     return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         ListTile(
+
           leading: Icon(icon),
           title: Text(title),
           trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-          onTap: () {},
+          onTap: () {
+            if(index==1){
+              Navigator.push(context, MaterialPageRoute(builder: (context)=>Languages()));
+
+            }else if(index==2){
+
+            }else if(index==3){
+
+            }else if(index==4){
+              Navigator.push(context, MaterialPageRoute(builder: (context)=>RaiseComplaintsScreen()));
+
+
+            }
+          },
         ),
-        const Divider(height: 1),
+
       ],
     );
   }

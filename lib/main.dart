@@ -38,7 +38,7 @@ class MyApp extends StatelessWidget {
             builder: (context, value, child) {
               return MaterialApp(
                 debugShowCheckedModeBanner: false,
-                title: 'product name',
+                title: 'Loyal Safar',
                 theme: ThemeData(),
                 home: const LoadingPage(),
                 builder: (context, child) {

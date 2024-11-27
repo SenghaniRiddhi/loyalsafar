@@ -14,6 +14,7 @@ import '../noInternet/noInternet.dart';
 import '../onTripPage/booking_confirmation.dart';
 import '../onTripPage/invoice.dart';
 import '../onTripPage/map_page.dart';
+import '../profile/profile_screen.dart';
 import 'loading.dart';
 
 class LoadingPage extends StatefulWidget {
@@ -216,6 +217,7 @@ class _LoadingPageState extends State<LoadingPage> {
             navigate();
           } else if (choosenLanguage == '') {
             // ignore: use_build_context_synchronously
+
             Navigator.pushReplacement(context,
                 MaterialPageRoute(builder: (context) => const Languages()));
           } else if (val == '2') {
@@ -227,6 +229,7 @@ class _LoadingPageState extends State<LoadingPage> {
           } else {
             Future.delayed(const Duration(seconds: 2), () {
               //choose language page
+
               Navigator.pushReplacement(context,
                   MaterialPageRoute(builder: (context) => const Languages()));
             });
@@ -265,7 +268,7 @@ class _LoadingPageState extends State<LoadingPage> {
               height: media.height * 1,
               width: media.width * 1,
               decoration: BoxDecoration(
-                color: theme,
+                color: Colors.black,
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,

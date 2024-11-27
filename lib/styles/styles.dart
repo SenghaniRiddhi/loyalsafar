@@ -47,6 +47,8 @@ Color greyText = const Color(0xff808080);
 Color borderColor = const Color(0xffAAABAA);
 Color boxColors = const Color(0xffAAAAAA).withOpacity(0.20);
 
+Color buttonColors = const Color(0xffBCFD5D);
+
 dynamic shimmer;
 List<Color> shaderColor = [
   const Color(0xFFEBEBF4).withOpacity(0.2),

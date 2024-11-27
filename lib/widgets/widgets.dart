@@ -692,6 +692,7 @@ class ProfileDetails extends StatelessWidget {
   final String? heading;
   final String? value;
   final String? hinttext;
+  final String? text;
   final double? width;
   final bool? readyonly;
   final TextEditingController? controller;
@@ -702,73 +703,73 @@ class ProfileDetails extends StatelessWidget {
       this.width,
       this.controller,
       this.hinttext,
-      this.readyonly});
+      this.readyonly,this.text});
 
   @override
   Widget build(BuildContext context) {
     var media = MediaQuery.of(context).size;
 
-    return Column(
-      children: [
-        SizedBox(
-            width: width ?? media.width * 0.9,
-            child: MyText(
-              text: heading,
-              size: media.width * fourteen,
-              color: hintColor,
-              maxLines: 1,
-            )),
-        Container(
-          height: media.width * 0.1,
-          width: width ?? media.width * 0.9,
-          alignment: Alignment.centerLeft,
-          decoration: BoxDecoration(
-              border: Border(
-                  bottom: BorderSide(
-                      color: (isDarkTheme == true)
-                          ? textColor.withOpacity(0.4)
-                          : underline)),
-              color: page),
-          padding: const EdgeInsets.only(right: 5, bottom: 5),
-          child: (controller == null)
-              ? MyText(
-                  text: value,
-                  size: media.width * sixteen,
-                  color: textColor,
-                )
-              : TextField(
-                  controller: controller,
-                  readOnly: readyonly!,
-                  decoration: InputDecoration(
-                    counterText: '',
-                    // prefixText: '+962 ',
-                    prefixStyle: GoogleFonts.notoSans(
-                      fontSize: media.width * fourteen,
-                      fontWeight: FontWeight.normal,
-                      color: textColor,
-                    ),
-                    border: InputBorder.none,
-                    hintText: hinttext,
-                    hintStyle: GoogleFonts.notoSans(
-                      fontSize: media.width * fourteen,
-                      fontWeight: FontWeight.normal,
-                      color: textColor.withOpacity(0.3),
-                    ),
-                  ),
-                  style: GoogleFonts.notoSans(
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 15,vertical: 03),
+
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(09),
+          border: Border.all(
+        color: hintColor,
+      )),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+              // width: width ?? media.width * 0.9,
+              child: MyText(
+                text: heading,
+                size: media.width * fourteen,
+                color: Colors.black,
+                maxLines: 1,
+              )),
+          Container(
+            height: media.width * 0.07,
+            // width: width ?? media.width * 0.9,
+            alignment: Alignment.centerLeft,
+            // decoration: BoxDecoration(
+            //     border: Border(
+            //         bottom: BorderSide(
+            //             color: (isDarkTheme == true)
+            //                 ? textColor.withOpacity(0.4)
+            //                 : underline)),
+            //     color: page),
+            padding: const EdgeInsets.only(right: 5, bottom: 5),
+            child: (controller == null)
+                ? MyText(
+                    text: value,
+                    size: media.width * sixteen,
                     color: textColor,
-                    fontSize: media.width * fourteen,
-                    fontWeight: FontWeight.normal,
+                  )
+                : TextField(
+                    controller: controller,
+                    readOnly: readyonly!,
+              decoration: InputDecoration(
+                labelText: text,
+                hintText: hinttext,
+                border: InputBorder.none
+              ),
+                    style: GoogleFonts.notoSans(
+                      color: textColor,
+                      fontSize: media.width * fourteen,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    // onChanged: (val) {
+                    //   setState(() {});
+                    // },
                   ),
-                  // onChanged: (val) {
-                  //   setState(() {});
-                  // },
-                ),
-        ),
-        SizedBox(
-          height: media.width * 0.02,
-        ),
-      ],
+          ),
+          // SizedBox(
+          //   height: media.width * 0.02,
+          // ),
+        ],
+      ),
     );
   }
 }
