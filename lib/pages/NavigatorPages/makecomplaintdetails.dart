@@ -135,6 +135,7 @@ class _MakeComplaintsDetailsState extends State<MakeComplaintsDetails> {
                           ],
                         ),
                       ),
+
                       Button(
                           onTap: () async {
                             if (complaintText.text.length >= 10) {

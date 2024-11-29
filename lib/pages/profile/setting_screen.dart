@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_user/pages/profile/contact_us_screen.dart';
-import 'package:flutter_user/pages/profile/faq_screen.dart';
 import 'package:flutter_user/styles/styles.dart';
+
+import '../NavigatorPages/faq.dart';
 
 class SettingsScreen extends StatefulWidget {
   @override
@@ -95,7 +96,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     icon: Icons.help_outline,
                     title: 'FAQ’s',
                     onTap: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context)=>FAQScreen()));
+                      Navigator.push(context, MaterialPageRoute(builder: (context)=>
+                      Faq())
+                      );
+
 
                       // Navigate to FAQ's
                     },
@@ -388,6 +392,7 @@ class _DeactivateAccountDialogContentState extends State<DeactivateAccountDialog
   Widget build(BuildContext context) {
     var media = MediaQuery.of(context).size;
     return Dialog(
+      backgroundColor: Colors.white,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
       ),

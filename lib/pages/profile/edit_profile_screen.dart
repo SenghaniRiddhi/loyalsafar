@@ -1,13 +1,48 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_user/pages/profile/text_field.dart';
 
-class EditProfileScreen extends StatelessWidget {
+import '../../styles/styles.dart';
+import '../../widgets/widgets.dart';
+
+class EditProfileScreen extends StatefulWidget {
+  @override
+  State<EditProfileScreen> createState() => _EditProfileScreenState();
+}
+
+class _EditProfileScreenState extends State<EditProfileScreen> {
   TextEditingController controllersDemo = TextEditingController();
+
+
+  bool autoFocusNode=false;
+  bool cilckTextField=false;
+
+  final FocusNode focusNode1 = FocusNode();
+  bool isFocused = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Add listener to detect focus changes
+    // focusNode1.addListener(() {
+    //   setState(() {
+    //     isFocused = focusNode1.hasFocus;
+    //   });
+    // });
+  }
+
+  @override
+  void dispose() {
+    focusNode1.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
+    var media = MediaQuery.of(context).size;
     return Scaffold(
+      backgroundColor: Colors.grey.shade200,
       appBar: AppBar(
+
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
@@ -15,7 +50,7 @@ class EditProfileScreen extends StatelessWidget {
           },
         ),
         title: Text("Edit Profile"),
-        backgroundColor: Colors.white,
+        backgroundColor:Colors. grey.shade200,
         elevation: 0,
         centerTitle: true,
         titleTextStyle: TextStyle(
@@ -25,130 +60,171 @@ class EditProfileScreen extends StatelessWidget {
         ),
         iconTheme: IconThemeData(color: Colors.black),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            CircleAvatar(
-              radius: 50,
-              backgroundImage: AssetImage("assets/profile_picture.jpg"), // Replace with your image
-              child: Align(
-                alignment: Alignment.bottomRight,
-                child: CircleAvatar(
-                  backgroundColor: Colors.white,
-                  radius: 15,
-                  child: Icon(
-                    Icons.edit,
-                    size: 15,
-                    color: Colors.black,
-                  ),
-                ),
-              ),
-            ),
+      body: Stack(
+        children: [
+          // Gray Container
+          Positioned.fill(
+            top: 80, // Push the container down for the profile picture overlap
+            child: Container(
+              color: Colors.white, // Light gray background
+              child: Padding(
+                padding:  EdgeInsets.only(top: media.width*0.2,left: media.width*0.04,right: media.width*0.04 ), // Padding for the fields
+                child: Column(
+                  children: [
 
-            TextFieldUI(text: "Email",hintText: "Enter Email", textController: controllersDemo),
-            SizedBox(height: 20),
-            Container(
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              padding: EdgeInsets.symmetric(horizontal: 12),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-
-                  Text("First Name",style: TextStyle(fontSize: 15),),
-                  TextField(
-                    decoration: InputDecoration(
-                      hintText: "",
-                      border: InputBorder.none,
-
+                    TextFieldUI(textController: controllersDemo,labelText:"First Name" ,),
+                   SizedBox(height: media.height*0.02),
+                   TextFieldUI(textController: controllersDemo,labelText:"Last Name" ,),
+                   SizedBox(height: media.height*0.02),
+                    Container(
+                      // width: media.height*0.,
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      padding: EdgeInsets.symmetric(horizontal: 12),
+                      child: Row(
+                        // mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Image.asset("assets/icons/india.png"),
+                          SizedBox(width:  media.width*0.03,),
+                          Text("+91"),
+                          SizedBox(width:  media.width*0.04,),
+                          Container(
+                            width: media.width*0.004,
+                            height: media.height*0.065,
+                            color: Colors.grey,
+                          ),
+                          SizedBox(width:  media.width*0.04,),
+                          Expanded(
+                            child: TextFormField(
+                              controller: controllersDemo,
+                              decoration: InputDecoration(
+                                labelText: "Phone Number",
+                                // hintText: !cilckTextField ? "Enter First Name" : "",
+                                border: InputBorder.none,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            ),
-            // TextField(
-            //   decoration: InputDecoration(
-            //     labelText: "First Name",
-            //     hintText: "Enter your first name",
-            //     border: OutlineInputBorder(
-            //       borderRadius: BorderRadius.circular(8.0),
-            //     ),
-            //   ),
-            // ),
-            SizedBox(height: 20),
-            TextField(
-              decoration: InputDecoration(
-                labelText: "Last Name",
-                hintText: "Enter your last name",
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-              ),
-            ),
-            SizedBox(height: 20),
-            // TextField(
-            //   keyboardType: TextInputType.phone,
-            //   decoration: InputDecoration(
-            //     labelText: "Phone Number",
-            //     prefixIcon: Padding(
-            //       padding: const EdgeInsets.only(left: 8.0),
-            //       child: Row(
-            //         mainAxisSize: MainAxisSize.min,
-            //         children: [
-            //           Image.asset(
-            //             "assets/flag.png", // Replace with your flag icon
-            //             width: 24,
-            //           ),
-            //           SizedBox(width: 8),
-            //           Text("+91"),
-            //         ],
-            //       ),
-            //     ),
-            //     border: OutlineInputBorder(
-            //       borderRadius: BorderRadius.circular(8.0),
-            //     ),
-            //   ),
-            // ),
-            // SizedBox(height: 20),
+                    SizedBox(height: media.height*0.02),
+                   TextFieldUI(textController: controllersDemo,labelText:"Email" ,),
 
-           TextFieldUI(text: "Email", textController: controllersDemo,hintText: "Enter Email",),
+                    Spacer(),
+                    // Save Button
+                Button(
+                          color: buttonColors,
+                          textcolor: Colors.black,
+                          borcolor: Colors.white,
+                          onTap: () async {
 
-            // TextField(
-            //   decoration: InputDecoration(
-            //     labelText: "Email",
-            //     hintText: "Enter your email",
-            //     border: OutlineInputBorder(
-            //       borderRadius: BorderRadius.circular(8.0),
-            //     ),
-            //   ),
-            // ),
-            SizedBox(height: 30),
-            ElevatedButton(
-              onPressed: () {
-                // Handle save action
-              },
-              style: ElevatedButton.styleFrom(
-                // primary: Colors.green,
-                minimumSize: Size(double.infinity, 50),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              child: Text(
-                "Save",
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.white,
+                          },
+                          text: "Save",),
+                    SizedBox(height: media.height*0.04),
+                  ],
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+          // Profile Picture
+          Align(
+            alignment: Alignment.topCenter,
+            child: Column(
+              children: [
+                SizedBox(height: 20), // Spacing from top
+                Stack(
+                  children: [
+                    CircleAvatar(
+                      radius: 58,
+                      backgroundColor: Colors.white,
+                      child: CircleAvatar(
+                        radius: 55,
+                        backgroundImage: AssetImage("assets/icons/userIcon.png"), // Replace with user image URL
+                      ),
+                    ),
+                    Positioned(
+                      bottom: 0,
+                      right: 0,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.5), // Shadow color
+                              spreadRadius: 2, // Spread radius
+                              blurRadius: 4, // Blur radius
+                              offset: Offset(2, 2), // Offset for the shadow (x, y)
+                            ),
+                          ],
+                        ),
+                        child: CircleAvatar(
+                          radius: 16,
+                          backgroundColor: Colors.white,
+                          child: CircleAvatar(
+
+                            radius: 14,
+                            backgroundColor: Colors.white,
+                            child: Icon(
+                              Icons.edit,
+                              size: 16,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
+      // Padding(
+      //   padding: const EdgeInsets.all(16.0),
+      //   child: Column(
+      //     children: [
+      //       CircleAvatar(
+      //         radius: 50,
+      //         backgroundImage: AssetImage("assets/profile_picture.jpg"), // Replace with your image
+      //         child: Align(
+      //           alignment: Alignment.bottomRight,
+      //           child: CircleAvatar(
+      //             backgroundColor: Colors.white,
+      //             radius: 15,
+      //             child: Icon(
+      //               Icons.edit,
+      //               size: 15,
+      //               color: Colors.black,
+      //             ),
+      //           ),
+      //         ),
+      //       ),
+      //       SizedBox(height: media.height*0.05),
+      //       TextFieldUI(textController: controllersDemo,labelText:"First Name" ,),
+      //       SizedBox(height: media.height*0.02),
+      //       TextFieldUI(textController: controllersDemo,labelText:"Last Name" ,),
+      //       SizedBox(height: media.height*0.02),
+      //       TextFieldUI(textController: controllersDemo,labelText:"Email" ,),
+      //       SizedBox(height: media.height*0.4),
+      //
+      //
+      //
+      //
+      //       Button(
+      //         color: buttonColors,
+      //         textcolor: Colors.black,
+      //         borcolor: Colors.white,
+      //         onTap: () async {
+      //
+      //         },
+      //         text: "Save",),
+      //     ],
+      //   ),
+      // ),
     );
   }
 }

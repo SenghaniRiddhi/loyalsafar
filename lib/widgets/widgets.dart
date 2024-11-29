@@ -698,78 +698,52 @@ class ProfileDetails extends StatelessWidget {
   final TextEditingController? controller;
   const ProfileDetails(
       {super.key,
-      required this.heading,
+       this.heading,
       this.value,
       this.width,
       this.controller,
       this.hinttext,
-      this.readyonly,this.text});
+      this.readyonly,required this.text});
 
   @override
   Widget build(BuildContext context) {
     var media = MediaQuery.of(context).size;
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 15,vertical: 03),
+      // padding: const EdgeInsets.symmetric(horizontal: 15,vertical: 03),
 
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(09),
           border: Border.all(
-        color: hintColor,
-      )),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-              // width: width ?? media.width * 0.9,
-              child: MyText(
-                text: heading,
-                size: media.width * fourteen,
-                color: Colors.black,
-                maxLines: 1,
-              )),
-          Container(
-            height: media.width * 0.07,
-            // width: width ?? media.width * 0.9,
-            alignment: Alignment.centerLeft,
-            // decoration: BoxDecoration(
-            //     border: Border(
-            //         bottom: BorderSide(
-            //             color: (isDarkTheme == true)
-            //                 ? textColor.withOpacity(0.4)
-            //                 : underline)),
-            //     color: page),
-            padding: const EdgeInsets.only(right: 5, bottom: 5),
-            child: (controller == null)
-                ? MyText(
-                    text: value,
-                    size: media.width * sixteen,
-                    color: textColor,
-                  )
-                : TextField(
-                    controller: controller,
-                    readOnly: readyonly!,
-              decoration: InputDecoration(
-                labelText: text,
-                hintText: hinttext,
-                border: InputBorder.none
+            color: hintColor,
+          )),
+      // width: width ?? media.width * 0.9,
+      alignment: Alignment.centerLeft,
+      padding: EdgeInsets.symmetric(horizontal: 12),
+      // padding: const EdgeInsets.only(right: 5, bottom: 5),
+      child: (controller == null)
+          ? MyText(
+              text: value,
+              size: media.width * sixteen,
+              color: textColor,
+            )
+          : TextField(
+              controller: controller,
+              readOnly: readyonly!,
+        decoration: InputDecoration(
+          labelText: text,
+          hintText: hinttext,
+          border: InputBorder.none
+        ),
+              style: GoogleFonts.notoSans(
+                color: textColor,
+                fontSize: media.width * fourteen,
+                fontWeight: FontWeight.bold,
               ),
-                    style: GoogleFonts.notoSans(
-                      color: textColor,
-                      fontSize: media.width * fourteen,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    // onChanged: (val) {
-                    //   setState(() {});
-                    // },
-                  ),
-          ),
-          // SizedBox(
-          //   height: media.width * 0.02,
-          // ),
-        ],
-      ),
+              // onChanged: (val) {
+              //   setState(() {});
+              // },
+            ),
     );
   }
 }

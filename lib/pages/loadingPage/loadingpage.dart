@@ -217,7 +217,8 @@ class _LoadingPageState extends State<LoadingPage> {
             navigate();
           } else if (choosenLanguage == '') {
             // ignore: use_build_context_synchronously
-
+            // Navigator.pushReplacement(context,
+            //     MaterialPageRoute(builder: (context) => const ProfileScreen()));
             Navigator.pushReplacement(context,
                 MaterialPageRoute(builder: (context) => const Languages()));
           } else if (val == '2') {
@@ -229,6 +230,8 @@ class _LoadingPageState extends State<LoadingPage> {
           } else {
             Future.delayed(const Duration(seconds: 2), () {
               //choose language page
+              // Navigator.pushReplacement(context,
+              //     MaterialPageRoute(builder: (context) => const ProfileScreen()));
 
               Navigator.pushReplacement(context,
                   MaterialPageRoute(builder: (context) => const Languages()));
