@@ -183,7 +183,7 @@ class MyText extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       text == null ? '' : text.toString(),
-      style: GoogleFonts.notoSans(
+      style: GoogleFonts.inter(
           fontSize: size,
           fontWeight: fontweight ?? FontWeight.normal,
           color: color ?? textColor),

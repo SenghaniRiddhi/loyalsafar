@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../functions/functions.dart';
 import '../../styles/styles.dart';
 import '../../translations/translation.dart';
+import '../../widgets/success_dialog_content.dart';
 import '../../widgets/widgets.dart';
 import '../loadingPage/loading.dart';
 import '../noInternet/noInternet.dart';
@@ -331,7 +332,7 @@ class _MakeComplaintState extends State<MakeComplaint> {
 
                                             showDialog(
                                               context: context,
-                                              builder: (context) => DeactivateAccountDialogContent(image: '',
+                                              builder: (context) => SuccessDialogContent(image: '',
                                                   title: '''Complaint Sent''', description: 'Thank you for submitting your complaint regarding your recent car ride.'),
                                             );
                                           }

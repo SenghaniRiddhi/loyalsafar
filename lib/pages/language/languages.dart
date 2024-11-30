@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../functions/functions.dart';
 import '../../styles/styles.dart';
 import '../../translations/translation.dart';
@@ -86,12 +87,16 @@ class _LanguagesState extends State<Languages> {
                               height: media.width * 0.11,
                               width: media.width * 1,
                               alignment: Alignment.center,
-                              child: MyText(
-                                text: (choosenLanguage.isEmpty)
+                              child: Text(
+                                (choosenLanguage.isEmpty)
                                     ? 'Choose Language'
                                     : languages[choosenLanguage]['text_choose_language'],
-                                size: media.width * sixteen,
-                                fontweight: FontWeight.bold,
+                                style:  GoogleFonts.inter(
+                                  fontSize: font18Size,
+                                  color: headingColors,
+                                  fontWeight: FontWeight.w600,
+                                ) ,
+
                               ),
                             ),
                           ],
@@ -155,7 +160,9 @@ class _LanguagesState extends State<Languages> {
                                                       .firstWhere(
                                                           (e) => e['code'] == i)['name']
                                                       .toString(),
-                                                  size: media.width * sixteen,
+                                                  size: font16Size,
+                                                  color: headingColors,
+                                                  fontweight: FontWeight.w500,
                                                 ),
                                               ],
                                             ),
@@ -213,10 +220,13 @@ class _LanguagesState extends State<Languages> {
           height: media.height*0.1,
           alignment: Alignment.topCenter,
           padding: EdgeInsets.all(20),
-          child: Text(
-            "Done",
-            style: TextStyle(fontSize: 18, color: Colors.black,fontWeight: FontWeight.bold),
+          child: MyText(
+            text: "Done",
+            size: font18Size,
+            color: Color(0xff030303),
+            fontweight: FontWeight.w600,
           ),
+
         ),
       ),
     );

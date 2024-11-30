@@ -7,6 +7,7 @@ import 'dart:io';
 import 'package:permission_handler/permission_handler.dart';
 import '../../functions/functions.dart';
 import '../../styles/styles.dart';
+import '../../widgets/success_dialog_content.dart';
 import '../../widgets/widgets.dart';
 import '../loadingPage/loading.dart';
 import '../login/login.dart';
@@ -70,7 +71,7 @@ class _EditProfileState extends State<EditProfile> {
       showToast = true;
       showDialog(
         context: context,
-        builder: (context) => DeactivateAccountDialogContent(image: '',
+        builder: (context) => SuccessDialogContent(image: '',
             title: '''Profile Updated''', description: 'Your Profile has been successfully updated.'),
       );
     });
