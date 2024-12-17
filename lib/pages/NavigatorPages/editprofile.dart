@@ -11,6 +11,7 @@ import '../../widgets/success_dialog_content.dart';
 import '../../widgets/widgets.dart';
 import '../loadingPage/loading.dart';
 import '../login/login.dart';
+import '../login/loginScreen.dart';
 import '../noInternet/nointernet.dart';
 import '../profile/setting_screen.dart';
 
@@ -88,7 +89,7 @@ class _EditProfileState extends State<EditProfile> {
     Future.delayed(const Duration(seconds: 2), () {
       Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => const Login()),
+          MaterialPageRoute(builder: (context) => const Loginscreen()),
           (route) => false);
     });
   }

@@ -32,6 +32,7 @@ import '../styles/styles.dart';
 
 //languages code
 dynamic phcode;
+dynamic countyCode;
 dynamic platform;
 dynamic pref;
 String isActive = '';
@@ -40,7 +41,7 @@ var audio = 'audio/notification_sound.mp3';
 bool internet = true;
 int waitingTime = 0;
 String gender = '';
-String packageName = 'com.userdemo';
+String packageName = 'com.loyalsafar';
 String signKey = '';
 
 //base url
@@ -48,9 +49,9 @@ String signKey = '';
 String url =
     'https://loyalsafar.com/'; //add '/' at the end of the url as 'https://url.com/'
 String mapkey =
-    (platform == TargetPlatform.android) ? 'android map key' : 'ios map key';
+    (platform == TargetPlatform.android) ? 'AIzaSyAxHr3V6Ts4omGvkxH28Ge-atsZOHQ6fXY' : 'AIzaSyAxHr3V6Ts4omGvkxH28Ge-atsZOHQ6fXY';
 
-String mapType = '';
+String mapType = 'google';
 
 //check internet connection
 
@@ -2918,9 +2919,11 @@ deleteSos(id) async {
 
 openBrowser(browseUrl) async {
   // ignore: deprecated_member_use
-  if (await canLaunch(browseUrl)) {
+  if (await canLaunch(browseUrl,
+    )) {
     // ignore: deprecated_member_use
-    await launch(browseUrl);
+    await launch(browseUrl,forceWebView: true, // Open in WebView
+        enableJavaScript: true);
   } else {
     throw 'Could not launch $browseUrl';
   }

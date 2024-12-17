@@ -8,6 +8,7 @@ import '../../widgets/widgets.dart';
 import '../NavigatorPages/walletpage.dart';
 import '../loadingPage/loading.dart';
 import '../login/login.dart';
+import '../login/loginScreen.dart';
 import 'booking_confirmation.dart';
 import 'map_page.dart';
 import 'review_page.dart';
@@ -39,7 +40,7 @@ class _InvoiceState extends State<Invoice> {
   navigateLogout() {
     Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(builder: (context) => const Login()),
+        MaterialPageRoute(builder: (context) => const Loginscreen()),
         (route) => false);
   }
 

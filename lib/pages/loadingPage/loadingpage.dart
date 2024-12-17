@@ -10,6 +10,7 @@ import 'package:http/http.dart' as http;
 import '../../widgets/widgets.dart';
 import '../language/languages.dart';
 import '../login/login.dart';
+import '../login/loginScreen.dart';
 import '../noInternet/noInternet.dart';
 import '../onTripPage/booking_confirmation.dart';
 import '../onTripPage/invoice.dart';
@@ -36,6 +37,8 @@ class _LoadingPageState extends State<LoadingPage> {
 
   @override
   void initState() {
+    // Navigator.pushReplacement(context,
+    //         MaterialPageRoute(builder: (context) => const ProfileScreen()));
     getLanguageDone();
     print("heelo");
     getemailmodule();
@@ -216,25 +219,29 @@ class _LoadingPageState extends State<LoadingPage> {
           if (val == '3') {
             navigate();
           } else if (choosenLanguage == '') {
-            // ignore: use_build_context_synchronously
-            Navigator.pushReplacement(context,
-                MaterialPageRoute(builder: (context) => const ProfileScreen()));
             // Navigator.pushReplacement(context,
-            //     MaterialPageRoute(builder: (context) => const Languages()));
+            //     MaterialPageRoute(builder: (context) =>  SignInScreen()));
+            // ignore: use_build_context_synchronously
+            // Navigator.pushReplacement(context,
+            //     MaterialPageRoute(builder: (context) => const ProfileScreen()));
+            Navigator.pushReplacement(context,
+                MaterialPageRoute(builder: (context) => const Languages()));
           } else if (val == '2') {
             Future.delayed(const Duration(seconds: 2), () {
               //login page
               Navigator.pushReplacement(context,
-                  MaterialPageRoute(builder: (context) => const Login()));
+                  MaterialPageRoute(builder: (context) => const Loginscreen()));
             });
           } else {
             Future.delayed(const Duration(seconds: 2), () {
-              //choose language page
-              Navigator.pushReplacement(context,
-                  MaterialPageRoute(builder: (context) => const ProfileScreen()));
+              // choose language page
+              // Navigator.pushReplacement(context,
+              //     MaterialPageRoute(builder: (context) => const ProfileScreen()));
 
               // Navigator.pushReplacement(context,
-              //     MaterialPageRoute(builder: (context) => const Languages()));
+              //     MaterialPageRoute(builder: (context) =>  SignInScreen()));
+              Navigator.pushReplacement(context,
+                  MaterialPageRoute(builder: (context) => const Languages()));
             });
           }
         } else {

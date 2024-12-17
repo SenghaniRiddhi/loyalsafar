@@ -7,6 +7,7 @@ import '../../translations/translation.dart';
 import '../../widgets/widgets.dart';
 import '../loadingPage/loading.dart';
 import '../login/login.dart';
+import '../login/loginScreen.dart';
 import 'selectlanguage.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -23,7 +24,7 @@ class _SettingsPageState extends State<SettingsPage> {
     Future.delayed(const Duration(seconds: 2), () {
       Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => const Login()),
+          MaterialPageRoute(builder: (context) => const Loginscreen()),
           (route) => false);
     });
   }

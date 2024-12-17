@@ -6,6 +6,7 @@ import '../../translations/translation.dart';
 import '../../widgets/appbar.dart';
 import '../../widgets/widgets.dart';
 import '../login/login.dart';
+import '../login/loginScreen.dart';
 
 class Languages extends StatefulWidget {
   const Languages({super.key});
@@ -25,7 +26,7 @@ class _LanguagesState extends State<Languages> {
 //navigate
   navigate() {
     Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => const Login()));
+        context, MaterialPageRoute(builder: (context) => const Loginscreen()));
   }
 
   final Map<String, String> languageFlags = {
@@ -54,8 +55,15 @@ class _LanguagesState extends State<Languages> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
 
-              appBarWidget(context: context,
-                  backgroundIcon: Colors.grey[200]!, title: "", showTitle: false),
+              Container(
+                margin: EdgeInsets.symmetric(horizontal: media.width * 0.05),
+                child: appBarWidget(context: context,
+                    onTaps: (){
+                      Navigator.pop(context);
+                    },
+                    backgroundIcon: Color(0xffECECEC), title: "",iconColors: iconGrayColors),
+              ),
+
 
               Material(
                   child: Directionality(
@@ -87,16 +95,13 @@ class _LanguagesState extends State<Languages> {
                               height: media.width * 0.11,
                               width: media.width * 1,
                               alignment: Alignment.center,
-                              child: Text(
-                                (choosenLanguage.isEmpty)
+                              child:  MyText(
+                                text: (choosenLanguage.isEmpty)
                                     ? 'Choose Language'
                                     : languages[choosenLanguage]['text_choose_language'],
-                                style:  GoogleFonts.inter(
-                                  fontSize: font18Size,
-                                  color: headingColors,
-                                  fontWeight: FontWeight.w600,
-                                ) ,
-
+                                size: font18Size,
+                                color: headingColors,
+                                fontweight: FontWeight.w600,
                               ),
                             ),
                           ],

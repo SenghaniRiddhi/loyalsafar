@@ -152,7 +152,8 @@ class _SupportPageState extends State<SupportPage> {
 
                       SubMenu(
                         onTap: () {
-                          openBrowser('your privacy policy url here');
+                          openBrowser('https://loyalsafar.com/privacy');
+
                         },
                         text: languages[choosenLanguage]['text_privacy'],
                         icon: Icons.privacy_tip_outlined,

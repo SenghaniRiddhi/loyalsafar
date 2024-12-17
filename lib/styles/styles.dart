@@ -53,15 +53,20 @@ Color headingColors = const Color(0xff1D1B20);
 Color backgroundColors = const Color(0xffE8E9EA);
 Color backgroundWhiteColors = const Color(0xff1D1B20);
 Color iconColors = const Color(0xff1D1B20);
+Color iconGrayColors = const Color(0xff6D6D6D);
 Color normalTextColors = const Color(0xff494A52);
 Color normalText1Colors = const Color(0xff5E5E5E);
+Color whiteColors = const Color(0xffFFFFFF);
 
-
+double font13Size =13;
+double font14Size = 14;
 double font16Size = 16;
 double font18Size =18;
 double font24Size = 24;
 double font25Size = 25;
 double font26Size = 26;
+double font15Size = 15;
+double font22Size = 22;
 double font27Size = 27;
 
 

@@ -4,6 +4,7 @@ import 'package:flutter_user/translations/translation.dart';
 import '../../functions/functions.dart';
 import '../../styles/styles.dart';
 import '../../widgets/widgets.dart';
+import '../login/loginScreen.dart';
 import '../noInternet/nointernet.dart';
 import 'historydetails.dart';
 
@@ -43,7 +44,7 @@ class _HistoryState extends State<History> {
       Future.delayed(const Duration(seconds: 2), () {
         Navigator.pushAndRemoveUntil(
             context,
-            MaterialPageRoute(builder: (context) => const Login()),
+            MaterialPageRoute(builder: (context) => const Loginscreen()),
             (route) => false);
       });
     }

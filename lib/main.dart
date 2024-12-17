@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_user/pages/profile/profile_screen.dart';
 import 'functions/functions.dart';
 import 'functions/notifications.dart';
 import 'pages/loadingPage/loadingpage.dart';
@@ -40,6 +41,7 @@ class MyApp extends StatelessWidget {
                 debugShowCheckedModeBanner: false,
                 title: 'Loyal Safar',
                 theme: ThemeData(),
+                // home: const ProfileScreen(),
                 home: const LoadingPage(),
                 builder: (context, child) {
                   return MediaQuery(

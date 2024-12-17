@@ -6,6 +6,7 @@ import '../../styles/styles.dart';
 import '../../translations/translation.dart';
 import '../../widgets/widgets.dart';
 import '../loadingPage/loading.dart';
+import '../login/loginScreen.dart';
 
 class NotificationPage extends StatefulWidget {
   const NotificationPage({super.key});
@@ -51,7 +52,7 @@ class _NotificationPageState extends State<NotificationPage> {
 
   navigateLogout() {
     Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => const Login()));
+        context, MaterialPageRoute(builder: (context) => const Loginscreen()));
   }
 
   bool showinfo = false;

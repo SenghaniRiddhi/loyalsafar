@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../functions/functions.dart';
 import '../../styles/styles.dart';
 import '../../translations/translation.dart';
+import '../../widgets/appbar.dart';
 import '../../widgets/success_dialog_content.dart';
 import '../../widgets/widgets.dart';
 import '../loadingPage/loading.dart';
@@ -78,11 +79,20 @@ class _MakeComplaintState extends State<MakeComplaint> {
                 padding: EdgeInsets.only(
                     left: media.width * 0.05, right: media.width * 0.05),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(
-                        height: MediaQuery.of(context).padding.top +
-                            media.width * 0.05),
-                    BackButton(),
+                    // SizedBox(
+                    //     height: MediaQuery.of(context).padding.top +
+                    //         media.width * 0.0),
+                    appBarWidget(
+                      onTaps: (){
+                        Navigator.pop(context);
+                      },
+                        context: context,
+                        backgroundIcon: Color(0xffECECEC),
+                        title: "",
+                        iconColors: iconGrayColors),
+
                     SizedBox(
                       height: media.width * 0.03,
                     ),
@@ -94,7 +104,6 @@ class _MakeComplaintState extends State<MakeComplaint> {
                                 Center(
                                   child: Column(
                                     children: [
-
                                       SizedBox(
                                         width: media.width * 0.8,
                                         height: media.height * 0.12,
@@ -104,17 +113,23 @@ class _MakeComplaintState extends State<MakeComplaint> {
                                         ),
                                       ),
                                       SizedBox(height: media.height * 0.04),
-                                      Text(
-                                        'Raise Complaints',
-                                        style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                                      MyText(
+                                        text: "Raise Complaints",
+                                        size: font22Size,
+                                        color: Color(0xff303030),
+                                        fontweight: FontWeight.w700,
                                       ),
                                       SizedBox(height: media.height * 0.01),
                                       Padding(
-                                        padding:  EdgeInsets.symmetric(horizontal:  media.width * 0.07),
-                                        child: Text(
-                                          'Please raise your concern which you faced in the ride.',
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: media.width * 0.07),
+                                        child: MyText(
+                                          text:
+                                              "Please raise your concern which you faced in the ride.",
+                                          size: font16Size,
                                           textAlign: TextAlign.center,
-                                          style: TextStyle(color: Colors.black),
+                                          color: normalText1Colors,
+                                          fontweight: FontWeight.w400,
                                         ),
                                       ),
                                     ],
@@ -206,67 +221,77 @@ class _MakeComplaintState extends State<MakeComplaint> {
                                 // ),
 
                                 DropdownButtonFormField<String>(
-                        value: selectedComplaint,
-                        hint: Text(
-                          "Select Reason",
-                          style: GoogleFonts.poppins(fontSize: media.width * 0.04,color: Colors.black,fontWeight: FontWeight.w500),
-                        ),
-                         decoration: InputDecoration(
-                           border: OutlineInputBorder(
-                             borderSide: BorderSide(
-                               color: Colors.grey, // Color for the enabled border
-                             ),
-                             borderRadius:
-                         BorderRadius.circular(media.width * 0.02) ,),),
-                        items: generalComplaintList.map((item) {
-                          return DropdownMenuItem<String>(
+                                  value: selectedComplaint,
+                                  hint: Text(
+                                    "Select Reason",
+                                    style: GoogleFonts.poppins(
+                                        fontSize: media.width * 0.04,
+                                        color: Color(0xff5C6266),
+                                        fontWeight: FontWeight.w500),
+                                  ),
+                                  decoration: InputDecoration(
+                                    border: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: Color(
+                                              0xff5C6266) // Color for the enabled border
+                                          ),
+                                      borderRadius: BorderRadius.circular(
+                                          media.width * 0.02),
+                                    ),
+                                  ),
+                                  items: generalComplaintList.map((item) {
+                                    return DropdownMenuItem<String>(
+                                      value: item['title'].toString(),
+                                      child: Text(
+                                        item['title'].toString(),
+                                        style: GoogleFonts.poppins(
+                                          fontSize: media.width * 0.04,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                    );
+                                  }).toList(),
+                                  onChanged: (value) {
+                                    setState(() {
+                                      selectedComplaint =
+                                          value; // Update the selected value
+                                    });
+                                    // Navigate to details page based on selected item
 
-                            value: item['title'].toString(),
-                            child: Text(
-                              item['title'].toString(),
-                              style: GoogleFonts.poppins(
-                                fontSize: media.width * 0.04,
-                                color: Colors.black,
-                              ),
-                            ),
-                          );
-                        }).toList(),
-                        onChanged: (value) {
-                          setState(() {
-                            selectedComplaint = value; // Update the selected value
-                          });
+                                    final selectedIndex = generalComplaintList
+                                        .indexWhere((element) =>
+                                            element['title'] == value);
 
-                          // Navigate to details page based on selected item
-                          final selectedIndex = generalComplaintList.indexWhere(
-                                  (element) => element['title'] == value);
-
-                          // if (selectedIndex != -1) {
-                          //   Navigator.push(
-                          //     context,
-                          //     MaterialPageRoute(
-                          //       builder: (context) => MakeComplaintsDetails(
-                          //         i: selectedIndex,
-                          //       ),
-                          //     ),
-                          //   );
-                          // }
-                        },
-                        // underline: Container(
-                        //   height: 1,
-                        //   color: Colors.grey,
-                        // ),
-                        icon: Icon(Icons.keyboard_arrow_down_outlined),
-                        isExpanded: true,
-                      ),
+                                    // if (selectedIndex != -1) {
+                                    //   Navigator.push(
+                                    //     context,
+                                    //     MaterialPageRoute(
+                                    //       builder: (context) => MakeComplaintsDetails(
+                                    //         i: selectedIndex,
+                                    //       ),
+                                    //     ),
+                                    //   );
+                                    // }
+                                  },
+                                  // underline: Container(
+                                  //   height: 1,
+                                  //   color: Colors.grey,
+                                  // ),
+                                  icon:
+                                      Icon(Icons.keyboard_arrow_down_outlined),
+                                  isExpanded: true,
+                                ),
                                 SizedBox(
                                   height: media.width * 0.05,
                                 ),
                                 Container(
                                   width: media.width * 0.9,
-                                  padding: EdgeInsets.symmetric(vertical: media.width * 0.01,horizontal: media.width * 0.05),
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: media.width * 0.01,
+                                      horizontal: media.width * 0.05),
                                   decoration: BoxDecoration(
-                                      border: Border.all(
-                                          color: Colors.black),
+                                      border:
+                                          Border.all(color: Color(0xffD9D9D9)),
                                       borderRadius: BorderRadius.circular(
                                           media.width * 0.02)),
                                   child: TextField(
@@ -275,16 +300,15 @@ class _MakeComplaintState extends State<MakeComplaint> {
                                     maxLines: 5,
                                     decoration: InputDecoration(
                                       border: InputBorder.none,
-                                      hintStyle: GoogleFonts.notoSans(
-                                        color: textColor.withOpacity(0.4),
-                                        fontSize: media.width * fourteen,
+                                      hintStyle: TextStyle(
+                                        color: Color(0xff5C6266),
                                       ),
+                                      // GoogleFonts.notoSans(
+                                      //   color: textColor.withOpacity(0.4),
+                                      //   fontSize: media.width * fourteen,
+                                      // ),
                                       hintText: languages[choosenLanguage]
-                                      ['text_complaint_2'] +
-                                          ' (' +
-                                          languages[choosenLanguage]
-                                          ['text_complaint_3'] +
-                                          ')',
+                                          ['text_complaint_2'],
                                     ),
                                     onChanged: (val) {
                                       complaintDesc = val;
@@ -294,7 +318,8 @@ class _MakeComplaintState extends State<MakeComplaint> {
                                         });
                                       }
                                     },
-                                    style: GoogleFonts.notoSans(color: textColor),
+                                    style:
+                                        GoogleFonts.notoSans(color: textColor),
                                   ),
                                 ),
                                 if (_error != '')
@@ -314,41 +339,45 @@ class _MakeComplaintState extends State<MakeComplaint> {
                                 ),
                                 Button(
                                   color: buttonColors,
-                                    textcolor: Colors.black,
-                                    borcolor: Colors.white,
-                                    onTap: () async {
-                                      if (complaintText.text.length >= 10) {
-                                        setState(() {
-                                          _isLoading = true;
-                                        });
-                                        dynamic result;
+                                  textcolor: Colors.black,
+                                  borcolor: Colors.white,
+                                  onTap: () async {
+                                    if (complaintText.text.length >= 10) {
+                                      setState(() {
+                                        _isLoading = true;
+                                      });
+                                      dynamic result;
 
-                                        result =
-                                        await makeGeneralComplaint(complaintDesc);
+                                      result = await makeGeneralComplaint(
+                                          complaintDesc);
 
-                                        setState(() {
-                                          if (result == 'success') {
-                                            _success = true;
+                                      setState(() {
+                                        if (result == 'success') {
+                                          _success = true;
 
-                                            showDialog(
-                                              context: context,
-                                              builder: (context) => SuccessDialogContent(image: '',
-                                                  title: '''Complaint Sent''', description: 'Thank you for submitting your complaint regarding your recent car ride.'),
-                                            );
-                                          }
+                                          showDialog(
+                                            context: context,
+                                            builder: (context) =>
+                                                SuccessDialogContent(
+                                                    image: '',
+                                                    title: '''Complaint Sent''',
+                                                    description:
+                                                        'Thank you for submitting your complaint regarding your recent car ride.'),
+                                          );
+                                        }
 
-                                          _isLoading = false;
-                                        });
-                                      } else {
-                                        setState(() {
-                                          _error = languages[choosenLanguage]
-                                          ['text_complaint_text_error'];
-                                        });
-                                      }
-                                    },
-                                    text: languages[choosenLanguage]['text_submit'],),
-
-
+                                        _isLoading = false;
+                                      });
+                                    } else {
+                                      setState(() {
+                                        _error = languages[choosenLanguage]
+                                            ['text_complaint_text_error'];
+                                      });
+                                    }
+                                  },
+                                  text: languages[choosenLanguage]
+                                      ['text_submit'],
+                                ),
                               ],
                             ),
                           )
@@ -453,13 +482,9 @@ class _MakeComplaintState extends State<MakeComplaint> {
                                   ],
                                 ),
                               ),
-
-
                   ],
                 ),
               ),
-
-
 
               //loader
               (_isLoading == true)

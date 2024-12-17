@@ -130,8 +130,8 @@ class _AggreementPageState extends State<AggreementPage> {
                                       ),
                                       recognizer: TapGestureRecognizer()
                                         ..onTap = () {
-                                          openBrowser(
-                                              'your terms and condition url here');
+                                          openBrowser('https://loyalsafar.com/terms');
+
                                         }),
                                   TextSpan(
                                       text: languages[choosenLanguage]
@@ -145,8 +145,8 @@ class _AggreementPageState extends State<AggreementPage> {
                                       ),
                                       recognizer: TapGestureRecognizer()
                                         ..onTap = () {
-                                          openBrowser(
-                                              'your privacy policy url here');
+                                          openBrowser('https://loyalsafar.com/privacy');
+
                                         }),
                                 ],
                               ),

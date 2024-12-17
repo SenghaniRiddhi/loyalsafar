@@ -5,6 +5,7 @@ import '../../functions/functions.dart';
 import '../../styles/styles.dart';
 import '../../widgets/widgets.dart';
 import '../loadingPage/loading.dart';
+import '../login/loginScreen.dart';
 import 'pickcontacts.dart';
 
 class Sos extends StatefulWidget {
@@ -23,7 +24,7 @@ class _SosState extends State<Sos> {
     Future.delayed(const Duration(seconds: 2), () {
       Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => const Login()),
+          MaterialPageRoute(builder: (context) => const Loginscreen()),
           (route) => false);
     });
   }

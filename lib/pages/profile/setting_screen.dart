@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_user/pages/profile/contact_us_screen.dart';
 import 'package:flutter_user/styles/styles.dart';
 
+import '../../functions/functions.dart';
+import '../../widgets/appbar.dart';
 import '../../widgets/bottom_sheet_content.dart';
 import '../../widgets/success_dialog_content.dart';
 import '../../widgets/widgets.dart';
 import '../NavigatorPages/faq.dart';
+import '../login/loginScreen.dart';
 
 class SettingsScreen extends StatefulWidget {
   @override
@@ -18,29 +21,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
     var media = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: backgroundColors,
-
       body: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height:media.width * 0.1 ,),
-            GestureDetector(
-              onTap: (){
-                Navigator.pop(context);
-              },
-              child: Container(
-                width: media.width * 0.1, // Set width
-                height: media.width * 0.1,
-                margin: EdgeInsets.symmetric(horizontal: 16),
-                decoration: BoxDecoration(
-                  color: Colors.white, // Background color
-                  shape: BoxShape.circle, // Makes the container circular
-                ),
-                child: const Icon(Icons.arrow_back_ios_new, color: Colors.black),
+            SizedBox(height:media.width * 0.01 ,),
 
-              ),
+            Container(
+              margin: EdgeInsets.symmetric(horizontal: 14),
+              child: appBarWidget(context: context,
+                  onTaps: (){
+                    Navigator.pop(context);
+                  },
+                  backgroundIcon: whiteColors, title: "",iconColors: iconGrayColors),
             ),
+
             SizedBox(height:media.width * 0.04,),
             Container(
                 margin: EdgeInsets.symmetric(horizontal: 16),
@@ -57,8 +53,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
               margin: EdgeInsets.all(16.0),
               padding: EdgeInsets.symmetric(horizontal: 16,vertical: 05),
               decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(17),
+                color: whiteColors,
+                borderRadius: BorderRadius.circular(12),
               ),
               child: Column(
                 // padding: const EdgeInsets.symmetric(vertical: 16.0),
@@ -68,20 +64,25 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     icon: Icons.info_outline,
                     title: 'About Us',
                     onTap: () {
+
+                      openBrowser('https://loyalsafar.com/terms');
+
                       // Navigate to About Us
                     },
                   ),
-                  Divider(),
+                  horizontalDivider(),
                   // Contact Us
                   SettingsTile(
                     icon: Icons.mail_outline,
                     title: 'Contact Us',
                     onTap: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context)=>ContactUsScreen()));
+                     // Navigator.push(context, MaterialPageRoute(builder: (context)=>ContactUsScreen()));
+                      Navigator.push(context, MaterialPageRoute(builder: (context)=>Loginscreen()));
+
                       // Navigate to Contact Us
                     },
                   ),
-                  Divider(),
+                  horizontalDivider(),
                   // Terms & Conditions
                   SettingsTile(
                     icon: Icons.description_outlined,
@@ -90,7 +91,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       // Navigate to Terms & Conditions
                     },
                   ),
-                  Divider(),
+                  horizontalDivider(),
                   // Privacy Policy
                   SettingsTile(
                     icon: Icons.contact_page_outlined,
@@ -99,7 +100,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       // Navigate to Privacy Policy
                     },
                   ),
-                  Divider(),
+                  horizontalDivider(),
                   // FAQ's
                   SettingsTile(
                     icon: Icons.help_outline,
@@ -113,7 +114,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       // Navigate to FAQ's
                     },
                   ),
-                  Divider(),
+                  horizontalDivider(),
                   // Rate the App
                   SettingsTile(
                     icon: Icons.star_outline,
@@ -122,7 +123,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       // Navigate to Rate The App
                     },
                   ),
-                  Divider(),
+                  horizontalDivider(),
                   // Share App
                   SettingsTile(
                     icon: Icons.share,
@@ -139,7 +140,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               margin: EdgeInsets.all(16.0),
               padding: EdgeInsets.symmetric(horizontal: 16),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: whiteColors,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Column(
@@ -184,7 +185,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ),
                   // Delete Account
 
-                  Divider(),
+                  horizontalDivider(),
                   SettingsTile(
                     icon: Icons.delete_outline,
                     title: 'Delete Account',
@@ -238,6 +239,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ),
     );
   }
+  Widget horizontalDivider() {
+    return Padding(
+      padding: EdgeInsets.only(left: 15,top:03,right: 18,bottom: 03 ),
+      child: const Divider(height: 1),
+    );
+  }
 }
 
 class SettingsTile extends StatelessWidget {
@@ -254,18 +261,44 @@ class SettingsTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      leading: Icon(icon, color: Color(0xff4F4F4F),size: 30,),
-      title: MyText(
-        text: title,
-        size: font16Size,
-        color: normalText1Colors,
-        fontweight: FontWeight.w500,
-      ),
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 10,vertical: 18),
+      child: GestureDetector(
+        onTap:onTap,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+                Icon(icon,size: 25,color: normalText1Colors,),
+                SizedBox(width: 15,),
+                MyText(
+                  text:  title,
+                  size: font16Size,
+                  color: normalText1Colors,
+                  fontweight: FontWeight.w500,
+                ),
+              ],
+            ),
 
-      trailing: const Icon(Icons.chevron_right,color: Color(0xff4F4F4F),size: 27),
-      onTap: onTap,
+            Icon(Icons.arrow_forward_ios,color: normalText1Colors, size: 18),
+
+          ],
+        ),
+      ),
     );
+    //   ListTile(
+    //   leading: Icon(icon, color: Color(0xff4F4F4F),size: 30,),
+    //   title: MyText(
+    //     text: title,
+    //     size: font16Size,
+    //     color: normalText1Colors,
+    //     fontweight: FontWeight.w500,
+    //   ),
+    //
+    //   trailing: const Icon(Icons.chevron_right,color: Color(0xff4F4F4F),size: 27),
+    //   onTap: onTap,
+    // );
   }
 }
 

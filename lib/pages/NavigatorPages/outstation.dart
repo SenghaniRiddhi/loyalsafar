@@ -8,6 +8,8 @@ import 'package:flutter_user/styles/styles.dart';
 import 'package:flutter_user/translations/translation.dart';
 import 'package:flutter_user/widgets/widgets.dart';
 
+import '../login/loginScreen.dart';
+
 class OutStationRides extends StatefulWidget {
   const OutStationRides({super.key});
 
@@ -61,7 +63,7 @@ class _OutStationRidesState extends State<OutStationRides> {
     Future.delayed(const Duration(seconds: 2), () {
       Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => const Login()),
+          MaterialPageRoute(builder: (context) => const Loginscreen()),
           (route) => false);
     });
   }

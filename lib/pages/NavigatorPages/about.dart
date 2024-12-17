@@ -72,7 +72,7 @@ class _AboutState extends State<About> {
                       //terms and condition
                       InkWell(
                           onTap: () {
-                            openBrowser('your terms and condition url here');
+                            openBrowser('https://loyalsafar.com/terms');
                           },
                           child: MyText(
                             text: languages[choosenLanguage]
@@ -87,7 +87,7 @@ class _AboutState extends State<About> {
                       //privacy policy
                       InkWell(
                           onTap: () {
-                            openBrowser('your privacy policy url here');
+                            openBrowser('https://loyalsafar.com/privacy');
                           },
                           child: MyText(
                             text: languages[choosenLanguage]['text_privacy'],

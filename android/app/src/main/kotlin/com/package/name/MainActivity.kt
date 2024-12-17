@@ -1,4 +1,4 @@
-package com.userdemo
+package com.loyalsafar
 
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.android.FlutterFragmentActivity

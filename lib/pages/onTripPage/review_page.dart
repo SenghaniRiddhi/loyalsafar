@@ -7,6 +7,7 @@ import '../../translations/translation.dart';
 import '../../widgets/widgets.dart';
 import '../loadingPage/loading.dart';
 import '../login/login.dart';
+import '../login/loginScreen.dart';
 import 'map_page.dart';
 
 class Review extends StatefulWidget {
@@ -31,7 +32,7 @@ class _ReviewState extends State<Review> {
   navigateLogout() {
     Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(builder: (context) => const Login()),
+        MaterialPageRoute(builder: (context) => const Loginscreen()),
         (route) => false);
   }
 

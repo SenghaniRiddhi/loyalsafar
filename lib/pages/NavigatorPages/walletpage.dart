@@ -7,6 +7,7 @@ import '../../styles/styles.dart';
 import '../../widgets/widgets.dart';
 import '../loadingPage/loading.dart';
 import '../login/login.dart';
+import '../login/loginScreen.dart';
 import '../noInternet/nointernet.dart';
 
 class WalletPage extends StatefulWidget {
@@ -77,7 +78,7 @@ class _WalletPageState extends State<WalletPage> {
     Future.delayed(const Duration(seconds: 2), () {
       Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => const Login()),
+          MaterialPageRoute(builder: (context) => const Loginscreen()),
           (route) => false);
     });
   }

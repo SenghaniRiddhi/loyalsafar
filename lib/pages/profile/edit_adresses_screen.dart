@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 
 class EditAddressScreen extends StatefulWidget {
@@ -7,6 +8,43 @@ class EditAddressScreen extends StatefulWidget {
 }
 
 class _EditAddressScreenState extends State<EditAddressScreen> {
+  final LatLng _initialPosition = LatLng(37.7749, -122.4194);
+  Set<Marker> _markers = {
+    Marker(
+      markerId: MarkerId('1'),
+      position: LatLng(37.7749, -122.4194),
+      infoWindow: InfoWindow(title: 'San Francisco'),
+    ),
+  };
+  late GoogleMapController _mapController;
+
+  LatLng _markerPosition = LatLng(37.7749, -122.4194); // Initial marker position
+  late Marker _marker;
+
+  @override
+  void initState() {
+    super.initState();
+    _marker = Marker(
+      markerId: MarkerId("moving_marker"),
+      position: _markerPosition,
+      draggable: false,
+      infoWindow: InfoWindow(title: "Moving Marker"),
+    );
+  }
+
+  void _moveMarker() {
+    // Change the marker's position
+    setState(() {
+      _markerPosition = LatLng(_markerPosition.latitude + 0.01, _markerPosition.longitude + 0.01);
+      _marker = Marker(
+        markerId: MarkerId("moving_marker"),
+        position: _markerPosition,
+        draggable: false,
+        infoWindow: InfoWindow(title: "Moving Marker"),
+      );
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,6 +64,7 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Map placeholder
+
             Stack(
               children: [
                 Container(
@@ -34,25 +73,29 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
                     borderRadius: BorderRadius.circular(8.0),
                     color: Colors.grey[300],
                   ),
-                  child: const Center(
-                    child: Text(
-                      'Map View',
-                      style: TextStyle(color: Colors.grey),
+                  child:  GoogleMap(
+                    initialCameraPosition: CameraPosition(
+                      target: _initialPosition,
+                      zoom: 12,
                     ),
-                  ),
-                ),
-                Positioned(
-                  bottom: 10,
-                  right: 10,
-                  child: FloatingActionButton.small(
-                    onPressed: () {
-                      // Handle map location refresh
+                    markers: {_marker},
+                    onMapCreated: (controller) {
+                      _mapController = controller;
                     },
-                    child: const Icon(Icons.my_location, size: 20),
                   ),
                 ),
+
+                Positioned(
+                  bottom: 50,
+                  left: 20,
+                  child: FloatingActionButton(
+                    onPressed: _moveMarker,
+                    child: Icon(Icons.directions),
+                  ),
+                )
               ],
             ),
+
             const SizedBox(height: 24.0),
 
             // Save As options

@@ -7,6 +7,7 @@ import '../../functions/functions.dart';
 import '../../styles/styles.dart';
 import '../../translations/translation.dart';
 import '../loadingPage/loading.dart';
+import '../login/loginScreen.dart';
 import '../noInternet/noInternet.dart';
 import '../onTripPage/map_page.dart';
 
@@ -32,7 +33,7 @@ class _FaqState extends State<Faq> {
   navigateLogout() {
     Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(builder: (context) => const Login()),
+        MaterialPageRoute(builder: (context) => const Loginscreen()),
         (route) => false);
   }
 

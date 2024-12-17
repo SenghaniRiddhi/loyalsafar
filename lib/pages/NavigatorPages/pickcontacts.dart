@@ -7,6 +7,7 @@ import '../../functions/functions.dart';
 import '../../styles/styles.dart';
 import '../../translations/translation.dart';
 import '../../widgets/widgets.dart';
+import '../login/loginScreen.dart';
 import '../noInternet/nointernet.dart';
 
 class PickContact extends StatefulWidget {
@@ -85,7 +86,7 @@ class _PickContactState extends State<PickContact> {
 
   navigateLogout() {
     Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => const Login()));
+        context, MaterialPageRoute(builder: (context) => const Loginscreen()));
   }
 
   @override

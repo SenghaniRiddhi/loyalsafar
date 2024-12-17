@@ -1,28 +1,31 @@
 import 'package:flutter/material.dart';
 
+import '../pages/NavigatorPages/editprofile.dart';
+import '../pages/profile/edit_profile_screen.dart';
+import '../styles/styles.dart';
+
 appBarWidget(
     {required BuildContext context,
       required Color backgroundIcon,
+      required Color iconColors,
       required String title,
-      required bool showTitle}){
+      required Function() onTaps,
+      }){
   var media = MediaQuery.of(context).size;
   return Column(
     children: [
       SizedBox(height: media.height*0.04,),
       GestureDetector(
-        onTap: () {
-          Navigator.pop(context);
-        },
-        child: Padding(
-          padding:  EdgeInsets.only(left: 10),
-          child: CircleAvatar(
-            backgroundColor: backgroundIcon,
-            radius: 20,
-            // Half of the desired width/height
+        onTap: onTaps,
+        child: CircleAvatar(
+          backgroundColor: backgroundIcon,
+          radius: 18,
+          child: Padding(
+            padding:  EdgeInsets.only(left: 09),
             child: Icon(
               Icons.arrow_back_ios,
-              color: Colors.black,
-              size: 23,
+              color: iconColors,
+              size: 20,
             ),
           ),
         ),
@@ -31,4 +34,37 @@ appBarWidget(
   );
 
 
+}
+
+
+
+appBarProfileWidget(
+    {required BuildContext context}){
+  var media = MediaQuery.of(context).size;
+  return  Row(
+    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    children: [
+      GestureDetector(
+        onTap: (){
+          Navigator.pop(context);
+        },
+        child: CircleAvatar(
+          radius: 18,
+          backgroundColor: Color(0xffECECEC),
+          child: Icon(Icons.close, color: iconGrayColors, size: 20,),
+        ),
+      ),
+
+      GestureDetector(
+        onTap: (){
+          Navigator.push(context,MaterialPageRoute(builder: (context)=>EditProfile()));
+        },
+        child: CircleAvatar(
+          radius: 18,
+          backgroundColor: Color(0xffECECEC),
+          child: Icon(Icons.edit, color: iconGrayColors, size: 18,),
+        ),
+      ),
+
+    ],);
 }
