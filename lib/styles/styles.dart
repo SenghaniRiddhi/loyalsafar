@@ -62,6 +62,7 @@ double font13Size =13;
 double font14Size = 14;
 double font16Size = 16;
 double font18Size =18;
+double font20Size = 20;
 double font24Size = 24;
 double font25Size = 25;
 double font26Size = 26;

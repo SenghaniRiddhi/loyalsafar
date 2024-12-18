@@ -54,7 +54,7 @@ class _NavDrawerState extends State<NavDrawer> {
                           var val = await Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => const EditProfile()));
+                                  builder: (context) =>  EditProfileScreen()));
                           if (val) {
                             setState(() {});
                           }
@@ -62,6 +62,10 @@ class _NavDrawerState extends State<NavDrawer> {
                           //         context,
                           //         MaterialPageRoute(
                           //             builder: (context) => EditProfileScreen()));
+                          // Navigator.push(
+                          //     context,
+                          //     MaterialPageRoute(
+                          //         builder: (context) => EditProfile()));
                         },
                         child: Container(
                           padding: EdgeInsets.all(media.width * 0.025),

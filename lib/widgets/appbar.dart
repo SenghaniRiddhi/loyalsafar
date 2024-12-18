@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_user/widgets/widgets.dart';
 
 import '../pages/NavigatorPages/editprofile.dart';
 import '../pages/profile/edit_profile_screen.dart';
@@ -36,7 +37,41 @@ appBarWidget(
 
 }
 
+appBarTitleWidget(
+    {required BuildContext context,
+      required Color backgroundIcon,
+      required Color iconColors,
+      required String title,
+      required Function() onTaps,
+    }){
+  var media = MediaQuery.of(context).size;
+  return Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 20),
+    child: Row(
+      children: [
+        GestureDetector(
+          onTap: onTaps,
+          child: CircleAvatar(
+            backgroundColor: backgroundIcon,
+            radius: 18,
+            child: Padding(
+              padding:  EdgeInsets.only(left: 09),
+              child: Icon(
+                Icons.arrow_back_ios,
+                color: iconColors,
+                size: 20,
+              ),
+            ),
+          ),
+        ),
+        SizedBox(width: 100,),
+        MyText(text: title, size: font18Size,color: headingColors,fontweight: FontWeight.w600,)
+      ],
+    ),
+  );
 
+
+}
 
 appBarProfileWidget(
     {required BuildContext context}){

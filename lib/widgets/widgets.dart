@@ -725,20 +725,30 @@ class ProfileDetails extends StatelessWidget {
           ? MyText(
               text: value,
               size: media.width * sixteen,
-              color: textColor,
+              color: Color(0xff303030),
             )
           : TextField(
               controller: controller,
               readOnly: readyonly!,
         decoration: InputDecoration(
           labelText: text,
+          labelStyle: GoogleFonts.inter(
+            color: Color(0xff5C6266),
+            fontSize: font13Size,
+            fontWeight: FontWeight.w500,
+          ) ,
           hintText: hinttext,
+          hintStyle: GoogleFonts.inter(
+            color: Color(0xff5C6266),
+            fontSize: font16Size,
+            fontWeight: FontWeight.w400,
+          ),
           border: InputBorder.none
         ),
-              style: GoogleFonts.notoSans(
-                color: textColor,
-                fontSize: media.width * fourteen,
-                fontWeight: FontWeight.bold,
+              style: GoogleFonts.inter(
+                color: Color(0xff303030),
+                fontSize: font16Size,
+                fontWeight: FontWeight.w500,
               ),
               // onChanged: (val) {
               //   setState(() {});

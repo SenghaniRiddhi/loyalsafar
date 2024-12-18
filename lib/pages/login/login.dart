@@ -14,10 +14,11 @@ import 'package:flutter_user/translations/translation.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:pin_code_fields/pin_code_fields.dart';
+import 'package:pinput/pinput.dart';
 import '../../styles/styles.dart';
 import '../../functions/functions.dart';
 import '../../widgets/appbar.dart';
+import '../../widgets/success_dialog_content.dart';
 import '../../widgets/widgets.dart';
 import 'dart:math' as math;
 import '../loadingPage/loading.dart';
@@ -49,18 +50,20 @@ String email = ''; // email of user
 String password = '';
 String name = ''; //name of user
 
+
 late StreamController profilepicturecontroller;
 StreamSink get profilepicturesink => profilepicturecontroller.sink;
 Stream get profilepicturestream => profilepicturecontroller.stream;
 
 class _LoginState extends State<Login> with TickerProviderStateMixin {
   TextEditingController controller = TextEditingController();
-
+  final TextEditingController _newPassword = TextEditingController();
   final TextEditingController _mobile = TextEditingController();
   final TextEditingController _email = TextEditingController();
-  final TextEditingController _password = TextEditingController();
+  final TextEditingController _password = TextEditingController(text: "123456");
   final TextEditingController _name = TextEditingController();
-  final TextEditingController _otp = TextEditingController();
+  // final TextEditingController _otp = TextEditingController();
+  late TextEditingController _otp;
 
   bool loginLoading = true;
   final ScrollController _scroll = ScrollController();
@@ -83,7 +86,8 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
   dynamic resendTime;
   bool forgotPassword = false;
   bool newPassword = false;
-  late List<FocusNode> _focusNodes;
+
+  late final FocusNode focusNode;
 
   resend() {
     resendTime?.cancel();
@@ -113,6 +117,8 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
   @override
   void initState() {
     currentPage = 0;
+    _otp = TextEditingController();
+    focusNode = FocusNode();
     controller.text = '';
     proImageFile1 = null;
     gender = '';
@@ -120,14 +126,10 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
         AnimationController(vsync: this, duration: const Duration(seconds: 60));
     countryCode();
 
-    _focusNodes = List.generate(6, (index) => FocusNode());
+
 
     // Add listeners to rebuild UI on focus changes
-    for (var focusNode in _focusNodes) {
-      focusNode.addListener(() {
-        setState(() {});
-      });
-    }
+
 
     super.initState();
   }
@@ -138,11 +140,10 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
     print("focus nodes::-");
     controller.dispose();
     _otp.dispose();
+    focusNode.dispose();
     _mobile.dispose();
     _email.dispose();
-    for (var focusNode in _focusNodes) {
-      focusNode.dispose();
-    }
+
     super.dispose();
   }
 
@@ -297,7 +298,24 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     var media = MediaQuery.of(context).size;
+    const focusedBorderColor = Color(0xff1D1B20);
+    const fillColor = Color(0xffFFFFFF);
+    const borderColor = Color(0xffD9D9D9);
 
+    final defaultPinTheme = PinTheme(
+      width: 50,
+      height: 58,
+      textStyle:  TextStyle(
+        fontSize: font20Size,
+        fontWeight: FontWeight.w700,
+        color: headingColors,
+      ),
+
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(06),
+        border: Border.all(color: Color(0xffD9D9D9),width: 2),
+      ),
+    );
     return Scaffold(
       backgroundColor: Color(0xffFFFFFF),
       body: SingleChildScrollView(
@@ -607,8 +625,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                           ),
                           SizedBox(height: 10),
                           MyText(
-                            text:
-                            "Please enter the 6 digit code sent to",
+                            text: "Please enter the 6 digit code sent to",
                             size: font15Size,
                             color: normalText1Colors,
                             fontweight: FontWeight.w400,
@@ -616,7 +633,8 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                           SizedBox(height: 4),
                           MyText(
                             text:
-                            "${countyCode + " " + _email.text}",
+                            "${countries[phcode]
+                            ['dial_code'] + " " + _email.text}",
                             size: font15Size,
                             color: headingColors,
                             fontweight: FontWeight.w700,
@@ -842,15 +860,18 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                                       radius: media.width *
                                           0.03, // Adjust the size
                                     ),
+
                                     // Image.network(
                                     //   countries[phcode]['flag'],
                                     //   width: media.width * 0.06,
                                     // ),
                                     SizedBox(
-                                      width: media.width * 0.015,
+                                      width: media.width * 0.03,
                                     ),
+
                                     MyText(
-                                      text: "${countyCode}",
+                                      text: "${countries[phcode]
+                                      ['dial_code']}",
                                       size: font15Size,
                                       color: Color(0xff697176),
                                       fontweight: FontWeight.w500,
@@ -862,11 +883,9 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                             VerticalDivider(
                               color: Color(
                                   0xffD9D9D9), // Color of the divider
-                              // thickness: 1,       // Thickness of the divider
-                              width:
-                              20, // Space occupied by the divider (including margin)
-                              // indent: 20,         // Space from top
-                              // endIndent: 20,      // Space from bottom
+                                // Thickness of the divider
+                              width: 20, // Space occupied by the divider (including margin)
+                             // Space from bottom
                             ),
                             Expanded(
                               child: SizedBox(
@@ -902,6 +921,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                                     }
                                   },
                                   decoration: InputDecoration(
+                                      contentPadding: EdgeInsets.symmetric( horizontal: 10.0),
                                       hintStyle: TextStyle(
                                           color:
                                           Color(0xff5C6266),
@@ -917,19 +937,19 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                                 ),
                               ),
                             ),
-                            if (otpSent == true && signIn == 0)
-                              IconButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      _error = '';
-                                      otpSent = false;
-                                      _password.clear();
-                                    });
-                                  },
-                                  icon: Icon(
-                                    Icons.edit,
-                                    size: media.width * 0.05,
-                                  ))
+                            // if (otpSent == true && signIn == 0)
+                            //   IconButton(
+                            //       onPressed: () {
+                            //         setState(() {
+                            //           _error = '';
+                            //           otpSent = false;
+                            //           _password.clear();
+                            //         });
+                            //       },
+                            //       icon: Icon(
+                            //         Icons.edit,
+                            //         size: media.width * 0.05,
+                            //       ))
                           ],
                         ),
                       ),
@@ -948,426 +968,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                         ),
                       ),
 
-                      // if ((withOtp == false ||
-                      //         otpSent == true ||
-                      //         signIn == 1) &&
-                      //     newPassword == false)
-                      //   Column(
-                      //     children: [
-                      //       SizedBox(
-                      //         height: media.width * 0.05,
-                      //       ),
-                      //       Container(
-                      //         height: media.width * 0.13,
-                      //         width: media.width * 0.8,
-                      //         decoration: BoxDecoration(
-                      //             borderRadius:
-                      //                 BorderRadius.circular(8),
-                      //             color: Colors.white),
-                      //         padding: EdgeInsets.only(
-                      //             right: media.width * 0.025,
-                      //             left: media.width * 0.025),
-                      //         child: Row(
-                      //           children: [
-                      //             Expanded(
-                      //               child: TextField(
-                      //                 controller: _password,
-                      //                 decoration: InputDecoration(
-                      //                     hintText: (otpSent == true)
-                      //                         ? languages[
-                      //                                 choosenLanguage]
-                      //                             ['text_driver_otp']
-                      //                         : languages[
-                      //                                 choosenLanguage][
-                      //                             'text_enter_password'],
-                      //                     border: InputBorder.none),
-                      //                 keyboardType: (otpSent == true)
-                      //                     ? TextInputType.number
-                      //                     : TextInputType.emailAddress,
-                      //                 obscureText: ((withOtp == false ||
-                      //                             signIn == 1) &&
-                      //                         showPassword == false)
-                      //                     ? true
-                      //                     : false,
-                      //               ),
-                      //             ),
-                      //             if (withOtp == false || signIn == 1)
-                      //               IconButton(
-                      //                   onPressed: () {
-                      //                     setState(() {
-                      //                       if (showPassword) {
-                      //                         showPassword = false;
-                      //                       } else {
-                      //                         showPassword = true;
-                      //                       }
-                      //                     });
-                      //                   },
-                      //                   icon: Icon(
-                      //                     Icons.remove_red_eye_sharp,
-                      //                     color: (showPassword == true)
-                      //                         ? const Color(0xffFFD302)
-                      //                         : null,
-                      //                   ))
-                      //           ],
-                      //         ),
-                      //       ),
-                      //     ],
-                      //   ),
 
-                      // AnimatedCrossFade(
-                      //     firstChild: Container(),
-                      //     secondChild: Column(
-                      //       children: [
-                      //         SizedBox(
-                      //           height: media.width * 0.05,
-                      //         ),
-                      //         Container(
-                      //           height: media.width * 0.12,
-                      //           width: media.width * 0.8,
-                      //           decoration: BoxDecoration(
-                      //               borderRadius:
-                      //                   BorderRadius.circular(8),
-                      //               color: Colors.white),
-                      //           padding: EdgeInsets.only(
-                      //               right: media.width * 0.025,
-                      //               left: media.width * 0.025),
-                      //           child: Row(
-                      //             children: [
-                      //               Expanded(
-                      //                 child: TextField(
-                      //                   controller: _newPassword,
-                      //                   decoration: InputDecoration(
-                      //                       hintText: languages[
-                      //                               choosenLanguage]
-                      //                           [
-                      //                           'Enter New Password'],
-                      //                       border:
-                      //                           InputBorder.none),
-                      //                   keyboardType:
-                      //                       TextInputType
-                      //                           .emailAddress,
-                      //                   obscureText:
-                      //                       (showNewPassword ==
-                      //                               false)
-                      //                           ? true
-                      //                           : false,
-                      //                 ),
-                      //               ),
-                      //               // if(withOtp == false || signIn == 1)
-                      //               IconButton(
-                      //                   onPressed: () {
-                      //                     setState(() {
-                      //                       if (showNewPassword) {
-                      //                         showNewPassword =
-                      //                             false;
-                      //                       } else {
-                      //                         showNewPassword =
-                      //                             true;
-                      //                       }
-                      //                     });
-                      //                   },
-                      //                   icon: Icon(
-                      //                     Icons
-                      //                         .remove_red_eye_sharp,
-                      //                     color:
-                      //                         (showNewPassword ==
-                      //                                 true)
-                      //                             ? const Color(
-                      //                                 0xffFFD302)
-                      //                             : null,
-                      //                   ))
-                      //             ],
-                      //           ),
-                      //         ),
-                      //       ],
-                      //     ),
-                      //     crossFadeState: (newPassword == false)
-                      //         ? CrossFadeState.showFirst
-                      //         : CrossFadeState.showSecond,
-                      //     duration:
-                      //         const Duration(milliseconds: 200)),
-
-                      // AnimatedCrossFade(
-                      //     firstChild: Container(),
-                      //     secondChild: Column(
-                      //       children: [
-                      //         SizedBox(
-                      //           height: media.width * 0.05,
-                      //         ),
-                      //         Container(
-                      //           height: media.width * 0.12,
-                      //           width: media.width * 0.8,
-                      //           decoration: BoxDecoration(
-                      //               borderRadius:
-                      //                   BorderRadius.circular(8),
-                      //               color: Colors.white),
-                      //           padding: EdgeInsets.only(
-                      //               right: media.width * 0.025,
-                      //               left: media.width * 0.025),
-                      //           child: Row(
-                      //             children: [
-                      //               // if(isLoginemail == false && phcode != null)
-                      //               InkWell(
-                      //                 onTap: () {
-                      //                   if (otpSent == false) {
-                      //                     showModalBottomSheet(
-                      //                         context: context,
-                      //                         builder: (builder) {
-                      //                           return Container(
-                      //                             padding: EdgeInsets
-                      //                                 .all(media
-                      //                                         .width *
-                      //                                     0.05),
-                      //                             width:
-                      //                                 media.width,
-                      //                             color: page,
-                      //                             child:
-                      //                                 Directionality(
-                      //                               textDirection: (languageDirection ==
-                      //                                       'rtl')
-                      //                                   ? TextDirection
-                      //                                       .rtl
-                      //                                   : TextDirection
-                      //                                       .ltr,
-                      //                               child: Column(
-                      //                                 children: [
-                      //                                   Container(
-                      //                                     padding: const EdgeInsets
-                      //                                         .only(
-                      //                                         left:
-                      //                                             20,
-                      //                                         right:
-                      //                                             20),
-                      //                                     height:
-                      //                                         40,
-                      //                                     width: media.width *
-                      //                                         0.9,
-                      //                                     decoration: BoxDecoration(
-                      //                                         borderRadius:
-                      //                                             BorderRadius.circular(20),
-                      //                                         border: Border.all(color: Colors.grey, width: 1.5)),
-                      //                                     child:
-                      //                                         TextField(
-                      //                                       decoration: InputDecoration(
-                      //                                           contentPadding: (languageDirection == 'rtl') ? EdgeInsets.only(bottom: media.width * 0.035) : EdgeInsets.only(bottom: media.width * 0.04),
-                      //                                           border: InputBorder.none,
-                      //                                           hintText: languages[choosenLanguage]['text_search'],
-                      //                                           hintStyle: GoogleFonts.notoSans(fontSize: media.width * sixteen, color: hintColor)),
-                      //                                       style: GoogleFonts.notoSans(
-                      //                                           fontSize: media.width * sixteen,
-                      //                                           color: textColor),
-                      //                                       onChanged:
-                      //                                           (val) {
-                      //                                         setState(() {
-                      //                                           searchVal = val;
-                      //                                         });
-                      //                                       },
-                      //                                     ),
-                      //                                   ),
-                      //                                   const SizedBox(
-                      //                                       height:
-                      //                                           20),
-                      //                                   Expanded(
-                      //                                     child:
-                      //                                         SingleChildScrollView(
-                      //                                       child:
-                      //                                           Column(
-                      //                                         children: countries
-                      //                                             .asMap()
-                      //                                             .map((i, value) {
-                      //                                               return MapEntry(
-                      //                                                   i,
-                      //                                                   // MyText(text: 'ttwer', size: 14)
-                      //                                                   SizedBox(
-                      //                                                     width: media.width * 0.9,
-                      //                                                     child: (searchVal == '' && countries[i]['flag'] != null)
-                      //                                                         ? InkWell(
-                      //                                                             onTap: () {
-                      //                                                               setState(() {
-                      //                                                                 phcode = i;
-                      //                                                               });
-                      //                                                               Navigator.pop(context);
-                      //                                                             },
-                      //                                                             child: Container(
-                      //                                                               padding: const EdgeInsets.only(top: 10, bottom: 10),
-                      //                                                               color: page,
-                      //                                                               child: Row(
-                      //                                                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      //                                                                 children: [
-                      //                                                                   Row(
-                      //                                                                     children: [
-                      //                                                                       Image.network(countries[i]['flag']),
-                      //                                                                       SizedBox(
-                      //                                                                         width: media.width * 0.02,
-                      //                                                                       ),
-                      //                                                                       SizedBox(
-                      //                                                                         width: media.width * 0.4,
-                      //                                                                         child: MyText(
-                      //                                                                           text: countries[i]['name'],
-                      //                                                                           size: media.width * sixteen,
-                      //                                                                         ),
-                      //                                                                       ),
-                      //                                                                     ],
-                      //                                                                   ),
-                      //                                                                   MyText(text: countries[i]['dial_code'], size: media.width * sixteen)
-                      //                                                                 ],
-                      //                                                               ),
-                      //                                                             ))
-                      //                                                         : (countries[i]['flag'] != null && countries[i]['name'].toLowerCase().contains(searchVal.toLowerCase()))
-                      //                                                             ? InkWell(
-                      //                                                                 onTap: () {
-                      //                                                                   setState(() {
-                      //                                                                     phcode = i;
-                      //                                                                   });
-                      //                                                                   Navigator.pop(context);
-                      //                                                                 },
-                      //                                                                 child: Container(
-                      //                                                                   padding: const EdgeInsets.only(top: 10, bottom: 10),
-                      //                                                                   color: page,
-                      //                                                                   child: Row(
-                      //                                                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      //                                                                     children: [
-                      //                                                                       Row(
-                      //                                                                         children: [
-                      //                                                                           Image.network(countries[i]['flag']),
-                      //                                                                           SizedBox(
-                      //                                                                             width: media.width * 0.02,
-                      //                                                                           ),
-                      //                                                                           SizedBox(
-                      //                                                                             width: media.width * 0.4,
-                      //                                                                             child: MyText(text: countries[i]['name'], size: media.width * sixteen),
-                      //                                                                           ),
-                      //                                                                         ],
-                      //                                                                       ),
-                      //                                                                       MyText(text: countries[i]['dial_code'], size: media.width * sixteen)
-                      //                                                                     ],
-                      //                                                                   ),
-                      //                                                                 ))
-                      //                                                             : Container(),
-                      //                                                   ));
-                      //                                             })
-                      //                                             .values
-                      //                                             .toList(),
-                      //                                       ),
-                      //                                     ),
-                      //                                   ),
-                      //                                 ],
-                      //                               ),
-                      //                             ),
-                      //                           );
-                      //                         });
-                      //                   }
-                      //                 },
-                      //                 child: Padding(
-                      //                   padding: EdgeInsets.only(
-                      //                       right: media.width *
-                      //                           0.025),
-                      //                   child: Row(
-                      //                     children: [
-                      //                       (phcode != null)
-                      //                           ? Image.network(
-                      //                               countries[
-                      //                                       phcode]
-                      //                                   ['flag'],
-                      //                               width: media
-                      //                                       .width *
-                      //                                   0.06,
-                      //                             )
-                      //                           : Container(),
-                      //                       SizedBox(
-                      //                         width: media.width *
-                      //                             0.015,
-                      //                       ),
-                      //                       Icon(
-                      //                         Icons
-                      //                             .arrow_drop_down,
-                      //                         size: media.width *
-                      //                             0.05,
-                      //                       )
-                      //                     ],
-                      //                   ),
-                      //                 ),
-                      //               ),
-                      //
-                      //               Expanded(
-                      //                 child: TextField(
-                      //                   controller: _mobile,
-                      //                   decoration: InputDecoration(
-                      //                       hintText: languages[
-                      //                               choosenLanguage]
-                      //                           ['text_mobile'],
-                      //                       border:
-                      //                           InputBorder.none),
-                      //                   keyboardType:
-                      //                       TextInputType.number,
-                      //                   enabled: (otpSent == true)
-                      //                       ? false
-                      //                       : true,
-                      //                 ),
-                      //               ),
-                      //
-                      //               if (otpSent == true)
-                      //                 IconButton(
-                      //                     onPressed: () {
-                      //                       setState(() {
-                      //                         _error = '';
-                      //                         otpSent = false;
-                      //                         mobileVerified =
-                      //                             false;
-                      //                         _otp.clear();
-                      //                       });
-                      //                     },
-                      //                     icon: Icon(
-                      //                       Icons.edit,
-                      //                       size: media.width *
-                      //                           0.05,
-                      //                     ))
-                      //             ],
-                      //           ),
-                      //         ),
-                      //       ],
-                      //     ),
-                      //     crossFadeState: (signIn == 0)
-                      //         ? CrossFadeState.showFirst
-                      //         : CrossFadeState.showSecond,
-                      //     duration:
-                      //         const Duration(milliseconds: 200)),
-
-                      // AnimatedCrossFade(
-                      //     firstChild: Container(),
-                      //     secondChild: Column(
-                      //       children: [
-                      //         SizedBox(
-                      //           height: media.width * 0.05,
-                      //         ),
-                      //         Container(
-                      //           height: media.width * 0.12,
-                      //           width: media.width * 0.8,
-                      //           decoration: BoxDecoration(
-                      //               borderRadius:
-                      //                   BorderRadius.circular(8),
-                      //               color: Colors.white),
-                      //           padding: EdgeInsets.only(
-                      //               right: media.width * 0.025,
-                      //               left: media.width * 0.025),
-                      //           child: TextField(
-                      //             controller: _otp,
-                      //             keyboardType: TextInputType.number,
-                      //             decoration: InputDecoration(
-                      //                 hintText:
-                      //                     languages[choosenLanguage]
-                      //                         ['text_driver_otp'],
-                      //                 border: InputBorder.none),
-                      //           ),
-                      //         ),
-                      //       ],
-                      //     ),
-                      //     crossFadeState: (signIn == 1 &&
-                      //             otpSent == true &&
-                      //             mobileVerified == false)
-                      //         ? CrossFadeState.showSecond
-                      //         : CrossFadeState.showFirst,
-                      //     duration: const Duration(milliseconds: 200)),
 
 
                       if ((withOtp == false ||
@@ -1379,355 +980,60 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                       if ((withOtp == false ||
                           otpSent == true ||
                           signIn == 1) )
-                        PinCodeTextField(
-                          appContext: context,
-                          length: 6, // Number of pin/OTP fields
-                          obscureText:
-                          false, // Use true for password-like behavior
-                          animationType: AnimationType.fade,
-                          pinTheme: PinTheme(
-                            shape: PinCodeFieldShape.box,
-                            borderRadius: BorderRadius.circular(5),
-                            fieldHeight: 50,
-                            fieldWidth: 40,
-                            activeFillColor: Colors.white,
-                            activeColor:
-                            Color(0xffD9D9D9), // Active border color
-                            inactiveColor:
-                            Color(0xffD9D9D9), // Inactive border color
-                            selectedColor:
-                            iconColors, // Selected border color
-                          ),
-                          animationDuration: Duration(milliseconds: 300),
-                          // backgroundColor: Colors.blue.shade50,
-                          // enableActiveFill:
-                          //     true, // Fills the active field background
-                          controller:
-                          _otp, // Controller for the pin input
-                          onCompleted: (v) {
-                            print("Completed: $v");
-                          },
-                          onChanged: (value) {
-                            setState(() {
-                              currentPin = value;
-                            });
-                          },
-                          beforeTextPaste: (text) {
-                            print("Allowing to paste $text");
-                            return true; // Allow paste
-                          },
-                          keyboardType: TextInputType.number,
+                        Pinput(
+                        // You can pass your own SmsRetriever implementation based on any package
+                        // in this example we are using the SmartAuth
+                        // smsRetriever: smsRetriever,
+                        controller: _otp,
+                        focusNode: focusNode,
+                        length: 6,
+                        defaultPinTheme: defaultPinTheme,
+                        separatorBuilder: (index) => const SizedBox(width: 15),
+                        // validator: (value) {
+                        //
+                        // },
+                        hapticFeedbackType: HapticFeedbackType.lightImpact,
+                        onCompleted: (pin) {
+                          _otp.text=pin;
+                          debugPrint('onCompleted: $pin');
+                        },
+                        onChanged: (value) {
+                          debugPrint('onChanged: $value');
+                        },
+                        cursor: Column(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            // Container(
+                            //   margin: const EdgeInsets.only(bottom: 9),
+                            //   width: 22,
+                            //   height: 1,
+                            //   color: focusedBorderColor,
+                            // ),
+                          ],
                         ),
+                        focusedPinTheme: defaultPinTheme.copyWith(
+                          decoration: defaultPinTheme.decoration!.copyWith(
+                            borderRadius: BorderRadius.circular(06),
+                            border: Border.all(color: focusedBorderColor,width: 2),
+                          ),
+                        ),
+                        submittedPinTheme: defaultPinTheme.copyWith(
+                          decoration: defaultPinTheme.decoration!.copyWith(
+                            borderRadius: BorderRadius.circular(06),
+                            border: Border.all(color: focusedBorderColor,width: 2),
+                          ),
+                          // decoration: defaultPinTheme.decoration!.copyWith(
+                          //   color: fillColor,
+                          //   borderRadius: BorderRadius.circular(04),
+                          //   border: Border.all(color: focusedBorderColor),
+                          // ),
+                        ),
+                        errorPinTheme: defaultPinTheme.copyBorderWith(
+                          border: Border.all(color: Colors.redAccent),
+                        ),
+                      ),
 
-                      // if (signIn == 0 && forgotPassword == false)
-                      //   Column(
-                      //     children: [
-                      //       SizedBox(
-                      //         height: media.width * 0.01,
-                      //       ),
-                      //       SizedBox(
-                      //         width: media.width * 0.8,
-                      //         child: InkWell(
-                      //             onTap: () {
-                      //
-                      //               setState(() {
-                      //                 _error = '';
-                      //                 _password.clear();
-                      //                 _email.text = '';
-                      //                 if (withOtp == false) {
-                      //                   withOtp = true;
-                      //                 } else {
-                      //                   otpSent = false;
-                      //                   withOtp = false;
-                      //                 }
-                      //               });
-                      //             },
-                      //             child: MyText(
-                      //               text: (withOtp == false)
-                      //                   ? "otp"
-                      //                   : languages[
-                      //                           choosenLanguage][
-                      //                       'text_sign_in_password'],
-                      //               size: media.width * fourteen,
-                      //               textAlign: TextAlign.end,
-                      //               color: Colors.white,
-                      //             )),
-                      //       ),
-                      //     ],
-                      //   ),
-                      // AnimatedCrossFade(
-                      //     firstChild: Container(),
-                      //     secondChild: Column(
-                      //       children: [
-                      //         SizedBox(
-                      //           width: media.width * 0.8,
-                      //           child: Column(
-                      //             children: [
-                      //               SizedBox(
-                      //                 height: media.width * 0.05,
-                      //               ),
-                      //               Row(
-                      //                 children: [
-                      //                   Text(
-                      //                     languages[
-                      //                             choosenLanguage]
-                      //                         ['text_gender'],
-                      //                     // 'Gender',
-                      //                     style:
-                      //                         GoogleFonts.roboto(
-                      //                             fontSize: media
-                      //                                     .width *
-                      //                                 fourteen,
-                      //                             color: Colors
-                      //                                 .white,
-                      //                             fontWeight:
-                      //                                 FontWeight
-                      //                                     .w600),
-                      //                     maxLines: 1,
-                      //                   ),
-                      //                 ],
-                      //               ),
-                      //               SizedBox(
-                      //                 height: media.width * 0.025,
-                      //               ),
-                      //               Row(
-                      //                 mainAxisAlignment:
-                      //                     MainAxisAlignment
-                      //                         .spaceBetween,
-                      //                 children: [
-                      //                   InkWell(
-                      //                     onTap: () {
-                      //                       setState(() {
-                      //                         gender = 'male';
-                      //                       });
-                      //                     },
-                      //                     child: Row(
-                      //                       children: [
-                      //                         Container(
-                      //                           height:
-                      //                               media.width *
-                      //                                   0.05,
-                      //                           width:
-                      //                               media.width *
-                      //                                   0.05,
-                      //                           decoration:
-                      //                               BoxDecoration(
-                      //                             shape: BoxShape
-                      //                                 .circle,
-                      //                             border: Border.all(
-                      //                                 width: 1.2,
-                      //                                 color: Colors
-                      //                                     .white),
-                      //                           ),
-                      //                           alignment:
-                      //                               Alignment
-                      //                                   .center,
-                      //                           child: (gender ==
-                      //                                   'male')
-                      //                               ? Container(
-                      //                                   height: media
-                      //                                           .width *
-                      //                                       0.03,
-                      //                                   width: media
-                      //                                           .width *
-                      //                                       0.03,
-                      //                                   decoration: const BoxDecoration(
-                      //                                       shape: BoxShape
-                      //                                           .circle,
-                      //                                       color:
-                      //                                           Colors.white),
-                      //                                 )
-                      //                               : Container(),
-                      //                         ),
-                      //                         SizedBox(
-                      //                           width:
-                      //                               media.width *
-                      //                                   0.015,
-                      //                         ),
-                      //                         SizedBox(
-                      //                           width:
-                      //                               media.width *
-                      //                                   0.15,
-                      //                           child: Text(
-                      //                             languages[
-                      //                                     choosenLanguage]
-                      //                                 [
-                      //                                 'text_male'],
-                      //                             // 'Male',
-                      //                             style: GoogleFonts.roboto(
-                      //                                 fontSize: media
-                      //                                         .width *
-                      //                                     fourteen,
-                      //                                 color: Colors
-                      //                                     .white,
-                      //                                 fontWeight:
-                      //                                     FontWeight
-                      //                                         .w600),
-                      //                             maxLines: 1,
-                      //                           ),
-                      //                         ),
-                      //                       ],
-                      //                     ),
-                      //                   ),
-                      //                   InkWell(
-                      //                     onTap: () {
-                      //                       setState(() {
-                      //                         gender = 'female';
-                      //                       });
-                      //                     },
-                      //                     child: Row(
-                      //                       children: [
-                      //                         Container(
-                      //                           height:
-                      //                               media.width *
-                      //                                   0.05,
-                      //                           width:
-                      //                               media.width *
-                      //                                   0.05,
-                      //                           decoration:
-                      //                               BoxDecoration(
-                      //                             shape: BoxShape
-                      //                                 .circle,
-                      //                             border: Border.all(
-                      //                                 width: 1.2,
-                      //                                 color: Colors
-                      //                                     .white),
-                      //                           ),
-                      //                           alignment:
-                      //                               Alignment
-                      //                                   .center,
-                      //                           child: (gender ==
-                      //                                   'female')
-                      //                               ? Container(
-                      //                                   height: media
-                      //                                           .width *
-                      //                                       0.03,
-                      //                                   width: media
-                      //                                           .width *
-                      //                                       0.03,
-                      //                                   decoration: const BoxDecoration(
-                      //                                       shape: BoxShape
-                      //                                           .circle,
-                      //                                       color:
-                      //                                           Colors.white),
-                      //                                 )
-                      //                               : Container(),
-                      //                         ),
-                      //                         SizedBox(
-                      //                           width:
-                      //                               media.width *
-                      //                                   0.015,
-                      //                         ),
-                      //                         SizedBox(
-                      //                           width:
-                      //                               media.width *
-                      //                                   0.15,
-                      //                           child: Text(
-                      //                             languages[
-                      //                                     choosenLanguage]
-                      //                                 [
-                      //                                 'text_female'],
-                      //                             // 'Female',
-                      //                             style: GoogleFonts.roboto(
-                      //                                 fontSize: media
-                      //                                         .width *
-                      //                                     fourteen,
-                      //                                 color: Colors
-                      //                                     .white,
-                      //                                 fontWeight:
-                      //                                     FontWeight
-                      //                                         .w600),
-                      //                             maxLines: 1,
-                      //                           ),
-                      //                         ),
-                      //                       ],
-                      //                     ),
-                      //                   ),
-                      //                   InkWell(
-                      //                     onTap: () {
-                      //                       setState(() {
-                      //                         gender = 'others';
-                      //                       });
-                      //                     },
-                      //                     child: Row(
-                      //                       children: [
-                      //                         Container(
-                      //                           height:
-                      //                               media.width *
-                      //                                   0.05,
-                      //                           width:
-                      //                               media.width *
-                      //                                   0.05,
-                      //                           decoration:
-                      //                               BoxDecoration(
-                      //                             shape: BoxShape
-                      //                                 .circle,
-                      //                             border: Border.all(
-                      //                                 width: 1.2,
-                      //                                 color: Colors
-                      //                                     .white),
-                      //                           ),
-                      //                           alignment:
-                      //                               Alignment
-                      //                                   .center,
-                      //                           child: (gender ==
-                      //                                   'others')
-                      //                               ? Container(
-                      //                                   height: media
-                      //                                           .width *
-                      //                                       0.03,
-                      //                                   width: media
-                      //                                           .width *
-                      //                                       0.03,
-                      //                                   decoration: const BoxDecoration(
-                      //                                       shape: BoxShape
-                      //                                           .circle,
-                      //                                       color:
-                      //                                           Colors.white),
-                      //                                 )
-                      //                               : Container(),
-                      //                         ),
-                      //                         SizedBox(
-                      //                           width:
-                      //                               media.width *
-                      //                                   0.015,
-                      //                         ),
-                      //                         SizedBox(
-                      //                           width:
-                      //                               media.width *
-                      //                                   0.25,
-                      //                           child: Text(
-                      //                             languages[
-                      //                                     choosenLanguage]
-                      //                                 [
-                      //                                 'text_others'],
-                      //                             style: GoogleFonts.roboto(
-                      //                                 fontSize: media
-                      //                                         .width *
-                      //                                     fourteen,
-                      //                                 color: Colors
-                      //                                     .white,
-                      //                                 fontWeight:
-                      //                                     FontWeight
-                      //                                         .w600),
-                      //                             maxLines: 1,
-                      //                           ),
-                      //                         ),
-                      //                       ],
-                      //                     ),
-                      //                   ),
-                      //                 ],
-                      //               )
-                      //             ],
-                      //           ),
-                      //         )
-                      //       ],
-                      //     ),
-                      //     crossFadeState: (signIn == 0)
-                      //         ? CrossFadeState.showFirst
-                      //         : CrossFadeState.showSecond,
-                      //     duration:
-                      //         const Duration(milliseconds: 200)),
+
                       SizedBox(
                         height: media.width * 0.03,
                       ),
@@ -2009,32 +1315,86 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                               loginLoading = true;
                             });
 
-                             if (signIn == 0) {
-                              print("hello");
+                            print("newPassword::- ${newPassword} signIn:-${signIn} mobileVerified ${mobileVerified}");
+
+                            if (newPassword == true) {
+                              if (_newPassword.text.length >= 8) {
+                                var val = await updatePassword(
+                                    _email.text,
+                                    _newPassword.text,
+                                    isLoginemail);
+                                if (val == true) {
+                                  withOtp = false;
+                                  otpSent = false;
+                                  _password.clear();
+                                  _email.clear();
+                                  forgotPassword = false;
+                                  newPassword = false;
+                                  showModalBottomSheet(
+                                      context: context,
+                                      // isScrollControlled: true,
+                                      backgroundColor: page,
+                                      builder: (context) {
+                                        return Container(
+                                          width: media.width,
+                                          padding: EdgeInsets.all(
+                                              media.width * 0.05),
+                                          child: MyText(
+                                            text: languages[
+                                            choosenLanguage]
+                                            [
+                                            'text_password_update_successfully'],
+                                            size: media.width *
+                                                fourteen,
+                                            maxLines: 4,
+                                            color: textColor,
+                                          ),
+                                        );
+                                      });
+                                } else {
+                                  _error = val.toString();
+                                }
+                              } else {
+                                setState(() {
+                                  _error =
+                                  'Password must be 8 character length';
+                                });
+                              }
+                            } else if (signIn == 0) {
                               if (withOtp == true) {
+                                print("otpSent ${otpSent} withOtp ${withOtp}");
+
                                 if (otpSent == true) {
-                                  if (_email.text.isNotEmpty &&
+                                  if (_email.text.isNotEmpty
+                                      &&
                                       _password.text.isNotEmpty &&
-                                      _password.text.length == 6) {
+                                      _password.text.length ==
+                                          6) {
+                                    print("phoneAuthCheck ${phoneAuthCheck}");
                                     if (phoneAuthCheck == true) {
                                       if (isLoginemail == true) {
                                         // var val = await emailVerify(_email.text,_password.text);
                                         // if(val == 'success'){
-                                        if (forgotPassword == true) {
-                                          var val = await emailVerify(
+                                        if (forgotPassword ==
+                                            true) {
+                                          var val =
+                                          await emailVerify(
                                               _email.text,
                                               _password.text);
                                           if (val == 'success') {
                                             _password.clear();
                                             newPassword = true;
-                                            showNewPassword = false;
+                                            showNewPassword =
+                                            false;
                                           } else {
                                             _error = val;
                                           }
                                         } else {
-                                          var val = await verifyUser(
+                                          var val =
+                                          await verifyUser(
                                               _email.text,
-                                              (isLoginemail == true)
+                                              (isLoginemail ==
+                                                  true)
                                                   ? 1
                                                   : 0,
                                               _password.text,
@@ -2050,8 +1410,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                                           try {
                                             PhoneAuthCredential
                                             credential =
-                                            PhoneAuthProvider
-                                                .credential(
+                                            PhoneAuthProvider.credential(
                                                 verificationId:
                                                 verId,
                                                 smsCode:
@@ -2059,7 +1418,8 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                                                     .text);
 
                                             // Sign the user in (or link) with the credential
-                                            await FirebaseAuth.instance
+                                            await FirebaseAuth
+                                                .instance
                                                 .signInWithCredential(
                                                 credential);
 
@@ -2079,10 +1439,13 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                                                 forgotPassword);
                                             if (forgotPassword ==
                                                 true) {
-                                              if (verify == true) {
+                                              if (verify ==
+                                                  true) {
                                                 _password.clear();
-                                                newPassword = true;
-                                                showNewPassword = false;
+                                                newPassword =
+                                                true;
+                                                showNewPassword =
+                                                false;
                                               }
                                             } else {
                                               navigate(verify);
@@ -2104,8 +1467,10 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                                           var val =
                                           await validateSmsOtp(
                                               (signIn == 1)
-                                                  ? _mobile.text
-                                                  : _email.text,
+                                                  ? _mobile
+                                                  .text
+                                                  : _email
+                                                  .text,
                                               _password.text);
                                           if (val == 'success') {
                                             var verify =
@@ -2118,35 +1483,45 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                                                 forgotPassword);
                                             if (forgotPassword ==
                                                 true) {
-                                              if (verify == true) {
+                                              if (verify ==
+                                                  true) {
                                                 _password.clear();
-                                                newPassword = true;
-                                                showNewPassword = false;
+                                                newPassword =
+                                                true;
+                                                showNewPassword =
+                                                false;
                                               }
                                             } else {
                                               navigate(verify);
                                             }
                                           } else {
-                                            _error = val.toString();
+                                            _error =
+                                                val.toString();
                                           }
                                         }
                                       }
                                     } else {
-                                      if (_password.text == '123456') {
-                                        var val = await verifyUser(
+                                      print("_password.text ${_password.text}");
+                                      if (_password.text ==
+                                          '123456') {
+                                        var val =
+                                        await verifyUser(
                                             _email.text,
-                                            (isLoginemail == true)
+                                            (isLoginemail ==
+                                                true)
                                                 ? 1
                                                 : 0,
                                             _password.text,
                                             '',
                                             withOtp,
                                             forgotPassword);
-                                        if (forgotPassword == true) {
+                                        if (forgotPassword ==
+                                            true) {
                                           if (val == true) {
                                             _password.clear();
                                             newPassword = true;
-                                            showNewPassword = false;
+                                            showNewPassword =
+                                            false;
                                           }
                                         } else {
                                           navigate(val);
@@ -2158,8 +1533,10 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                                     }
                                   } else {
                                     setState(() {
-                                      if (_password.text.isEmpty) {
-                                        _error = 'Please enter otp';
+                                      if (_password
+                                          .text.isEmpty) {
+                                        _error =
+                                        'Please enter otp';
                                       } else {
                                         _error =
                                         'Please enter correct otp';
@@ -2171,7 +1548,9 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                                   if (forgotPassword == true) {
                                     var ver = await verifyUser(
                                         _email.text,
-                                        (isLoginemail == true) ? 1 : 0,
+                                        (isLoginemail == true)
+                                            ? 1
+                                            : 0,
                                         _password.text,
                                         '',
                                         withOtp,
@@ -2186,27 +1565,28 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                                     if (isLoginemail == false) {
                                       String pattern =
                                           r'(^(?:[+0]9)?[0-9]{1,12}$)';
-                                      RegExp regExp = RegExp(pattern);
-                                      if (regExp
-                                          .hasMatch(_email.text) &&
+                                      RegExp regExp =
+                                      RegExp(pattern);
+                                      if (regExp.hasMatch(
+                                          _email.text) &&
                                           _email.text.length <=
-                                              countries[phcode]
-                                              ['dial_max_length'] &&
+                                              countries[phcode][
+                                              'dial_max_length'] &&
                                           _email.text.length >=
-                                              countries[phcode]
-                                              ['dial_min_length']) {
+                                              countries[phcode][
+                                              'dial_min_length']) {
                                         // setState(() {
                                         //   _error = '';
                                         //   loginLoading = true;
                                         // });
-
                                         if (isCheckFireBaseOTP) {
-                                          var val = await otpCall();
+                                          var val =
+                                          await otpCall();
 
                                           if (val.value == true) {
                                             await phoneAuth(
-                                                countries[phcode]
-                                                ['dial_code'] +
+                                                countries[phcode][
+                                                'dial_code'] +
                                                     _email.text);
                                             phoneAuthCheck = true;
                                             _resend = false;
@@ -2214,14 +1594,16 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                                             resendTimer = 60;
                                             resend();
                                           } else {
-                                            phoneAuthCheck = false;
+                                            phoneAuthCheck =
+                                            false;
                                             RemoteNotification noti =
                                             const RemoteNotification(
                                                 title:
                                                 'Otp for Login',
                                                 body:
                                                 'Login to your account with test OTP 123456');
-                                            showOtpNotification(noti);
+                                            showOtpNotification(
+                                                noti);
                                           }
                                           // setState(() {
                                           _resend = false;
@@ -2229,13 +1611,12 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                                           resendTimer = 60;
                                           resend();
                                         } else {
-                                          var val =
-                                          await sendOTPtoMobile(
+                                          var val = await sendOTPtoMobile(
                                               (signIn == 1)
                                                   ? _mobile.text
                                                   : _email.text,
-                                              countries[phcode]
-                                              ['dial_code']
+                                              countries[phcode][
+                                              'dial_code']
                                                   .toString());
                                           if (val == 'success') {
                                             phoneAuthCheck = true;
@@ -2258,10 +1639,13 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                                     } else {
                                       String pattern =
                                           r"^[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?\.)+[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])*$";
-                                      RegExp regex = RegExp(pattern);
-                                      if (regex.hasMatch(_email.text)) {
+                                      RegExp regex =
+                                      RegExp(pattern);
+                                      if (regex.hasMatch(
+                                          _email.text)) {
                                         phoneAuthCheck = true;
-                                        var val = await sendOTPtoEmail(
+                                        var val =
+                                        await sendOTPtoEmail(
                                             _email.text);
                                         if (val == 'success') {
                                           _resend = false;
@@ -2282,12 +1666,14 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                                       }
                                     }
                                   } else {
-                                    _error = (isLoginemail == false)
+                                    _error = (isLoginemail ==
+                                        false)
                                         ? 'Mobile Number doesn\'t exists'
                                         : 'Email doesn\'t exists';
                                   }
                                 }
-                              } else {
+                              }
+                              else {
                                 if (_password.text.isNotEmpty &&
                                     _password.text.length >= 8 &&
                                     _email.text.isNotEmpty) {
@@ -2297,20 +1683,24 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                                   String pattern1 =
                                       r"^[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?\.)+[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])*$";
                                   RegExp regex = RegExp(pattern1);
-                                  if ((regExp.hasMatch(_email.text) &&
+                                  if ((regExp.hasMatch(
+                                      _email.text) &&
                                       _email.text.length <=
-                                          countries[phcode]
-                                          ['dial_max_length'] &&
+                                          countries[phcode][
+                                          'dial_max_length'] &&
                                       _email.text.length >=
-                                          countries[phcode]
-                                          ['dial_min_length'] &&
-                                      isLoginemail == false) ||
+                                          countries[phcode][
+                                          'dial_min_length'] &&
+                                      isLoginemail ==
+                                          false) ||
                                       (isLoginemail == true &&
-                                          regex
-                                              .hasMatch(_email.text))) {
+                                          regex.hasMatch(
+                                              _email.text))) {
                                     var val = await verifyUser(
                                         _email.text,
-                                        (isLoginemail == true) ? 1 : 0,
+                                        (isLoginemail == true)
+                                            ? 1
+                                            : 0,
                                         _password.text,
                                         '',
                                         withOtp,
@@ -2355,7 +1745,8 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                                 } else {
                                   _error = val;
                                 }
-                              } else if (otpSent == false) {
+                              }
+                              else if (otpSent == false) {
                                 if (_name.text.isNotEmpty &&
                                     _email.text.isNotEmpty &&
                                     _mobile.text.isNotEmpty &&
@@ -2366,23 +1757,27 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                                   String pattern =
                                       r'(^(?:[+0]9)?[0-9]{1,12}$)';
                                   RegExp regExp = RegExp(pattern);
-                                  if (regExp.hasMatch(_mobile.text) &&
+                                  if (regExp.hasMatch(
+                                      _mobile.text) &&
                                       _mobile.text.length <=
-                                          countries[phcode]
-                                          ['dial_max_length'] &&
+                                          countries[phcode][
+                                          'dial_max_length'] &&
                                       _mobile.text.length >=
-                                          countries[phcode]
-                                          ['dial_min_length']) {
+                                          countries[phcode][
+                                          'dial_min_length']) {
                                     // fd;
                                     String pattern =
                                         r"^[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?\.)+[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])*$";
-                                    RegExp regex = RegExp(pattern);
-                                    if (regex.hasMatch(_email.text)) {
+                                    RegExp regex =
+                                    RegExp(pattern);
+                                    if (regex
+                                        .hasMatch(_email.text)) {
                                       name = _name.text;
                                       email = _email.text;
                                       password = _password.text;
                                       phnumber = _mobile.text;
-                                      var verify = await verifyUser(
+                                      var verify =
+                                      await verifyUser(
                                           _mobile.text,
                                           0,
                                           '',
@@ -2391,11 +1786,12 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                                           forgotPassword);
                                       if (verify == false) {
                                         if (isCheckFireBaseOTP) {
-                                          var val = await otpCall();
+                                          var val =
+                                          await otpCall();
                                           if (val.value == true) {
                                             await phoneAuth(
-                                                countries[phcode]
-                                                ['dial_code'] +
+                                                countries[phcode][
+                                                'dial_code'] +
                                                     _mobile.text);
                                             phoneAuthCheck = true;
                                             _resend = false;
@@ -2403,14 +1799,16 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                                             resendTimer = 60;
                                             resend();
                                           } else {
-                                            phoneAuthCheck = false;
+                                            phoneAuthCheck =
+                                            false;
                                             RemoteNotification noti =
                                             const RemoteNotification(
                                                 title:
                                                 'Otp for Login',
                                                 body:
                                                 'Login to your account with test OTP 123456');
-                                            showOtpNotification(noti);
+                                            showOtpNotification(
+                                                noti);
                                           }
                                           // setState(() {
                                           _resend = false;
@@ -2419,19 +1817,20 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                                           resend();
                                           Future.delayed(
                                               const Duration(
-                                                  seconds: 1), () {
-                                            _scroll.position.moveTo(
+                                                  seconds: 1),
+                                                  () {
                                                 _scroll.position
+                                                    .moveTo(_scroll
+                                                    .position
                                                     .maxScrollExtent);
-                                          });
+                                              });
                                         } else {
-                                          var val =
-                                          await sendOTPtoMobile(
+                                          var val = await sendOTPtoMobile(
                                               (signIn == 1)
                                                   ? _mobile.text
                                                   : _email.text,
-                                              countries[phcode]
-                                              ['dial_code']
+                                              countries[phcode][
+                                              'dial_code']
                                                   .toString());
                                           if (val == 'success') {
                                             phoneAuthCheck = true;
@@ -2441,11 +1840,13 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                                             resend();
                                             Future.delayed(
                                                 const Duration(
-                                                    seconds: 1), () {
-                                              _scroll.position.moveTo(
+                                                    seconds: 1),
+                                                    () {
                                                   _scroll.position
+                                                      .moveTo(_scroll
+                                                      .position
                                                       .maxScrollExtent);
-                                            });
+                                                });
                                           } else {
                                             _error = val;
                                           }
@@ -2461,14 +1862,17 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                                     _error =
                                     'please enter valid mobile number';
                                   }
-                                } else if (_password.text.length < 8) {
+                                }
+                                else if (_password.text.length <
+                                    8) {
                                   _error =
                                   'password length must be 8 characters';
                                 } else {
                                   _error =
                                   'please enter all fields to proceed';
                                 }
-                              } else {
+                              }
+                              else {
                                 // iorejie
 
                                 if (_otp.text.isNotEmpty &&
@@ -2487,7 +1891,8 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                                   }
                                   if (val == false) {
                                     if (phoneAuthCheck == true) {
-                                      if (isCheckFireBaseOTP == true) {
+                                      if (isCheckFireBaseOTP ==
+                                          true) {
                                         try {
                                           PhoneAuthCredential
                                           credential =
@@ -2495,24 +1900,27 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                                               .credential(
                                               verificationId:
                                               verId,
-                                              smsCode:
-                                              _otp.text);
+                                              smsCode: _otp
+                                                  .text);
 
                                           // Sign the user in (or link) with the credential
-                                          await FirebaseAuth.instance
+                                          await FirebaseAuth
+                                              .instance
                                               .signInWithCredential(
                                               credential);
 
                                           String? bearerrrrr =
                                           await FirebaseAuth
-                                              .instance.currentUser!
+                                              .instance
+                                              .currentUser!
                                               .getIdToken();
 
                                           mobileVerified = true;
                                           Navigator.push(
                                               context,
                                               MaterialPageRoute(
-                                                  builder: (context) =>
+                                                  builder:
+                                                      (context) =>
                                                   const AggreementPage()));
 
                                           values = 0;
@@ -2528,7 +1936,8 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                                           }
                                         }
                                       } else {
-                                        var val = await validateSmsOtp(
+                                        var val =
+                                        await validateSmsOtp(
                                             (signIn == 1)
                                                 ? _mobile.text
                                                 : _email.text,
@@ -2540,7 +1949,8 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                                           Navigator.push(
                                               context,
                                               MaterialPageRoute(
-                                                  builder: (context) =>
+                                                  builder:
+                                                      (context) =>
                                                   const AggreementPage()));
                                         } else {
                                           _error = val.toString();
@@ -2568,6 +1978,594 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                               loginLoading = false;
                             });
                           },
+                          // onTap: () async {
+                          //   setState(() {
+                          //     _error = '';
+                          //     loginLoading = true;
+                          //   });
+                          //     print("signIn:- ${signIn}");
+                          //    if (signIn == 0) {
+                          //     print("withOtp::- ${withOtp}");
+                          //     if (withOtp == true) {
+                          //       print("otpSent::- ${otpSent} withOtp ${withOtp}");
+                          //       if (otpSent == true) {
+                          //         print("hello");
+                          //         if (_email.text.isNotEmpty &&
+                          //             _password.text.isNotEmpty &&
+                          //             _password.text.length == 6) {
+                          //           if (phoneAuthCheck == true) {
+                          //             if (isLoginemail == true) {
+                          //               // var val = await emailVerify(_email.text,_password.text);
+                          //               // if(val == 'success'){
+                          //               if (forgotPassword == true) {
+                          //                 var val = await emailVerify(
+                          //                     _email.text,
+                          //                     _password.text);
+                          //                 if (val == 'success') {
+                          //                   _password.clear();
+                          //                   newPassword = true;
+                          //                   showNewPassword = false;
+                          //                 } else {
+                          //                   _error = val;
+                          //                 }
+                          //               }
+                          //               else {
+                          //                 var val = await verifyUser(
+                          //                     _email.text,
+                          //                     (isLoginemail == true)
+                          //                         ? 1
+                          //                         : 0,
+                          //                     _password.text,
+                          //                     '',
+                          //                     withOtp,
+                          //                     forgotPassword);
+                          //
+                          //                 navigate(val);
+                          //               }
+                          //             }
+                          //             else {
+                          //               if (isCheckFireBaseOTP ==
+                          //                   true) {
+                          //                 try {
+                          //                   PhoneAuthCredential
+                          //                   credential =
+                          //                   PhoneAuthProvider
+                          //                       .credential(
+                          //                       verificationId:
+                          //                       verId,
+                          //                       smsCode:
+                          //                       _password
+                          //                           .text);
+                          //
+                          //                   // Sign the user in (or link) with the credential
+                          //                   await FirebaseAuth.instance
+                          //                       .signInWithCredential(
+                          //                       credential);
+                          //
+                          //                   String? bearerrrrr =
+                          //                   await FirebaseAuth
+                          //                       .instance
+                          //                       .currentUser!
+                          //                       .getIdToken();
+                          //
+                          //                   var verify =
+                          //                   await verifyUser(
+                          //                       _email.text,
+                          //                       0,
+                          //                       '',
+                          //                       '',
+                          //                       withOtp,
+                          //                       forgotPassword);
+                          //                   if (forgotPassword ==
+                          //                       true) {
+                          //                     if (verify == true) {
+                          //                       _password.clear();
+                          //                       newPassword = true;
+                          //                       showNewPassword = false;
+                          //                     }
+                          //                   } else {
+                          //                     navigate(verify);
+                          //                   }
+                          //                   values = 0;
+                          //                 } on FirebaseAuthException catch (error) {
+                          //                   if (error.code ==
+                          //                       'invalid-verification-code') {
+                          //                     setState(() {
+                          //                       _password.clear();
+                          //                       // otpNumber = '';
+                          //                       _error =
+                          //                       'Please enter correct Otp or resend';
+                          //                     });
+                          //                   }
+                          //                 }
+                          //               } else {
+                          //                 var val =
+                          //                 await validateSmsOtp(
+                          //                     (signIn == 1)
+                          //                         ? _mobile.text
+                          //                         : _email.text,
+                          //                     _password.text);
+                          //                 if (val == 'success') {
+                          //                   var verify =
+                          //                   await verifyUser(
+                          //                       _email.text,
+                          //                       0,
+                          //                       '',
+                          //                       '',
+                          //                       withOtp,
+                          //                       forgotPassword);
+                          //                   if (forgotPassword ==
+                          //                       true) {
+                          //                     if (verify == true) {
+                          //                       _password.clear();
+                          //                       newPassword = true;
+                          //                       showNewPassword = false;
+                          //                     }
+                          //                   } else {
+                          //                     navigate(verify);
+                          //                   }
+                          //                 } else {
+                          //                   _error = val.toString();
+                          //                 }
+                          //               }
+                          //             }
+                          //           }
+                          //           else {
+                          //             if (_password.text == '123456') {
+                          //               var val = await verifyUser(
+                          //                   _email.text,
+                          //                   (isLoginemail == true)
+                          //                       ? 1
+                          //                       : 0,
+                          //                   _password.text,
+                          //                   '',
+                          //                   withOtp,
+                          //                   forgotPassword);
+                          //               if (forgotPassword == true) {
+                          //                 if (val == true) {
+                          //                   _password.clear();
+                          //                   newPassword = true;
+                          //                   showNewPassword = false;
+                          //                 }
+                          //               } else {
+                          //                 navigate(val);
+                          //               }
+                          //             } else {
+                          //               _error =
+                          //               'Please enter correct otp';
+                          //             }
+                          //           }
+                          //         } else {
+                          //           setState(() {
+                          //             // if (_password.text.isEmpty) {
+                          //             //   _error = 'Please enter otp';
+                          //             // } else {
+                          //             //   _error =
+                          //             //   'Please enter correct otp';
+                          //             // }
+                          //           });
+                          //         }
+                          //       }
+                          //       else if (withOtp == true) {
+                          //         print("good morning");
+                          //         var exist = true;
+                          //         // if (forgotPassword == true) {
+                          //         //   var ver = await verifyUser(
+                          //         //       _email.text,
+                          //         //       (isLoginemail == true) ? 1 : 0,
+                          //         //       _password.text,
+                          //         //       '',
+                          //         //       withOtp,
+                          //         //       forgotPassword);
+                          //         //   if (ver == true) {
+                          //         //     exist = true;
+                          //         //   } else {
+                          //         //     exist = false;
+                          //         //   }
+                          //         // }
+                          //         if (exist == true) {
+                          //           print("isLoginemail ${isLoginemail}");
+                          //           if (isLoginemail == false) {
+                          //             String pattern = r'(^(?:[+0]9)?[0-9]{1,12}$)';
+                          //             RegExp regExp = RegExp(pattern);
+                          //             print("match:- ${regExp.hasMatch(_email.text) }");
+                          //             print("email length:- ${_email.text.length}");
+                          //             print("dial max:- ${countries[phcode]['dial_max_length']}");
+                          //             print("dial min:- ${countries[phcode]['dial_min_length']}");
+                          //             if (regExp.hasMatch(_email.text) &&
+                          //                 _email.text.length <= countries[phcode]['dial_max_length'] &&
+                          //                 _email.text.length >= countries[phcode]['dial_min_length']) {
+                          //               // setState(() {
+                          //               //   _error = '';
+                          //               //   loginLoading = true;
+                          //               // });
+                          //               print("isCheckFireBaseOTP:- ${isCheckFireBaseOTP}");
+                          //               if (isCheckFireBaseOTP) {
+                          //                 var val = await otpCall();
+                          //
+                          //                 if (val.value == true) {
+                          //                   await phoneAuth(
+                          //                       countries[phcode]
+                          //                       ['dial_code'] +
+                          //                           _email.text);
+                          //                   phoneAuthCheck = true;
+                          //                   _resend = false;
+                          //                   otpSent = true;
+                          //                   resendTimer = 60;
+                          //                   resend();
+                          //                 } else {
+                          //                   phoneAuthCheck = false;
+                          //                   RemoteNotification noti =
+                          //                   const RemoteNotification(
+                          //                       title:
+                          //                       'Otp for Login',
+                          //                       body:
+                          //                       'Login to your account with test OTP 123456');
+                          //                   showOtpNotification(noti);
+                          //                 }
+                          //                 // setState(() {
+                          //                 _resend = false;
+                          //                 otpSent = true;
+                          //                 resendTimer = 60;
+                          //                 resend();
+                          //               } else {
+                          //                 var val =
+                          //                 await sendOTPtoMobile(
+                          //                     (signIn == 1)
+                          //                         ? _mobile.text
+                          //                         : _email.text,
+                          //                     countries[phcode]
+                          //                     ['dial_code']
+                          //                         .toString());
+                          //                 if (val == 'success') {
+                          //                   phoneAuthCheck = true;
+                          //                   _resend = false;
+                          //                   otpSent = true;
+                          //                   resendTimer = 60;
+                          //                   resend();
+                          //                 } else {
+                          //                   _error = val;
+                          //                 }
+                          //               }
+                          //
+                          //               // });
+                          //             }
+                          //             else {
+                          //               //  setState(() {
+                          //               _error =
+                          //               'Please enter valid mobile number';
+                          //               // });
+                          //             }
+                          //           }
+                          //           else {
+                          //             String pattern =
+                          //                 r"^[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?\.)+[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])*$";
+                          //             RegExp regex = RegExp(pattern);
+                          //             if (regex.hasMatch(_email.text)) {
+                          //               phoneAuthCheck = true;
+                          //               var val = await sendOTPtoEmail(
+                          //                   _email.text);
+                          //               if (val == 'success') {
+                          //                 _resend = false;
+                          //                 otpSent = true;
+                          //                 resendTimer = 60;
+                          //                 resend();
+                          //               } else {
+                          //                 _error = val;
+                          //               }
+                          //               // setState(() {
+                          //               // _error = '';
+                          //               // });
+                          //             } else {
+                          //               // setState(() {
+                          //               _error =
+                          //               'Please enter valid Phone number';
+                          //               // });
+                          //             }
+                          //           }
+                          //         } else {
+                          //           _error = (isLoginemail == false)
+                          //               ? 'Mobile Number doesn\'t exists'
+                          //               : 'Email doesn\'t exists';
+                          //         }
+                          //       }
+                          //     }
+                          //     else {
+                          //       if (_password.text.isNotEmpty &&
+                          //           _password.text.length >= 8 &&
+                          //           _email.text.isNotEmpty) {
+                          //         String pattern =
+                          //             r'(^(?:[+0]9)?[0-9]{1,12}$)';
+                          //         RegExp regExp = RegExp(pattern);
+                          //         String pattern1 =
+                          //             r"^[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?\.)+[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])*$";
+                          //         RegExp regex = RegExp(pattern1);
+                          //         if ((regExp.hasMatch(_email.text) &&
+                          //             _email.text.length <=
+                          //                 countries[phcode]
+                          //                 ['dial_max_length'] &&
+                          //             _email.text.length >=
+                          //                 countries[phcode]
+                          //                 ['dial_min_length'] &&
+                          //             isLoginemail == false) ||
+                          //             (isLoginemail == true &&
+                          //                 regex
+                          //                     .hasMatch(_email.text))) {
+                          //           var val = await verifyUser(
+                          //               _email.text,
+                          //               (isLoginemail == true) ? 1 : 0,
+                          //               _password.text,
+                          //               '',
+                          //               withOtp,
+                          //               forgotPassword);
+                          //           navigate(val);
+                          //         } else {
+                          //           if (isLoginemail == false) {
+                          //             _error =
+                          //             'Please enter valid mobile number';
+                          //           } else {
+                          //             _error =
+                          //             'please enter valid email address';
+                          //           }
+                          //         }
+                          //       } else {
+                          //         setState(() {
+                          //           _error =
+                          //           'Password must be 8 character length';
+                          //         });
+                          //       }
+                          //     }
+                          //   }
+                          //    else {
+                          //      print("mobileVerified:- ${mobileVerified} otpSent::- ${otpSent}");
+                          //     if (mobileVerified == true) {
+                          //       dynamic val;
+                          //       if (email != _email.text) {
+                          //         val = await verifyUser(
+                          //             _mobile.text,
+                          //             0,
+                          //             _password.text,
+                          //             _email.text,
+                          //             withOtp,
+                          //             forgotPassword);
+                          //       } else {
+                          //         val = false;
+                          //       }
+                          //       if (val == false) {
+                          //         // showDialog(
+                          //         //   context: context,
+                          //         //   builder: (context) =>
+                          //         //       SuccessDialogContent(
+                          //         //           image: '',
+                          //         //           title: '''Verified!''',
+                          //         //           description:
+                          //         //           'Phone number successfully verified.'),
+                          //         // );
+                          //         Navigator.push(
+                          //             context,
+                          //             MaterialPageRoute(
+                          //                 builder: (context) =>
+                          //                 const AggreementPage()));
+                          //       } else {
+                          //         _error = val;
+                          //       }
+                          //     }
+                          //     else if (otpSent == false) {
+                          //       if (_name.text.isNotEmpty &&
+                          //           _email.text.isNotEmpty &&
+                          //           _mobile.text.isNotEmpty &&
+                          //           _password.text.length >= 8 &&
+                          //           gender.isNotEmpty &&
+                          //           gender != '') {
+                          //         // ef;
+                          //         String pattern =
+                          //             r'(^(?:[+0]9)?[0-9]{1,12}$)';
+                          //         RegExp regExp = RegExp(pattern);
+                          //         if (regExp.hasMatch(_mobile.text) &&
+                          //             _mobile.text.length <=
+                          //                 countries[phcode]
+                          //                 ['dial_max_length'] &&
+                          //             _mobile.text.length >=
+                          //                 countries[phcode]
+                          //                 ['dial_min_length']) {
+                          //           // fd;
+                          //           String pattern =
+                          //               r"^[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?\.)+[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])*$";
+                          //           RegExp regex = RegExp(pattern);
+                          //           if (regex.hasMatch(_email.text)) {
+                          //             name = _name.text;
+                          //             email = _email.text;
+                          //             password = _password.text;
+                          //             phnumber = _mobile.text;
+                          //             var verify = await verifyUser(
+                          //                 _mobile.text,
+                          //                 0,
+                          //                 '',
+                          //                 _email.text,
+                          //                 withOtp,
+                          //                 forgotPassword);
+                          //             if (verify == false) {
+                          //               if (isCheckFireBaseOTP) {
+                          //                 var val = await otpCall();
+                          //                 if (val.value == true) {
+                          //                   await phoneAuth(
+                          //                       countries[phcode]
+                          //                       ['dial_code'] +
+                          //                           _mobile.text);
+                          //                   phoneAuthCheck = true;
+                          //                   _resend = false;
+                          //                   otpSent = true;
+                          //                   resendTimer = 60;
+                          //                   resend();
+                          //                 } else {
+                          //                   phoneAuthCheck = false;
+                          //                   RemoteNotification noti =
+                          //                   const RemoteNotification(
+                          //                       title:
+                          //                       'Otp for Login',
+                          //                       body:
+                          //                       'Login to your account with test OTP 123456');
+                          //                   showOtpNotification(noti);
+                          //                 }
+                          //                 // setState(() {
+                          //                 _resend = false;
+                          //                 otpSent = true;
+                          //                 resendTimer = 60;
+                          //                 resend();
+                          //                 Future.delayed(
+                          //                     const Duration(
+                          //                         seconds: 1), () {
+                          //                   _scroll.position.moveTo(
+                          //                       _scroll.position
+                          //                           .maxScrollExtent);
+                          //                 });
+                          //               } else {
+                          //                 var val =
+                          //                 await sendOTPtoMobile(
+                          //                     (signIn == 1)
+                          //                         ? _mobile.text
+                          //                         : _email.text,
+                          //                     countries[phcode]
+                          //                     ['dial_code']
+                          //                         .toString());
+                          //                 if (val == 'success') {
+                          //                   phoneAuthCheck = true;
+                          //                   _resend = false;
+                          //                   otpSent = true;
+                          //                   resendTimer = 60;
+                          //                   resend();
+                          //                   Future.delayed(
+                          //                       const Duration(
+                          //                           seconds: 1), () {
+                          //                     _scroll.position.moveTo(
+                          //                         _scroll.position
+                          //                             .maxScrollExtent);
+                          //                   });
+                          //                 } else {
+                          //                   _error = val;
+                          //                 }
+                          //               }
+                          //             } else {
+                          //               _error = verify;
+                          //             }
+                          //           } else {
+                          //             _error =
+                          //             'please enter valid email address';
+                          //           }
+                          //         } else {
+                          //           _error =
+                          //           'please enter valid mobile number';
+                          //         }
+                          //       } else if (_password.text.length < 8) {
+                          //         _error =
+                          //         'password length must be 8 characters';
+                          //       } else {
+                          //         _error =
+                          //         'please enter all fields to proceed';
+                          //       }
+                          //     }
+                          //     else {
+                          //       // iorejie
+                          //
+                          //       if (_otp.text.isNotEmpty &&
+                          //           _otp.text.length == 6) {
+                          //         dynamic val;
+                          //         if (email != _email.text) {
+                          //           val = await verifyUser(
+                          //               _mobile.text,
+                          //               0,
+                          //               _password.text,
+                          //               _email.text,
+                          //               withOtp,
+                          //               forgotPassword);
+                          //         } else {
+                          //           val = false;
+                          //         }
+                          //         if (val == false) {
+                          //           if (phoneAuthCheck == true) {
+                          //             if (isCheckFireBaseOTP == true) {
+                          //               try {
+                          //                 PhoneAuthCredential
+                          //                 credential =
+                          //                 PhoneAuthProvider
+                          //                     .credential(
+                          //                     verificationId:
+                          //                     verId,
+                          //                     smsCode:
+                          //                     _otp.text);
+                          //
+                          //                 // Sign the user in (or link) with the credential
+                          //                 await FirebaseAuth.instance
+                          //                     .signInWithCredential(
+                          //                     credential);
+                          //
+                          //                 String? bearerrrrr =
+                          //                 await FirebaseAuth
+                          //                     .instance.currentUser!
+                          //                     .getIdToken();
+                          //
+                          //                 mobileVerified = true;
+                          //                 Navigator.push(
+                          //                     context,
+                          //                     MaterialPageRoute(
+                          //                         builder: (context) =>
+                          //                         const AggreementPage()));
+                          //
+                          //                 values = 0;
+                          //               } on FirebaseAuthException catch (error) {
+                          //                 if (error.code ==
+                          //                     'invalid-verification-code') {
+                          //                   setState(() {
+                          //                     _otp.clear();
+                          //                     // otpNumber = '';
+                          //                     _error =
+                          //                     'Please enter correct Otp or resend';
+                          //                   });
+                          //                 }
+                          //               }
+                          //             } else {
+                          //               var val = await validateSmsOtp(
+                          //                   _mobile.text
+                          //                   // (signIn == 1)
+                          //                   //     ? _mobile.text
+                          //                   //     : _email.text
+                          //                   ,
+                          //                   _otp.text);
+                          //               if (val == 'success') {
+                          //                 //                                       var verify = await verifyUser(_email.text,0,'','');
+                          //                 // navigate(verify);
+                          //                 mobileVerified = true;
+                          //                 Navigator.push(
+                          //                     context,
+                          //                     MaterialPageRoute(
+                          //                         builder: (context) =>
+                          //                         const AggreementPage()));
+                          //               } else {
+                          //                 _error = val.toString();
+                          //               }
+                          //             }
+                          //           } else {
+                          //             mobileVerified = true;
+                          //             Navigator.push(
+                          //                 context,
+                          //                 MaterialPageRoute(
+                          //                     builder: (context) =>
+                          //                     const AggreementPage()));
+                          //           }
+                          //         } else {
+                          //           _error = val;
+                          //         }
+                          //       } else {
+                          //         // setState(() {
+                          //         _error = 'Please enter otp';
+                          //         // });
+                          //       }
+                          //     }
+                          //   }
+                          //   setState(() {
+                          //     loginLoading = false;
+                          //   });
+                          // },
                           text: (signIn == 0)
                               ? (withOtp == false)
                               ? languages[choosenLanguage]
@@ -2633,49 +2631,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildOTPBox(
-      int index, TextEditingController controllers, FocusNode focusNode) {
-    return Container(
-      width: 45,
-      height: 55,
-      margin: EdgeInsets.only(top: 30),
-      decoration: BoxDecoration(
-        border: Border.all(
-          color: focusNode.hasFocus
-              ? Colors.grey
-              : Colors.red, // Gray when focused, Red otherwise
-          width: 2,
-        ),
-        // border: Border.all(
-        //     color: Colors.black
-        // ),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: TextField(
-        controller: controllers,
-        focusNode: focusNode,
-        keyboardType: TextInputType.number,
-        textAlign: TextAlign.center,
-        maxLength: 1,
-        autofocus: index == 0,
-        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-        decoration: InputDecoration(
-          counterText: "",
-          border: InputBorder.none,
-        ),
-        onChanged: (value) {
-          if (value.isNotEmpty) {
-            if (index < _focusNodes.length - 1) {
-              FocusScope.of(context).requestFocus(_focusNodes[index + 1]);
-            } else {
-              FocusScope.of(context)
-                  .unfocus(); // Remove focus from the last field
-            }
-          }
-        },
-      ),
-    );
-  }
+
 }
 
 class ShapePainter extends CustomClipper<Path> {

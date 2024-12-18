@@ -305,6 +305,8 @@
 //   }
 // }
 
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_user/pages/profile/adresses_screen.dart';
 import 'package:flutter_user/pages/profile/edit_profile_screen.dart';
@@ -313,7 +315,9 @@ import 'package:flutter_user/pages/profile/setting_screen.dart';
 import 'package:flutter_user/styles/styles.dart';
 import 'package:flutter_user/widgets/appbar.dart';
 
+import '../../functions/functions.dart';
 import '../../widgets/widgets.dart';
+import '../NavigatorPages/editprofile.dart';
 import '../NavigatorPages/makecomplaint.dart';
 import '../language/languages.dart';
 
@@ -346,23 +350,43 @@ class ProfileScreen extends StatelessWidget {
         
                   Row(
                     children: [
-                       CircleAvatar(
-                        radius: 40,
-                        backgroundColor: Colors.grey[200],
-                        backgroundImage: AssetImage('assets/icons/userIcon.png'), // Add your profile image here
+                      Container(
+                        height: media.width * 0.25,
+                        width: media.width * 0.25,
+                        decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: page,
+                            image: (profileImageFile == null)
+                                ? DecorationImage(
+                                image: NetworkImage(
+                                  userDetails[
+                                  'profile_picture'],
+                                ),
+                                fit: BoxFit.cover)
+                                : DecorationImage(
+                                image: FileImage(File(
+                                    profileImageFile)),
+                                fit: BoxFit.cover)
+                        ),
                       ),
+                      //  CircleAvatar(
+                      //   radius: 40,
+                      //   backgroundColor: Colors.grey[200],
+                      //   backgroundImage: NetworkImage(userDetails['profile_picture']
+                      //   ), // Add your profile image here
+                      // ),
                       const SizedBox(width: 16),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children:  [
                           MyText(
-                            text: "Celina Mark",
+                            text: userDetails['name'],
                             size: font24Size,
                             color: headingColors,
                             fontweight: FontWeight.w700,
                           ),
                           MyText(
-                            text: "celinamark01@gmail.com",
+                            text: userDetails['mobile'],
                             size: font16Size,
                             color: Color(0xff697176),
                             fontweight: FontWeight.w400,

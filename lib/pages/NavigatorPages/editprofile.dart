@@ -7,6 +7,7 @@ import 'dart:io';
 import 'package:permission_handler/permission_handler.dart';
 import '../../functions/functions.dart';
 import '../../styles/styles.dart';
+import '../../widgets/appbar.dart';
 import '../../widgets/success_dialog_content.dart';
 import '../../widgets/widgets.dart';
 import '../loadingPage/loading.dart';
@@ -169,26 +170,27 @@ class _EditProfileState extends State<EditProfile> {
 
     return Material(
       child: Scaffold(
-        backgroundColor: Colors.grey.shade200,
-        appBar: AppBar(
+        backgroundColor: Color(0xffE8E9EA),
+        // appBar: AppBar(
+        //
+        //   leading: IconButton(
+        //     icon: Icon(Icons.arrow_back),
+        //     onPressed: () {
+        //       Navigator.pop(context);
+        //     },
+        //   ),
+        //   title: Text("Edit Profile"),
+        //   backgroundColor:Colors. grey.shade200,
+        //   elevation: 0,
+        //   centerTitle: true,
+        //   titleTextStyle: TextStyle(
+        //     color: Colors.black,
+        //     fontSize: 20,
+        //     fontWeight: FontWeight.bold,
+        //   ),
+        //   iconTheme: IconThemeData(color: Colors.black),
+        // ),
 
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
-          title: Text("Edit Profile"),
-          backgroundColor:Colors. grey.shade200,
-          elevation: 0,
-          centerTitle: true,
-          titleTextStyle: TextStyle(
-            color: Colors.black,
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
-          iconTheme: IconThemeData(color: Colors.black),
-        ),
         body: Directionality(
           textDirection: (languageDirection == 'rtl')
               ? TextDirection.rtl
@@ -197,7 +199,7 @@ class _EditProfileState extends State<EditProfile> {
             children: [
 
               Positioned.fill(
-                top: 80, // Push the container down for the profile picture overlap
+                top: 160, // Push the container down for the profile picture overlap
                 child: Container(
                   color: Colors.white, // Light gray background
                   child: Padding(
@@ -295,40 +297,151 @@ class _EditProfileState extends State<EditProfile> {
                                           height: media.height * 0.02,
                                         ),
 
+
                                         Container(
-                                          // width: media.height*0.,
+                                          height: media.width * 0.13,
+                                          width: media.width,
                                           decoration: BoxDecoration(
-                                            border: Border.all(color: Colors.grey),
-                                            borderRadius: BorderRadius.circular(8),
-                                          ),
-                                          padding: EdgeInsets.symmetric(horizontal: 12),
+                                              border: Border.all(
+                                                  color: Color(0xffD9D9D9)),
+                                              borderRadius:
+                                              BorderRadius.circular(8),
+                                              color: Colors.white),
+
+                                          padding: EdgeInsets.only(
+                                              right: media.width * 0.025,
+                                              left: media.width * 0.025),
                                           child: Row(
-                                            // mainAxisAlignment: MainAxisAlignment.center,
-                                            crossAxisAlignment: CrossAxisAlignment.center,
                                             children: [
-                                              Image.asset("assets/icons/india.png"),
-                                              SizedBox(width:  media.width*0.03,),
-                                              Text("+91"),
-                                              SizedBox(width:  media.width*0.04,),
-                                              Container(
-                                                width: media.width*0.004,
-                                                height: media.height*0.065,
-                                                color: Colors.grey,
-                                              ),
-                                              SizedBox(width:  media.width*0.04,),
-                                              Expanded(
-                                                child: TextFormField(
-                                                  controller: mobilenum,
-                                                  decoration: InputDecoration(
-                                                    labelText: "Phone Number",
-                                                    // hintText: !cilckTextField ? "Enter First Name" : "",
-                                                    border: InputBorder.none,
+                                              // if (isLoginemail == false &&
+                                              //     phcode != null)
+                                              InkWell(
+                                                onTap: () {
+
+                                                },
+                                                child: Padding(
+                                                  padding: EdgeInsets.only(
+                                                      right: media.width * 0.025),
+                                                  child: Row(
+                                                    children: [
+                                                      CircleAvatar(
+                                                        backgroundImage:
+                                                        NetworkImage(
+                                                            countries[phcode]
+                                                            ['flag']),
+                                                        radius: media.width *
+                                                            0.03, // Adjust the size
+                                                      ),
+
+                                                      // Image.network(
+                                                      //   countries[phcode]['flag'],
+                                                      //   width: media.width * 0.06,
+                                                      // ),
+                                                      SizedBox(
+                                                        width: media.width * 0.03,
+                                                      ),
+
+                                                      MyText(
+                                                        text: "${countries[phcode]
+                                                        ['dial_code']}",
+                                                        size: font15Size,
+                                                        color: Color(0xff697176),
+                                                        fontweight: FontWeight.w500,
+                                                      ),
+                                                    ],
                                                   ),
                                                 ),
                                               ),
+                                              VerticalDivider(
+                                                color: Color(
+                                                    0xffD9D9D9), // Color of the divider
+                                                // Thickness of the divider
+                                                width: 20, // Space occupied by the divider (including margin)
+                                                // Space from bottom
+                                              ),
+                                              Expanded(
+                                                child: SizedBox(
+                                                  height: media.width * 0.12,
+                                                  child: TextField(
+                                                    controller: mobilenum,
+
+                                                    decoration: InputDecoration(
+                                                        labelText: "Phone Number",
+                                                        labelStyle: GoogleFonts.inter(
+                                                          color: Color(0xff5C6266),
+                                                          fontSize: font13Size,
+                                                          fontWeight: FontWeight.w500,
+                                                        ) ,
+                                                        hintText: "Phone Number",
+                                                        hintStyle: GoogleFonts.inter(
+                                                          color: Color(0xff5C6266),
+                                                          fontSize: font16Size,
+                                                          fontWeight: FontWeight.w400,
+                                                        ),
+                                                        border: InputBorder.none
+                                                    ),
+                                                    style: GoogleFonts.inter(
+                                                      color: Color(0xff303030),
+                                                      fontSize: font16Size,
+                                                      fontWeight: FontWeight.w500,
+                                                    ),
+                                                    // onChanged: (val) {
+                                                    //   setState(() {});
+                                                    // },
+                                                  ),
+
+                                                ),
+                                              ),
+                                              // if (otpSent == true && signIn == 0)
+                                              //   IconButton(
+                                              //       onPressed: () {
+                                              //         setState(() {
+                                              //           _error = '';
+                                              //           otpSent = false;
+                                              //           _password.clear();
+                                              //         });
+                                              //       },
+                                              //       icon: Icon(
+                                              //         Icons.edit,
+                                              //         size: media.width * 0.05,
+                                              //       ))
                                             ],
                                           ),
                                         ),
+                                        // Container(
+                                        //   // width: media.height*0.,
+                                        //   decoration: BoxDecoration(
+                                        //     border: Border.all(color: Colors.grey),
+                                        //     borderRadius: BorderRadius.circular(8),
+                                        //   ),
+                                        //   padding: EdgeInsets.symmetric(horizontal: 12),
+                                        //   child: Row(
+                                        //     // mainAxisAlignment: MainAxisAlignment.center,
+                                        //     crossAxisAlignment: CrossAxisAlignment.center,
+                                        //     children: [
+                                        //       Image.asset("assets/icons/india.png"),
+                                        //       SizedBox(width:  media.width*0.03,),
+                                        //       Text("+91"),
+                                        //       SizedBox(width:  media.width*0.04,),
+                                        //       Container(
+                                        //         width: media.width*0.004,
+                                        //         height: media.height*0.065,
+                                        //         color: Colors.grey,
+                                        //       ),
+                                        //       SizedBox(width:  media.width*0.04,),
+                                        //       Expanded(
+                                        //         child: TextFormField(
+                                        //           controller: mobilenum,
+                                        //           decoration: InputDecoration(
+                                        //             labelText: "Phone Number",
+                                        //             // hintText: !cilckTextField ? "Enter First Name" : "",
+                                        //             border: InputBorder.none,
+                                        //           ),
+                                        //         ),
+                                        //       ),
+                                        //     ],
+                                        //   ),
+                                        // ),
 
 
                                         SizedBox(
@@ -679,65 +792,89 @@ class _EditProfileState extends State<EditProfile> {
                 ),
               ),
 
-              Align(
-                alignment: Alignment.topCenter,
-                child: Column(
-                  children: [
-                    SizedBox(height: 20), // Spacing from top
-                    Stack(
+              Column(
+                children: [
+                  Align(
+                    alignment: Alignment.topLeft,
+                    child: Column(
                       children: [
-                        CircleAvatar(
-                          radius: 58,
-                          backgroundColor: Colors.white,
-                          child: CircleAvatar(
-                            radius: 55,
-                            backgroundImage: AssetImage("assets/icons/userIcon.png"), // Replace with user image URL
-                          ),
-                        ),
-                        Positioned(
-                          bottom: 0,
-                          right: 0,
-                          child: InkWell(
-                            onTap: () {
-                              // if (isEdit) {
-                              setState(() {
-                                _pickImage = true;
-                              });
-                              // }
-                            },
-                            child: Container(
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.grey.withOpacity(0.5), // Shadow color
-                                    spreadRadius: 2, // Spread radius
-                                    blurRadius: 4, // Blur radius
-                                    offset: Offset(2, 2), // Offset for the shadow (x, y)
-                                  ),
-                                ],
-                              ),
-                              child: CircleAvatar(
-                                radius: 16,
-                                backgroundColor: Colors.white,
-                                child: CircleAvatar(
+                        SizedBox(height: 35),
 
-                                  radius: 14,
-                                  backgroundColor: Colors.white,
-                                  child: Icon(
-                                    Icons.edit,
-                                    size: 16,
-                                    color: Colors.black,
+                        Positioned(
+                          top: 0,
+                          left: 0,
+                          child:  appBarTitleWidget(
+                              onTaps: (){
+                                Navigator.pop(context);
+                              },
+                              context: context,
+                              backgroundIcon: whiteColors,
+                              title: "Edit Profile",
+                              iconColors: iconGrayColors)
+                          ,),
+                        SizedBox(height: 35), // Spacing from top
+
+                        Stack(
+                          children: [
+
+
+                            CircleAvatar(
+                              radius: 58,
+                              backgroundColor: Colors.white,
+                              child: CircleAvatar(
+                                radius: 55,
+                                backgroundImage: profileImageFile == null
+                                    ? NetworkImage(userDetails['profile_picture']) as ImageProvider
+                                    : FileImage(File(profileImageFile)), // Replace with user image URL
+                              ),
+                            ),
+                            Positioned(
+                              bottom: 10,
+                              right: 0,
+                              child: InkWell(
+                                onTap: () {
+                                  // if (isEdit) {
+                                  setState(() {
+                                    _pickImage = true;
+                                  });
+                                  // }
+                                },
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.grey.withOpacity(0.5), // Shadow color
+                                        spreadRadius: 2, // Spread radius
+                                        blurRadius: 4, // Blur radius
+                                        offset: Offset(2, 2), // Offset for the shadow (x, y)
+                                      ),
+                                    ],
+                                  ),
+                                  child: CircleAvatar(
+                                    radius: 16,
+                                    backgroundColor: Colors.white,
+                                    child: CircleAvatar(
+
+                                      radius: 14,
+                                      backgroundColor: Colors.white,
+                                      child: Icon(
+                                        Icons.edit,
+                                        size: 16,
+                                        color: Colors.black,
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
-                          ),
+
+                          ],
                         ),
                       ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
 
               // if (showToast == true)
