@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_user/functions/notifications.dart';
 import 'package:flutter_user/translations/translation.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:http/http.dart' as http;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -67,6 +68,30 @@ checkInternetConnection() {
       valueNotifierBook.incrementNotifier();
     }
   });
+}
+
+Future<void> getAddressDetails({required double latitude,required double longitude ,
+  required String addressLine,required String area,required String city ,  ValueNotifier<String>? cityNotifier }) async {
+  try {
+    List<Placemark> placemarks = await placemarkFromCoordinates(latitude, longitude);
+
+    if (placemarks.isNotEmpty) {
+      Placemark place = placemarks[0];
+
+      cityNotifier?.value = "${place.locality!+"," + place.country!}" ?? '';
+        addressLine = place.street ?? ''; // Street name or detailed address
+        area = place.subLocality ?? '';   // Area or neighborhood
+        city = place.country!;
+
+          // City name
+
+      print('Address Line: $addressLine');
+      print('Area: $area');
+      print('City: $city');
+    }
+  } catch (e) {
+    print('Error: $e');
+  }
 }
 
 getDetailsOfDevice() async {

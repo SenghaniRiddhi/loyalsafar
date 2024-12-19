@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+import '../../styles/styles.dart';
+
 
 class EditAddressScreen extends StatefulWidget {
   @override
@@ -188,22 +190,30 @@ class AddressTypeButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        CircleAvatar(
-          radius: 24,
-          backgroundColor: isSelected ? Colors.lightGreen : Colors.grey[300],
-          child: Icon(icon, color: isSelected ? Colors.white : Colors.black54),
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20.0),
+        border: Border.all(color: isSelected ? Color(0xffECECEC):whiteColors),
+        color: isSelected ?whiteColors:Color(0xffECECEC),
+      ),
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 10,vertical: 07),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+
+            Icon(icon, color:  headingColors),
+            const SizedBox(width: 8.0),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 14.0,
+                color:  headingColors,
+              ),
+            ),
+          ],
         ),
-        const SizedBox(height: 8.0),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 14.0,
-            color: isSelected ? Colors.lightGreen : Colors.grey[700],
-          ),
-        ),
-      ],
+      ),
     );
   }
 }

@@ -8,6 +8,8 @@ import 'package:flutter_user/widgets/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:location/location.dart';
 
+import '../profile/adresses_screen.dart';
+
 class FavAddressPage extends StatefulWidget {
   const FavAddressPage({super.key});
 
@@ -80,16 +82,26 @@ class _FavAddressPageState extends State<FavAddressPage> {
                                 if (others.length < 4)
                                   InkWell(
                                     onTap: () {
-                                      setState(() {
-                                        newAddressController.text = '';
-                                      });
-
-                                      showDialog(
-                                        context: context,
-                                        builder: (context) {
-                                          return addDialoge(context);
-                                        },
-                                      ).then((_) async {
+                                      // setState(() {
+                                      //   newAddressController.text = '';
+                                      // });
+                                      //
+                                      // showDialog(
+                                      //   context: context,
+                                      //   builder: (context) {
+                                      //     return addDialoge(context);
+                                      //   },
+                                      // ).then((_) async {
+                                      //   await getFavLocations();
+                                      // });
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  DropLocation(
+                                                      from: 'favourite',
+                                                      favName: '')))
+                                          .then((_) async {
                                         await getFavLocations();
                                       });
                                     },
@@ -101,18 +113,16 @@ class _FavAddressPageState extends State<FavAddressPage> {
                               height: media.width * 0.05,
                             ),
                             MyText(
-                              text: languages[choosenLanguage]
-                                      ['text_fav_address']
-                                  .toString()
-                                  .toUpperCase(),
-                              size: media.width * sixteen,
+                              text: "My Addresses",
+                              size: font26Size,
+                              color: headingColors,
                               fontweight: FontWeight.w800,
                             ),
                             SizedBox(
                               height: media.width * 0.05,
                             ),
                             (home.isEmpty)
-                                ? Padding(
+                                ?Padding(
                                     padding:
                                         const EdgeInsets.fromLTRB(2, 2, 2, 8),
                                     child: InkWell(
@@ -123,7 +133,7 @@ class _FavAddressPageState extends State<FavAddressPage> {
                                                     builder: (context) =>
                                                         DropLocation(
                                                             from: 'favourite',
-                                                            favName: 'Home')))
+                                                            favName: '')))
                                             .then((_) async {
                                           await getFavLocations();
                                         });
@@ -203,90 +213,27 @@ class _FavAddressPageState extends State<FavAddressPage> {
                                       ),
                                     ),
                                   )
-                                : Padding(
-                                    padding:
-                                        const EdgeInsets.fromLTRB(2, 2, 2, 8),
-                                    child: InkWell(
-                                      onTap: () async {
-                                        await location.requestPermission();
+                                : AddressCard(
+                                  icon: Icons.home_filled,
+                                  label: home[0]
+                                  ['address_name'],
+                                  address: home[0]
+                                  ['pick_address'],
+                                  onEdit: () {
+
+                                    // Handle edit for Home
+                                  },
+                                  onDelete: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return deleteDialoge(
+                                            context, 0, home);
                                       },
-                                      child: Container(
-                                        height: media.width * 0.15,
-                                        decoration: BoxDecoration(
-                                          border: Border.all(
-                                              color:
-                                                  borderLines.withOpacity(0.5)),
-                                          boxShadow: const [
-                                            BoxShadow(
-                                              spreadRadius: 1,
-                                              blurRadius: 2,
-                                              color: Colors.black12,
-                                            )
-                                          ],
-                                          color: page,
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                        ),
-                                        child: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 10),
-                                          child: Row(
-                                            children: [
-                                              const CircleAvatar(
-                                                child: Icon(Icons.home_filled),
-                                              ),
-                                              const SizedBox(width: 15),
-                                              SizedBox(
-                                                width: media.width * 0.5,
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: [
-                                                    MyText(
-                                                      text: home[0]
-                                                          ['address_name'],
-                                                      size: media.width *
-                                                          fourteen,
-                                                      fontweight:
-                                                          FontWeight.w500,
-                                                    ),
-                                                    MyText(
-                                                      text: home[0]
-                                                          ['pick_address'],
-                                                      maxLines: 2,
-                                                      size: media.width * ten,
-                                                      fontweight:
-                                                          FontWeight.w500,
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                              const Spacer(),
-                                              InkWell(
-                                                onTap: () async {
-                                                  showDialog(
-                                                    context: context,
-                                                    builder: (context) {
-                                                      return deleteDialoge(
-                                                          context, 0, home);
-                                                    },
-                                                  );
-                                                },
-                                                child: Icon(
-                                                  Icons.cancel_outlined,
-                                                  color: (isDarkTheme == true)
-                                                      ? Colors.white
-                                                      : Colors.black,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
+                                    );
+                                    // Handle delete for Home
+                                  },
+                                ),
                             (work.isEmpty)
                                 ? Padding(
                                     padding:
@@ -299,7 +246,7 @@ class _FavAddressPageState extends State<FavAddressPage> {
                                                     builder: (context) =>
                                                         DropLocation(
                                                             from: 'favourite',
-                                                            favName: 'Work')))
+                                                            favName: '')))
                                             .then((_) async {
                                           await getFavLocations();
                                         });
@@ -382,90 +329,28 @@ class _FavAddressPageState extends State<FavAddressPage> {
                                       ),
                                     ),
                                   )
-                                : Padding(
-                                    padding:
-                                        const EdgeInsets.fromLTRB(2, 2, 2, 8),
-                                    child: InkWell(
-                                      onTap: () async {
-                                        await location.requestPermission();
-                                      },
-                                      child: Container(
-                                        height: media.width * 0.15,
-                                        decoration: BoxDecoration(
-                                          border: Border.all(
-                                              color:
-                                                  borderLines.withOpacity(0.5)),
-                                          boxShadow: const [
-                                            BoxShadow(
-                                              spreadRadius: 1,
-                                              blurRadius: 2,
-                                              color: Colors.black12,
-                                            )
-                                          ],
-                                          color: page,
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                        ),
-                                        child: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 10),
-                                          child: Row(
-                                            children: [
-                                              const CircleAvatar(
-                                                child: Icon(Icons.work),
-                                              ),
-                                              const SizedBox(width: 15),
-                                              SizedBox(
-                                                width: media.width * 0.5,
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: [
-                                                    MyText(
-                                                      text: work[0]
-                                                          ['address_name'],
-                                                      size: media.width *
-                                                          fourteen,
-                                                      fontweight:
-                                                          FontWeight.w500,
-                                                    ),
-                                                    MyText(
-                                                      text: work[0]
-                                                          ['pick_address'],
-                                                      maxLines: 2,
-                                                      size: media.width * ten,
-                                                      fontweight:
-                                                          FontWeight.w500,
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                              const Spacer(),
-                                              InkWell(
-                                                onTap: () async {
-                                                  showDialog(
-                                                    context: context,
-                                                    builder: (context) {
-                                                      return deleteDialoge(
-                                                          context, 0, work);
-                                                    },
-                                                  );
-                                                },
-                                                child: Icon(
-                                                  Icons.cancel_outlined,
-                                                  color: (isDarkTheme == true)
-                                                      ? Colors.white
-                                                      : Colors.black,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
+                                : AddressCard(
+                              icon: Icons.work,
+                              label:work[0]
+                              ['address_name'],
+                              address:work[0]
+                              ['pick_address'],
+                              onEdit: () {
+
+                                // Handle edit for Home
+                              },
+                              onDelete: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return deleteDialoge(
+                                        context, 0, work);
+                                  },
+                                );
+                                // Handle delete for Home
+                              },
+                            ),
+
                             if (others.isNotEmpty)
                               SizedBox(
                                 height: media.height * 0.8,
@@ -477,97 +362,29 @@ class _FavAddressPageState extends State<FavAddressPage> {
                                         const NeverScrollableScrollPhysics(),
                                     padding: const EdgeInsets.only(bottom: 30),
                                     itemBuilder: (context, index) {
-                                      return Padding(
-                                        padding: const EdgeInsets.fromLTRB(
-                                            2, 2, 2, 8),
-                                        child: InkWell(
-                                          onTap: () async {
-                                            await location.requestPermission();
+                                      return AddressCard(
+                                          icon: Icons.question_mark,
+                                          label:others[index]
+                                          ['address_name'],
+                                          address:others[index]
+                                          ['pick_address'],
+                                          onEdit: () {
+
+                                            // Handle edit for Home
                                           },
-                                          child: Container(
-                                            height: media.width * 0.15,
-                                            decoration: BoxDecoration(
-                                              border: Border.all(
-                                                  color: borderLines
-                                                      .withOpacity(0.5)),
-                                              boxShadow: const [
-                                                BoxShadow(
-                                                  spreadRadius: 1,
-                                                  blurRadius: 2,
-                                                  color: Colors.black12,
-                                                )
-                                              ],
-                                              color: page,
-                                              borderRadius:
-                                                  BorderRadius.circular(10),
-                                            ),
-                                            child: Padding(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 10),
-                                              child: Row(
-                                                children: [
-                                                  const CircleAvatar(
-                                                    child: Icon(Icons.favorite),
-                                                  ),
-                                                  const SizedBox(width: 15),
-                                                  SizedBox(
-                                                    width: media.width * 0.5,
-                                                    child: Column(
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .start,
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .center,
-                                                      children: [
-                                                        MyText(
-                                                          text: others[index]
-                                                              ['address_name'],
-                                                          size: media.width *
-                                                              fourteen,
-                                                          fontweight:
-                                                              FontWeight.w500,
-                                                        ),
-                                                        MyText(
-                                                          text: others[index]
-                                                              ['pick_address'],
-                                                          maxLines: 2,
-                                                          size:
-                                                              media.width * ten,
-                                                          fontweight:
-                                                              FontWeight.w500,
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                  const Spacer(),
-                                                  InkWell(
-                                                    onTap: () async {
-                                                      showDialog(
-                                                        context: context,
-                                                        builder: (context) {
-                                                          return deleteDialoge(
-                                                              context,
-                                                              index,
-                                                              others);
-                                                        },
-                                                      );
-                                                    },
-                                                    child: Icon(
-                                                      Icons.cancel_outlined,
-                                                      color:
-                                                          (isDarkTheme == true)
-                                                              ? Colors.white
-                                                              : Colors.black,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      );
+                                          onDelete: () {
+                                            showDialog(
+                                              context: context,
+                                              builder: (context) {
+                                                return deleteDialoge(
+                                                    context,
+                                                    index,
+                                                    others);
+                                              },
+                                            );
+                                            // Handle delete for others
+                                          },
+                                        );
                                     },
                                   ),
                                 ),

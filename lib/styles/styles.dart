@@ -49,6 +49,7 @@ Color boxColors = const Color(0xffAAAAAA).withOpacity(0.20);
 
 
 Color buttonColors = const Color(0xffBCFD5D);
+Color headingColorsdf = const Color(0xffeaeaea);
 Color headingColors = const Color(0xff1D1B20);
 Color backgroundColors = const Color(0xffE8E9EA);
 Color backgroundWhiteColors = const Color(0xff1D1B20);

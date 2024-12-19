@@ -469,7 +469,7 @@ class ProfileScreen extends StatelessWidget {
                       children: [
                         GestureDetector(
                           onTap:(){
-                           // Navigator.push(context, MaterialPageRoute(builder: (context)=>AddressesScreen()));
+                           Navigator.push(context, MaterialPageRoute(builder: (context)=>AddressesScreen()));
                             },
                           child: Container(
                             width: media.width*0.27,
