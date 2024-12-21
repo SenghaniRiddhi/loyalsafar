@@ -63,10 +63,13 @@ class _DropLocationState extends State<DropLocation>
   final _debouncer = Debouncer(milliseconds: 1000);
   bool useMyDetails = false;
   bool useMyAddress = false;
+  TextEditingController newAddressController = TextEditingController();
 
   String addressLine="abc";
   String area="cdf";
   String city="dff";
+
+  String selectedAddressType = "";
 
   void _onMapCreated(GoogleMapController controller) {
     setState(() {
@@ -580,53 +583,76 @@ class _DropLocationState extends State<DropLocation>
 
                                            SizedBox(height: 12.0),
                                           Row(
-                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+
                                             children: [
                                               GestureDetector(
                                                 onTap:(){
                                                   setState(() {
+                                                    selectedAddressType = "Home";
                                                     widget.favName="Home";
-
+                                                    favName = 'Home';
+                                                    widget.from="favourite";
                                                   });
                                                 },
                                                 child: AddressTypeButton(
                                                   label: 'Home',
                                                   icon: Icons.home,
-                                                  isSelected: true,
+                                                  isSelected: selectedAddressType == "Home",
                                                 ),
                                               ),
+                                              SizedBox(width: 15,),
                                               GestureDetector(
                                                 onTap: (){
                                                   setState(() {
                                                     widget.favName="Work";
-
+                                                    selectedAddressType = "Work";
+                                                    favName = 'Work';
+                                                    widget.from="favourite";
                                                   });
                                                 },
                                                 child: AddressTypeButton(
                                                   label: 'Work',
                                                   icon: Icons.work,
-                                                  isSelected: false,
+                                                  isSelected: selectedAddressType == "Work",
                                                 ),
                                               ),
-                                              AddressTypeButton(
-                                                label: 'Other',
-                                                icon: Icons.question_mark,
-                                                isSelected: false,
+                                              SizedBox(width: 15,),
+                                              GestureDetector(
+                                                onTap: (){
+                                                  setState(() {
+                                                    // widget.favName="abc";
+                                                    favName = 'Others';
+                                                    selectedAddressType = "Other";
+                                                  });
+                                                  showDialog(
+                                                    context: context,
+                                                    builder: (context) {
+                                                      return addDialoge(context);
+                                                    },
+                                                  );
+                                                  print("widget.favName ${widget.favName}");
+                                                },
+                                                child: AddressTypeButton(
+                                                  label: 'Other',
+                                                  icon: Icons.question_mark,
+                                                  isSelected: selectedAddressType == "Other",
+                                                ),
                                               ),
                                             ],
                                           ),
+
                                           const SizedBox(height: 24.0),
                                           Container(
                                               padding: EdgeInsets.fromLTRB(
-                                                  media.width * 0.03,
+                                                  media.width * 0.05,
                                                   media.width * 0.01,
                                                   media.width * 0.03,
                                                   media.width * 0.01),
-                                              height: media.width * 0.1,
+                                              // height: media.width * 0.1,
                                               width: media.width * 0.9,
                                               decoration: BoxDecoration(
                                                   border: Border.all(
-                                                    color: Colors.grey,
+                                                    color: borderColors,
                                                     width: 1.5,
                                                   ),
                                                   borderRadius:
@@ -634,224 +660,97 @@ class _DropLocationState extends State<DropLocation>
                                                           media.width * 0.02),
                                                   color: page),
                                               alignment: Alignment.centerLeft,
-                                              child: Row(
+                                              child: Column(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
                                                 children: [
+                                                  MyText(text: "Address line 1",
+                                                    fontweight: FontWeight.w500,
+                                                    size: font13Size,color: Color(0xff5C6266),),
                                                   SizedBox(
                                                       width:
                                                           media.width * 0.02),
-                                                  Expanded(
-                                                    child:
-                                                        (dropAddressConfirmation ==
-                                                                '')
-                                                            ? Text(
-                                                                languages[
-                                                                        choosenLanguage]
-                                                                    [
-                                                                    'text_pickdroplocation'],
-                                                                style: GoogleFonts.notoSans(
-                                                                    fontSize: media
-                                                                            .width *
-                                                                        twelve,
-                                                                    color:
-                                                                        hintColor),
-                                                              )
-                                                            : Row(
-                                                                mainAxisAlignment:
-                                                                    MainAxisAlignment
-                                                                        .spaceBetween,
-                                                                children: [
-                                                                  SizedBox(
-                                                                    width: media
-                                                                            .width *
-                                                                        0.7,
-                                                                    child: Text(
-                                                                      dropAddressConfirmation,
-                                                                      style: GoogleFonts
-                                                                          .notoSans(
-                                                                        fontSize:
-                                                                            media.width *
-                                                                                twelve,
-                                                                        color:
-                                                                            textColor,
-                                                                      ),
-                                                                      maxLines:
-                                                                          1,
-                                                                      overflow:
-                                                                          TextOverflow
-                                                                              .ellipsis,
-                                                                    ),
-                                                                  ),
-                                                                  (favAddress.length <
-                                                                              4 &&
-                                                                          (widget.from !=
-                                                                              'favourite'))
-                                                                      ? InkWell(
-                                                                          onTap:
-                                                                              () async {
-                                                                            if (favAddress.where((element) => element['pick_address'] == dropAddressConfirmation).isEmpty) {
-                                                                              setState(() {
-                                                                                favSelectedAddress = dropAddressConfirmation;
-                                                                                favLat = _center.latitude;
-                                                                                favLng = _center.longitude;
-                                                                                favAddressAdd = true;
-                                                                              });
-                                                                            }
-                                                                          },
-                                                                          child:
-                                                                              Icon(
-                                                                            Icons.favorite_outline,
-                                                                            size:
-                                                                                media.width * 0.05,
-                                                                            color: favAddress.where((element) => element['pick_address'] == dropAddressConfirmation).isEmpty
-                                                                                ? (isDarkTheme == true)
-                                                                                    ? Colors.white
-                                                                                    : textColor
-                                                                                : buttonColor,
-                                                                          ),
-                                                                        )
-                                                                      : Container()
-                                                                ],
-                                                              ),
-                                                  ),
-                                                ],
-                                              )),
-                                          SizedBox(
-                                            height: media.height * 0.03,
-                                          ),
-                                          Container(
-                                              padding: EdgeInsets.fromLTRB(
-                                                  media.width * 0.03,
-                                                  media.width * 0.01,
-                                                  media.width * 0.03,
-                                                  media.width * 0.01),
-                                              height: media.width * 0.1,
-                                              width: media.width * 0.9,
-                                              decoration: BoxDecoration(
-                                                  border: Border.all(
-                                                    color: Colors.grey,
-                                                    width: 1.5,
-                                                  ),
-                                                  borderRadius:
-                                                  BorderRadius.circular(
-                                                      media.width * 0.02),
-                                                  color: page),
-                                              alignment: Alignment.centerLeft,
-                                              child: Row(
-                                                children: [
-                                                  Container(
-                                                    height: media.width * 0.04,
-                                                    width: media.width * 0.04,
-                                                    alignment: Alignment.center,
-                                                    decoration: BoxDecoration(
-                                                        shape: BoxShape.circle,
-                                                        color: const Color(
-                                                            0xffFF0000)
-                                                            .withOpacity(0.3)),
-                                                    child: Container(
-                                                      height:
-                                                      media.width * 0.02,
-                                                      width: media.width * 0.02,
-                                                      decoration:
-                                                      const BoxDecoration(
-                                                          shape: BoxShape
-                                                              .circle,
-                                                          color: Color(
-                                                              0xffFF0000)),
-                                                    ),
-                                                  ),
-                                                  SizedBox(
-                                                      width:
-                                                      media.width * 0.02),
-                                                  Expanded(
-                                                    child:
-                                                    (area ==
-                                                        '')
-                                                        ? Text(
-                                                      languages[
-                                                      choosenLanguage]
-                                                      [
-                                                      'text_pickdroplocation'],
-                                                      style: GoogleFonts.notoSans(
-                                                          fontSize: media
-                                                              .width *
-                                                              twelve,
-                                                          color:
-                                                          hintColor),
-                                                    )
-                                                        : Row(
-                                                      mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                      children: [
-                                                        SizedBox(
-                                                          width: media
-                                                              .width *
-                                                              0.7,
-                                                          child: Text(
-                                                            area,
-                                                            style: GoogleFonts
-                                                                .notoSans(
-                                                              fontSize:
-                                                              media.width *
+                                                  (dropAddressConfirmation ==
+                                                          '')
+                                                      ? Text(
+                                                          languages[
+                                                                  choosenLanguage]
+                                                              [
+                                                              'text_pickdroplocation'],
+                                                          style: GoogleFonts.notoSans(
+                                                              fontSize: media
+                                                                      .width *
                                                                   twelve,
                                                               color:
-                                                              textColor,
-                                                            ),
-                                                            maxLines:
-                                                            1,
-                                                            overflow:
-                                                            TextOverflow
-                                                                .ellipsis,
-                                                          ),
-                                                        ),
-                                                        (favAddress.length <
-                                                            4 &&
-                                                            (widget.from !=
-                                                                'favourite'))
-                                                            ? InkWell(
-                                                          onTap:
-                                                              () async {
-                                                            if (favAddress.where((element) => element['pick_address'] == dropAddressConfirmation).isEmpty) {
-                                                              setState(() {
-                                                                favSelectedAddress = dropAddressConfirmation;
-                                                                favLat = _center.latitude;
-                                                                favLng = _center.longitude;
-                                                                favAddressAdd = true;
-                                                              });
-                                                            }
-                                                          },
-                                                          child:
-                                                          Icon(
-                                                            Icons.favorite_outline,
-                                                            size:
-                                                            media.width * 0.05,
-                                                            color: favAddress.where((element) => element['pick_address'] == dropAddressConfirmation).isEmpty
-                                                                ? (isDarkTheme == true)
-                                                                ? Colors.white
-                                                                : textColor
-                                                                : buttonColor,
-                                                          ),
+                                                                  hintColor),
                                                         )
-                                                            : Container()
-                                                      ],
-                                                    ),
-                                                  ),
+                                                      : Row(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .spaceBetween,
+                                                          children: [
+                                                            SizedBox(
+                                                              width: media
+                                                                      .width *
+                                                                  0.7,
+                                                              child:
+                                                              MyText(text: dropAddressConfirmation,
+                                                                fontweight: FontWeight.w500,
+                                                                size: font16Size,color: Color(0xff303030),
+                                                                maxLines:
+                                                                1,
+                                                                overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
+                                                              ),
+                                                            ),
+                                                            // (favAddress.length <
+                                                            //             4 &&
+                                                            //         (widget.from !=
+                                                            //             'favourite'))
+                                                            //     ?
+                                                            // InkWell(
+                                                            //         onTap:
+                                                            //             () async {
+                                                            //           if (favAddress.where((element) => element['pick_address'] == dropAddressConfirmation).isEmpty) {
+                                                            //             setState(() {
+                                                            //               favSelectedAddress = dropAddressConfirmation;
+                                                            //               favLat = _center.latitude;
+                                                            //               favLng = _center.longitude;
+                                                            //               favAddressAdd = true;
+                                                            //             });
+                                                            //           }
+                                                            //         },
+                                                            //         child:
+                                                            //             Icon(
+                                                            //           Icons.favorite_outline,
+                                                            //           size:
+                                                            //               media.width * 0.05,
+                                                            //           color: favAddress.where((element) => element['pick_address'] == dropAddressConfirmation).isEmpty
+                                                            //               ? (isDarkTheme == true)
+                                                            //                   ? Colors.white
+                                                            //                   : textColor
+                                                            //               : buttonColor,
+                                                            //         ),
+                                                            //       )
+                                                            //     : Container()
+                                                          ],
+                                                        ),
                                                 ],
                                               )),
                                           SizedBox(
-                                            height: media.height * 0.03,
+                                            height: media.height * 0.02,
                                           ),
                                           Container(
                                               padding: EdgeInsets.fromLTRB(
-                                                  media.width * 0.03,
+                                                  media.width * 0.05,
                                                   media.width * 0.01,
                                                   media.width * 0.03,
                                                   media.width * 0.01),
-                                              height: media.width * 0.1,
+                                              // height: media.width * 0.1,
                                               width: media.width * 0.9,
                                               decoration: BoxDecoration(
                                                   border: Border.all(
-                                                    color: Colors.grey,
+                                                    color: borderColors,
                                                     width: 1.5,
                                                   ),
                                                   borderRadius:
@@ -859,124 +758,170 @@ class _DropLocationState extends State<DropLocation>
                                                       media.width * 0.02),
                                                   color: page),
                                               alignment: Alignment.centerLeft,
-                                              child: Row(
+                                              child: Column(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
                                                 children: [
-                                                  Container(
-                                                    height: media.width * 0.04,
-                                                    width: media.width * 0.04,
-                                                    alignment: Alignment.center,
-                                                    decoration: BoxDecoration(
-                                                        shape: BoxShape.circle,
-                                                        color: const Color(
-                                                            0xffFF0000)
-                                                            .withOpacity(0.3)),
-                                                    child: Container(
-                                                      height:
-                                                      media.width * 0.02,
-                                                      width: media.width * 0.02,
-                                                      decoration:
-                                                      const BoxDecoration(
-                                                          shape: BoxShape
-                                                              .circle,
-                                                          color: Color(
-                                                              0xffFF0000)),
-                                                    ),
-                                                  ),
-                                                  SizedBox(
-                                                      width:
-                                                      media.width * 0.02),
-                                                  Expanded(
-                                                    child:
-                                                    (city ==
-                                                        '')
-                                                        ? Text(
-                                                      languages[
-                                                      choosenLanguage]
-                                                      [
-                                                      'text_pickdroplocation'],
-                                                      style: GoogleFonts.notoSans(
-                                                          fontSize: media
-                                                              .width *
-                                                              twelve,
-                                                          color:
-                                                          hintColor),
-                                                    )
-                                                        : Row(
-                                                      mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                      children: [
-                                                        SizedBox(
-                                                          width: media
-                                                              .width *
-                                                              0.7,
-                                                          child: ValueListenableBuilder<String>(
-                                                            valueListenable: cityNotifier,
-                                                            builder: (context, city, child) {
-                                                              return Text(
-                                                                city,
-                                                                style: GoogleFonts.notoSans(
-                                                                  fontSize: MediaQuery.of(context).size.width * 0.05, // Example font size
-                                                                  color: Colors.black, // Example text color
-                                                                ),
-                                                                maxLines: 1,
-                                                                overflow: TextOverflow.ellipsis,
-                                                              );
-                                                            },
+                                                  MyText(text: "Area",
+                                                    fontweight: FontWeight.w500,
+                                                    size: font13Size,color: Color(0xff5C6266),),
+                                                  (area == '')
+                                                      ? Text(
+                                                    languages[
+                                                    choosenLanguage]
+                                                    [
+                                                    'text_pickdroplocation'],
+                                                    style: GoogleFonts.notoSans(
+                                                        fontSize: media
+                                                            .width *
+                                                            twelve,
+                                                        color:
+                                                        hintColor),
+                                                  )
+                                                      : Row(
+                                                    mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                    children: [
+                                                      SizedBox(
+                                                        width: media
+                                                            .width *
+                                                            0.7,
+                                                        child: MyText(text: area,
+                                                          fontweight: FontWeight.w500,
+                                                          size: font16Size,color: Color(0xff303030),
+                                                          maxLines:
+                                                          1,
+                                                          overflow:
+                                                          TextOverflow
+                                                              .ellipsis,
                                                           ),
-                                                          // Text(
-                                                          //   city,
-                                                          //   style: GoogleFonts
-                                                          //       .notoSans(
-                                                          //     fontSize:
-                                                          //     media.width *
-                                                          //         twelve,
-                                                          //     color:
-                                                          //     textColor,
-                                                          //   ),
-                                                          //   maxLines:
-                                                          //   1,
-                                                          //   overflow:
-                                                          //   TextOverflow
-                                                          //       .ellipsis,
-                                                          // ),
-                                                        ),
-                                                        (favAddress.length <
-                                                            4 &&
-                                                            (widget.from !=
-                                                                'favourite'))
-                                                            ? InkWell(
-                                                          onTap:
-                                                              () async {
-                                                            if (favAddress.where((element) => element['pick_address'] == dropAddressConfirmation).isEmpty) {
-                                                              setState(() {
-                                                                favSelectedAddress = dropAddressConfirmation;
-                                                                favLat = _center.latitude;
-                                                                favLng = _center.longitude;
-                                                                favAddressAdd = true;
-                                                              });
-                                                            }
-                                                          },
-                                                          child:
-                                                          Icon(
-                                                            Icons.favorite_outline,
-                                                            size:
-                                                            media.width * 0.05,
-                                                            color: favAddress.where((element) => element['pick_address'] == dropAddressConfirmation).isEmpty
-                                                                ? (isDarkTheme == true)
-                                                                ? Colors.white
-                                                                : textColor
-                                                                : buttonColor,
-                                                          ),
-                                                        )
-                                                            : Container()
-                                                      ],
-                                                    ),
+
+                                                      ),
+
+                                                    ],
                                                   ),
                                                 ],
                                               )),
                                           SizedBox(
-                                            height: media.height * 0.05,
+                                            height: media.height * 0.02,
+                                          ),
+                                          Container(
+                                              padding: EdgeInsets.fromLTRB(
+                                                  media.width * 0.05,
+                                                  media.width * 0.01,
+                                                  media.width * 0.03,
+                                                  media.width * 0.01),
+                                              // height: media.width * 0.1,
+                                              width: media.width * 0.9,
+                                              decoration: BoxDecoration(
+                                                  border: Border.all(
+                                                    color: borderColors,
+                                                    width: 1.5,
+                                                  ),
+                                                  borderRadius:
+                                                  BorderRadius.circular(
+                                                      media.width * 0.02),
+                                                  color: page),
+                                              alignment: Alignment.centerLeft,
+                                              child: Column(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  MyText(text: "City",
+                                                    fontweight: FontWeight.w500,
+                                                    size: font13Size,color: Color(0xff5C6266),),
+                                                  SizedBox(
+                                                      width:
+                                                      media.width * 0.02),
+                                                  (city ==
+                                                      '')
+                                                      ? Text(
+                                                    languages[
+                                                    choosenLanguage]
+                                                    [
+                                                    'text_pickdroplocation'],
+                                                    style: GoogleFonts.notoSans(
+                                                        fontSize: media
+                                                            .width *
+                                                            twelve,
+                                                        color:
+                                                        hintColor),
+                                                  )
+                                                      : Row(
+                                                    mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                    children: [
+                                                      SizedBox(
+                                                        width: media
+                                                            .width *
+                                                            0.7,
+                                                        child: ValueListenableBuilder<String>(
+                                                          valueListenable: cityNotifier,
+                                                          builder: (context, city, child) {
+                                                            return MyText(text: city,
+                                                              fontweight: FontWeight.w500,
+                                                              size: font16Size,color: Color(0xff303030),
+                                                              maxLines:
+                                                              1,
+                                                              overflow:
+                                                              TextOverflow
+                                                                  .ellipsis,
+                                                            );
+
+                                                          },
+                                                        ),
+                                                        // Text(
+                                                        //   city,
+                                                        //   style: GoogleFonts
+                                                        //       .notoSans(
+                                                        //     fontSize:
+                                                        //     media.width *
+                                                        //         twelve,
+                                                        //     color:
+                                                        //     textColor,
+                                                        //   ),
+                                                        //   maxLines:
+                                                        //   1,
+                                                        //   overflow:
+                                                        //   TextOverflow
+                                                        //       .ellipsis,
+                                                        // ),
+                                                      ),
+                                                      (favAddress.length <
+                                                          4 &&
+                                                          (widget.from !=
+                                                              'favourite'))
+                                                          ? InkWell(
+                                                        onTap:
+                                                            () async {
+                                                          if (favAddress.where((element) => element['pick_address'] == dropAddressConfirmation).isEmpty) {
+                                                            setState(() {
+                                                              favSelectedAddress = dropAddressConfirmation;
+                                                              favLat = _center.latitude;
+                                                              favLng = _center.longitude;
+                                                              favAddressAdd = true;
+                                                            });
+                                                          }
+                                                        },
+                                                        child:
+                                                        Icon(
+                                                          Icons.favorite_outline,
+                                                          size:
+                                                          media.width * 0.05,
+                                                          color: favAddress.where((element) => element['pick_address'] == dropAddressConfirmation).isEmpty
+                                                              ? (isDarkTheme == true)
+                                                              ? Colors.white
+                                                              : textColor
+                                                              : buttonColor,
+                                                        ),
+                                                      )
+                                                          : Container()
+                                                    ],
+                                                  ),
+                                                ],
+                                              )),
+                                          SizedBox(
+                                            height: media.height * 0.04,
                                           ),
                                           Button(
                                             color: buttonColors,
@@ -1429,7 +1374,10 @@ class _DropLocationState extends State<DropLocation>
                                                 }
                                               },
                                               text: languages[choosenLanguage]
-                                                  ['text_confirm'])
+                                                  ['text_confirm']),
+                                          SizedBox(
+                                            height: media.height * 0.06,
+                                          ),
                                         ],
                                       ),
                                     ),
@@ -1964,7 +1912,7 @@ class _DropLocationState extends State<DropLocation>
                                     ),
                                   ),
                                 ),
-                                MyText(text: "Edit Addess",size: font18Size,
+                                MyText(text: "Add Address",size: font18Size,
                                   fontweight: FontWeight.w600,
                                   color: headingColors,
                                 ),
@@ -1973,357 +1921,357 @@ class _DropLocationState extends State<DropLocation>
                             ),
                           )),
 
-                      //fav address
-                      (favAddressAdd == true)
-                          ? Positioned(
-                              top: 0,
-                              child: Container(
-                                height: media.height * 1,
-                                width: media.width * 1,
-                                color: Colors.transparent.withOpacity(0.6),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    SizedBox(
-                                      width: media.width * 0.9,
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.end,
-                                        children: [
-                                          Container(
-                                            height: media.width * 0.1,
-                                            width: media.width * 0.1,
-                                            decoration: BoxDecoration(
-                                                shape: BoxShape.circle,
-                                                color: page),
-                                            child: InkWell(
-                                              onTap: () {
-                                                setState(() {
-                                                  favName = '';
-                                                  favAddressAdd = false;
-                                                });
-                                              },
-                                              child: const Icon(
-                                                  Icons.cancel_outlined),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      height: media.width * 0.05,
-                                    ),
-                                    Container(
-                                      padding:
-                                          EdgeInsets.all(media.width * 0.05),
-                                      width: media.width * 0.9,
-                                      decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(12),
-                                          color: page),
-                                      child: Column(
-                                        children: [
-                                          Text(
-                                            languages[choosenLanguage]
-                                                ['text_saveaddressas'],
-                                            style: GoogleFonts.notoSans(
-                                                fontSize: media.width * sixteen,
-                                                color: textColor,
-                                                fontWeight: FontWeight.w600),
-                                          ),
-                                          SizedBox(
-                                            height: media.width * 0.025,
-                                          ),
-                                          Text(
-                                            favSelectedAddress,
-                                            style: GoogleFonts.notoSans(
-                                                fontSize: media.width * twelve,
-                                                color: textColor),
-                                          ),
-                                          SizedBox(
-                                            height: media.width * 0.025,
-                                          ),
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              InkWell(
-                                                onTap: () {
-                                                  FocusManager
-                                                      .instance.primaryFocus
-                                                      ?.unfocus();
-                                                  setState(() {
-                                                    favName = 'Home';
-                                                  });
-                                                },
-                                                child: Container(
-                                                  padding: EdgeInsets.all(
-                                                      media.width * 0.01),
-                                                  child: Row(
-                                                    children: [
-                                                      Container(
-                                                        height:
-                                                            media.height * 0.05,
-                                                        width:
-                                                            media.width * 0.05,
-                                                        decoration: BoxDecoration(
-                                                            shape:
-                                                                BoxShape.circle,
-                                                            border: Border.all(
-                                                                color: Colors
-                                                                    .black,
-                                                                width: 1.2)),
-                                                        alignment:
-                                                            Alignment.center,
-                                                        child:
-                                                            (favName == 'Home')
-                                                                ? Container(
-                                                                    height: media
-                                                                            .width *
-                                                                        0.03,
-                                                                    width: media
-                                                                            .width *
-                                                                        0.03,
-                                                                    decoration:
-                                                                        const BoxDecoration(
-                                                                      shape: BoxShape
-                                                                          .circle,
-                                                                      color: Colors
-                                                                          .black,
-                                                                    ),
-                                                                  )
-                                                                : Container(),
-                                                      ),
-                                                      SizedBox(
-                                                        width:
-                                                            media.width * 0.01,
-                                                      ),
-                                                      Text(languages[
-                                                              choosenLanguage]
-                                                          ['text_home'])
-                                                    ],
-                                                  ),
-                                                ),
-                                              ),
-                                              InkWell(
-                                                onTap: () {
-                                                  FocusManager
-                                                      .instance.primaryFocus
-                                                      ?.unfocus();
-                                                  setState(() {
-                                                    favName = 'Work';
-                                                  });
-                                                },
-                                                child: Container(
-                                                  padding: EdgeInsets.all(
-                                                      media.width * 0.01),
-                                                  child: Row(
-                                                    children: [
-                                                      Container(
-                                                        height:
-                                                            media.height * 0.05,
-                                                        width:
-                                                            media.width * 0.05,
-                                                        decoration: BoxDecoration(
-                                                            shape:
-                                                                BoxShape.circle,
-                                                            border: Border.all(
-                                                                color: Colors
-                                                                    .black,
-                                                                width: 1.2)),
-                                                        alignment:
-                                                            Alignment.center,
-                                                        child:
-                                                            (favName == 'Work')
-                                                                ? Container(
-                                                                    height: media
-                                                                            .width *
-                                                                        0.03,
-                                                                    width: media
-                                                                            .width *
-                                                                        0.03,
-                                                                    decoration:
-                                                                        const BoxDecoration(
-                                                                      shape: BoxShape
-                                                                          .circle,
-                                                                      color: Colors
-                                                                          .black,
-                                                                    ),
-                                                                  )
-                                                                : Container(),
-                                                      ),
-                                                      SizedBox(
-                                                        width:
-                                                            media.width * 0.01,
-                                                      ),
-                                                      Text(languages[
-                                                              choosenLanguage]
-                                                          ['text_work'])
-                                                    ],
-                                                  ),
-                                                ),
-                                              ),
-                                              InkWell(
-                                                onTap: () {
-                                                  FocusManager
-                                                      .instance.primaryFocus
-                                                      ?.unfocus();
-                                                  setState(() {
-                                                    favName = 'Others';
-                                                  });
-                                                },
-                                                child: Container(
-                                                  padding: EdgeInsets.all(
-                                                      media.width * 0.01),
-                                                  child: Row(
-                                                    children: [
-                                                      Container(
-                                                        height:
-                                                            media.height * 0.05,
-                                                        width:
-                                                            media.width * 0.05,
-                                                        decoration: BoxDecoration(
-                                                            shape:
-                                                                BoxShape.circle,
-                                                            border: Border.all(
-                                                                color: Colors
-                                                                    .black,
-                                                                width: 1.2)),
-                                                        alignment:
-                                                            Alignment.center,
-                                                        child: (favName ==
-                                                                'Others')
-                                                            ? Container(
-                                                                height: media
-                                                                        .width *
-                                                                    0.03,
-                                                                width: media
-                                                                        .width *
-                                                                    0.03,
-                                                                decoration:
-                                                                    const BoxDecoration(
-                                                                  shape: BoxShape
-                                                                      .circle,
-                                                                  color: Colors
-                                                                      .black,
-                                                                ),
-                                                              )
-                                                            : Container(),
-                                                      ),
-                                                      SizedBox(
-                                                        width:
-                                                            media.width * 0.01,
-                                                      ),
-                                                      Text(languages[
-                                                              choosenLanguage]
-                                                          ['text_others'])
-                                                    ],
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                          (favName == 'Others')
-                                              ? Container(
-                                                  padding: EdgeInsets.all(
-                                                      media.width * 0.025),
-                                                  decoration: BoxDecoration(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              12),
-                                                      border: Border.all(
-                                                          color: borderLines,
-                                                          width: 1.2)),
-                                                  child: TextField(
-                                                    decoration: InputDecoration(
-                                                        border:
-                                                            InputBorder.none,
-                                                        hintText: languages[
-                                                                choosenLanguage]
-                                                            [
-                                                            'text_enterfavname'],
-                                                        hintStyle: GoogleFonts
-                                                            .notoSans(
-                                                                fontSize: media
-                                                                        .width *
-                                                                    twelve,
-                                                                color:
-                                                                    hintColor)),
-                                                    maxLines: 1,
-                                                    onChanged: (val) {
-                                                      setState(() {
-                                                        favNameText = val;
-                                                      });
-                                                    },
-                                                  ),
-                                                )
-                                              : Container(),
-                                          SizedBox(
-                                            height: media.width * 0.05,
-                                          ),
-                                          Button(
-                                              onTap: () async {
-                                                if (favName == 'Others' &&
-                                                    favNameText != '') {
-                                                  setState(() {
-                                                    _isLoading = true;
-                                                  });
-                                                  var val =
-                                                      await addFavLocation(
-                                                          favLat,
-                                                          favLng,
-                                                          favSelectedAddress,
-                                                          favNameText);
-                                                  setState(() {
-                                                    _isLoading = false;
-                                                    if (val == true) {
-                                                      favLat = '';
-                                                      favLng = '';
-                                                      favSelectedAddress = '';
-                                                      favNameText = '';
-                                                      favName = 'Home';
-                                                      favAddressAdd = false;
-                                                    } else if (val ==
-                                                        'logout') {
-                                                      navigateLogout();
-                                                    }
-                                                  });
-                                                } else if (favName == 'Home' ||
-                                                    favName == 'Work') {
-                                                  setState(() {
-                                                    _isLoading = true;
-                                                  });
-                                                  var val =
-                                                      await addFavLocation(
-                                                          favLat,
-                                                          favLng,
-                                                          favSelectedAddress,
-                                                          favName);
-                                                  setState(() {
-                                                    _isLoading = false;
-                                                    if (val == true) {
-                                                      favLat = '';
-                                                      favLng = '';
-                                                      favSelectedAddress = '';
-                                                      favNameText = '';
-                                                      favName = 'Home';
-                                                      favAddressAdd = false;
-                                                    } else if (val ==
-                                                        'logout') {
-                                                      navigateLogout();
-                                                    }
-                                                  });
-                                                }
-                                              },
-                                              text: languages[choosenLanguage]
-                                                  ['text_confirm'])
-                                        ],
-                                      ),
-                                    )
-                                  ],
-                                ),
-                              ))
-                          : Container(),
+                      // //fav address
+                      // (favAddressAdd == true)
+                      //     ? Positioned(
+                      //         top: 0,
+                      //         child: Container(
+                      //           height: media.height * 1,
+                      //           width: media.width * 1,
+                      //           color: Colors.transparent.withOpacity(0.6),
+                      //           child: Column(
+                      //             mainAxisAlignment: MainAxisAlignment.center,
+                      //             children: [
+                      //               SizedBox(
+                      //                 width: media.width * 0.9,
+                      //                 child: Row(
+                      //                   mainAxisAlignment:
+                      //                       MainAxisAlignment.end,
+                      //                   children: [
+                      //                     Container(
+                      //                       height: media.width * 0.1,
+                      //                       width: media.width * 0.1,
+                      //                       decoration: BoxDecoration(
+                      //                           shape: BoxShape.circle,
+                      //                           color: page),
+                      //                       child: InkWell(
+                      //                         onTap: () {
+                      //                           setState(() {
+                      //                             favName = '';
+                      //                             favAddressAdd = false;
+                      //                           });
+                      //                         },
+                      //                         child: const Icon(
+                      //                             Icons.cancel_outlined),
+                      //                       ),
+                      //                     ),
+                      //                   ],
+                      //                 ),
+                      //               ),
+                      //               SizedBox(
+                      //                 height: media.width * 0.05,
+                      //               ),
+                      //               Container(
+                      //                 padding:
+                      //                     EdgeInsets.all(media.width * 0.05),
+                      //                 width: media.width * 0.9,
+                      //                 decoration: BoxDecoration(
+                      //                     borderRadius:
+                      //                         BorderRadius.circular(12),
+                      //                     color: page),
+                      //                 child: Column(
+                      //                   children: [
+                      //                     Text(
+                      //                       languages[choosenLanguage]
+                      //                           ['text_saveaddressas'],
+                      //                       style: GoogleFonts.notoSans(
+                      //                           fontSize: media.width * sixteen,
+                      //                           color: textColor,
+                      //                           fontWeight: FontWeight.w600),
+                      //                     ),
+                      //                     SizedBox(
+                      //                       height: media.width * 0.025,
+                      //                     ),
+                      //                     Text(
+                      //                       favSelectedAddress,
+                      //                       style: GoogleFonts.notoSans(
+                      //                           fontSize: media.width * twelve,
+                      //                           color: textColor),
+                      //                     ),
+                      //                     SizedBox(
+                      //                       height: media.width * 0.025,
+                      //                     ),
+                      //                     Row(
+                      //                       mainAxisAlignment:
+                      //                           MainAxisAlignment.spaceBetween,
+                      //                       children: [
+                      //                         InkWell(
+                      //                           onTap: () {
+                      //                             FocusManager
+                      //                                 .instance.primaryFocus
+                      //                                 ?.unfocus();
+                      //                             setState(() {
+                      //                               favName = 'Home';
+                      //                             });
+                      //                           },
+                      //                           child: Container(
+                      //                             padding: EdgeInsets.all(
+                      //                                 media.width * 0.01),
+                      //                             child: Row(
+                      //                               children: [
+                      //                                 Container(
+                      //                                   height:
+                      //                                       media.height * 0.05,
+                      //                                   width:
+                      //                                       media.width * 0.05,
+                      //                                   decoration: BoxDecoration(
+                      //                                       shape:
+                      //                                           BoxShape.circle,
+                      //                                       border: Border.all(
+                      //                                           color: Colors
+                      //                                               .black,
+                      //                                           width: 1.2)),
+                      //                                   alignment:
+                      //                                       Alignment.center,
+                      //                                   child:
+                      //                                       (favName == 'Home')
+                      //                                           ? Container(
+                      //                                               height: media
+                      //                                                       .width *
+                      //                                                   0.03,
+                      //                                               width: media
+                      //                                                       .width *
+                      //                                                   0.03,
+                      //                                               decoration:
+                      //                                                   const BoxDecoration(
+                      //                                                 shape: BoxShape
+                      //                                                     .circle,
+                      //                                                 color: Colors
+                      //                                                     .black,
+                      //                                               ),
+                      //                                             )
+                      //                                           : Container(),
+                      //                                 ),
+                      //                                 SizedBox(
+                      //                                   width:
+                      //                                       media.width * 0.01,
+                      //                                 ),
+                      //                                 Text(languages[
+                      //                                         choosenLanguage]
+                      //                                     ['text_home'])
+                      //                               ],
+                      //                             ),
+                      //                           ),
+                      //                         ),
+                      //                         InkWell(
+                      //                           onTap: () {
+                      //                             FocusManager
+                      //                                 .instance.primaryFocus
+                      //                                 ?.unfocus();
+                      //                             setState(() {
+                      //                               favName = 'Work';
+                      //                             });
+                      //                           },
+                      //                           child: Container(
+                      //                             padding: EdgeInsets.all(
+                      //                                 media.width * 0.01),
+                      //                             child: Row(
+                      //                               children: [
+                      //                                 Container(
+                      //                                   height:
+                      //                                       media.height * 0.05,
+                      //                                   width:
+                      //                                       media.width * 0.05,
+                      //                                   decoration: BoxDecoration(
+                      //                                       shape:
+                      //                                           BoxShape.circle,
+                      //                                       border: Border.all(
+                      //                                           color: Colors
+                      //                                               .black,
+                      //                                           width: 1.2)),
+                      //                                   alignment:
+                      //                                       Alignment.center,
+                      //                                   child:
+                      //                                       (favName == 'Work')
+                      //                                           ? Container(
+                      //                                               height: media
+                      //                                                       .width *
+                      //                                                   0.03,
+                      //                                               width: media
+                      //                                                       .width *
+                      //                                                   0.03,
+                      //                                               decoration:
+                      //                                                   const BoxDecoration(
+                      //                                                 shape: BoxShape
+                      //                                                     .circle,
+                      //                                                 color: Colors
+                      //                                                     .black,
+                      //                                               ),
+                      //                                             )
+                      //                                           : Container(),
+                      //                                 ),
+                      //                                 SizedBox(
+                      //                                   width:
+                      //                                       media.width * 0.01,
+                      //                                 ),
+                      //                                 Text(languages[
+                      //                                         choosenLanguage]
+                      //                                     ['text_work'])
+                      //                               ],
+                      //                             ),
+                      //                           ),
+                      //                         ),
+                      //                         InkWell(
+                      //                           onTap: () {
+                      //                             FocusManager
+                      //                                 .instance.primaryFocus
+                      //                                 ?.unfocus();
+                      //                             setState(() {
+                      //                               favName = 'Others';
+                      //                             });
+                      //                           },
+                      //                           child: Container(
+                      //                             padding: EdgeInsets.all(
+                      //                                 media.width * 0.01),
+                      //                             child: Row(
+                      //                               children: [
+                      //                                 Container(
+                      //                                   height:
+                      //                                       media.height * 0.05,
+                      //                                   width:
+                      //                                       media.width * 0.05,
+                      //                                   decoration: BoxDecoration(
+                      //                                       shape:
+                      //                                           BoxShape.circle,
+                      //                                       border: Border.all(
+                      //                                           color: Colors
+                      //                                               .black,
+                      //                                           width: 1.2)),
+                      //                                   alignment:
+                      //                                       Alignment.center,
+                      //                                   child: (favName ==
+                      //                                           'Others')
+                      //                                       ? Container(
+                      //                                           height: media
+                      //                                                   .width *
+                      //                                               0.03,
+                      //                                           width: media
+                      //                                                   .width *
+                      //                                               0.03,
+                      //                                           decoration:
+                      //                                               const BoxDecoration(
+                      //                                             shape: BoxShape
+                      //                                                 .circle,
+                      //                                             color: Colors
+                      //                                                 .black,
+                      //                                           ),
+                      //                                         )
+                      //                                       : Container(),
+                      //                                 ),
+                      //                                 SizedBox(
+                      //                                   width:
+                      //                                       media.width * 0.01,
+                      //                                 ),
+                      //                                 Text(languages[
+                      //                                         choosenLanguage]
+                      //                                     ['text_others'])
+                      //                               ],
+                      //                             ),
+                      //                           ),
+                      //                         ),
+                      //                       ],
+                      //                     ),
+                      //                     (favName == 'Others')
+                      //                         ? Container(
+                      //                             padding: EdgeInsets.all(
+                      //                                 media.width * 0.025),
+                      //                             decoration: BoxDecoration(
+                      //                                 borderRadius:
+                      //                                     BorderRadius.circular(
+                      //                                         12),
+                      //                                 border: Border.all(
+                      //                                     color: borderLines,
+                      //                                     width: 1.2)),
+                      //                             child: TextField(
+                      //                               decoration: InputDecoration(
+                      //                                   border:
+                      //                                       InputBorder.none,
+                      //                                   hintText: languages[
+                      //                                           choosenLanguage]
+                      //                                       [
+                      //                                       'text_enterfavname'],
+                      //                                   hintStyle: GoogleFonts
+                      //                                       .notoSans(
+                      //                                           fontSize: media
+                      //                                                   .width *
+                      //                                               twelve,
+                      //                                           color:
+                      //                                               hintColor)),
+                      //                               maxLines: 1,
+                      //                               onChanged: (val) {
+                      //                                 setState(() {
+                      //                                   favNameText = val;
+                      //                                 });
+                      //                               },
+                      //                             ),
+                      //                           )
+                      //                         : Container(),
+                      //                     SizedBox(
+                      //                       height: media.width * 0.05,
+                      //                     ),
+                      //                     Button(
+                      //                         onTap: () async {
+                      //                           if (favName == 'Others' &&
+                      //                               favNameText != '') {
+                      //                             setState(() {
+                      //                               _isLoading = true;
+                      //                             });
+                      //                             var val =
+                      //                                 await addFavLocation(
+                      //                                     favLat,
+                      //                                     favLng,
+                      //                                     favSelectedAddress,
+                      //                                     favNameText);
+                      //                             setState(() {
+                      //                               _isLoading = false;
+                      //                               if (val == true) {
+                      //                                 favLat = '';
+                      //                                 favLng = '';
+                      //                                 favSelectedAddress = '';
+                      //                                 favNameText = '';
+                      //                                 favName = 'Home';
+                      //                                 favAddressAdd = false;
+                      //                               } else if (val ==
+                      //                                   'logout') {
+                      //                                 navigateLogout();
+                      //                               }
+                      //                             });
+                      //                           } else if (favName == 'Home' ||
+                      //                               favName == 'Work') {
+                      //                             setState(() {
+                      //                               _isLoading = true;
+                      //                             });
+                      //                             var val =
+                      //                                 await addFavLocation(
+                      //                                     favLat,
+                      //                                     favLng,
+                      //                                     favSelectedAddress,
+                      //                                     favName);
+                      //                             setState(() {
+                      //                               _isLoading = false;
+                      //                               if (val == true) {
+                      //                                 favLat = '';
+                      //                                 favLng = '';
+                      //                                 favSelectedAddress = '';
+                      //                                 favNameText = '';
+                      //                                 favName = 'Home';
+                      //                                 favAddressAdd = false;
+                      //                               } else if (val ==
+                      //                                   'logout') {
+                      //                                 navigateLogout();
+                      //                               }
+                      //                             });
+                      //                           }
+                      //                         },
+                      //                         text: languages[choosenLanguage]
+                      //                             ['text_confirm'])
+                      //                   ],
+                      //                 ),
+                      //               )
+                      //             ],
+                      //           ),
+                      //         ))
+                      //     : Container(),
 
                       (_locationDenied == true)
                           ? Positioned(
@@ -2456,6 +2404,151 @@ class _DropLocationState extends State<DropLocation>
               );
             }),
       ),
+    );
+  }
+  AlertDialog addDialoge(BuildContext context) {
+    final media = MediaQuery.of(context).size;
+    return AlertDialog(
+      titlePadding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+      contentPadding: const EdgeInsets.all(20),
+      backgroundColor:
+      (isDarkTheme == true) ? borderLines.withOpacity(0.5) : page,
+      title: Center(
+        child: Text(
+          languages[choosenLanguage]['text_add_new'],
+          style: GoogleFonts.notoSans(
+              fontSize: media.width * twenty,
+              color: textColor,
+              fontWeight: FontWeight.bold),
+        ),
+      ),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TextField(
+            controller: newAddressController,
+            autofocus: false,
+            maxLines: 1,
+            textAlignVertical: TextAlignVertical.center,
+            decoration: InputDecoration(
+              isDense: true,
+              isCollapsed: true,
+              contentPadding: const EdgeInsets.all(10),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(5),
+                borderSide: BorderSide(color: textColor.withOpacity(0.3)),
+              ),
+              hintText: languages[choosenLanguage]['text_new_type_address'],
+              hintStyle: GoogleFonts.notoSans(
+                fontSize: media.width * twelve,
+                color: textColor.withOpacity(0.4),
+              ),
+            ),
+            style: GoogleFonts.notoSans(
+                fontSize: media.width * fourteen,
+                color: (isDarkTheme == true) ? Colors.white : textColor),
+            onTap: () {
+
+              },
+          ),
+        ],
+      ),
+      actions: [
+        Button(
+          color: buttonColors,
+          borcolor: buttonColors,
+          textcolor: headingColors,
+          onTap: () async {
+            Navigator.pop(context);
+            setState(() {
+              widget.favName = newAddressController.text; // Update directly
+            });
+            },
+          text: 'Add',
+          width: media.width * 0.25,
+          height: media.width * 0.1,
+        ),
+      ],
+    );
+  }
+}
+
+
+class AddressTypeButton extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final bool isSelected;
+
+  const AddressTypeButton({
+    Key? key,
+    required this.label,
+    required this.icon,
+    required this.isSelected,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20.0),
+        border: Border.all(color: isSelected ? Color(0xffECECEC):whiteColors),
+        color: isSelected ?whiteColors:Color(0xffECECEC),
+      ),
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 10,vertical: 07),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+
+            Icon(icon, color:  headingColors),
+            const SizedBox(width: 8.0),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 14.0,
+                color:  headingColors,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class AddressInputField extends StatelessWidget {
+  final String label;
+  final String hint;
+
+  const AddressInputField({
+    Key? key,
+    required this.label,
+    required this.hint,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+        ),
+        const SizedBox(height: 8.0),
+        TextFormField(
+          decoration: InputDecoration(
+            hintText: hint,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8.0),
+            ),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16.0,
+              vertical: 12.0,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

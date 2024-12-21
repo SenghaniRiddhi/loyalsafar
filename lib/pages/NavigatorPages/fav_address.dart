@@ -8,6 +8,7 @@ import 'package:flutter_user/widgets/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:location/location.dart';
 
+import '../../widgets/appbar.dart';
 import '../profile/adresses_screen.dart';
 
 class FavAddressPage extends StatefulWidget {
@@ -65,48 +66,21 @@ class _FavAddressPageState extends State<FavAddressPage> {
                     SingleChildScrollView(
                       child: Padding(
                         padding: EdgeInsets.fromLTRB(media.width * 0.05,
-                            media.width * 0.05, media.width * 0.05, 0),
+                            0, media.width * 0.05, 0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                InkWell(
-                                  onTap: () {
-                                    Navigator.pop(context);
-                                  },
-                                  child: Icon(Icons.arrow_back_ios,
-                                      color: textColor),
-                                ),
-                                if (others.length < 4)
-                                  InkWell(
-                                    onTap: () {
-                                      // setState(() {
-                                      //   newAddressController.text = '';
-                                      // });
-                                      //
-                                      // showDialog(
-                                      //   context: context,
-                                      //   builder: (context) {
-                                      //     return addDialoge(context);
-                                      //   },
-                                      // ).then((_) async {
-                                      //   await getFavLocations();
-                                      // });
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  DropLocation(
-                                                      from: 'favourite',
-                                                      favName: '')))
-                                          .then((_) async {
-                                        await getFavLocations();
-                                      });
+                                appBarWidget(context: context,
+                                    onTaps: (){
+                                      Navigator.pop(context);
                                     },
-                                    child: Icon(Icons.add, color: textColor),
-                                  ),
+                                    backgroundIcon: Color(0xffECECEC), title: "",iconColors: iconGrayColors),
+
+
+
                               ],
                             ),
                             SizedBox(
@@ -122,97 +96,7 @@ class _FavAddressPageState extends State<FavAddressPage> {
                               height: media.width * 0.05,
                             ),
                             (home.isEmpty)
-                                ?Padding(
-                                    padding:
-                                        const EdgeInsets.fromLTRB(2, 2, 2, 8),
-                                    child: InkWell(
-                                      onTap: () {
-                                        Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        DropLocation(
-                                                            from: 'favourite',
-                                                            favName: '')))
-                                            .then((_) async {
-                                          await getFavLocations();
-                                        });
-                                      },
-                                      child: Container(
-                                        height: media.width * 0.15,
-                                        decoration: BoxDecoration(
-                                          boxShadow: const [
-                                            BoxShadow(
-                                              spreadRadius: 1,
-                                              blurRadius: 2,
-                                              color: Colors.black12,
-                                            )
-                                          ],
-                                          color: page,
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                        ),
-                                        child: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 10),
-                                          child: Row(
-                                            children: [
-                                              const CircleAvatar(
-                                                child: Icon(Icons.home_filled),
-                                              ),
-                                              const SizedBox(width: 15),
-                                              Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: [
-                                                  MyText(
-                                                    text: languages[
-                                                            choosenLanguage]
-                                                        ['text_home'],
-                                                    size:
-                                                        media.width * fourteen,
-                                                    fontweight: FontWeight.w500,
-                                                  ),
-                                                  MyText(
-                                                    text: languages[
-                                                            choosenLanguage][
-                                                        'text_tap_add_address'],
-                                                    size: media.width * ten,
-                                                    fontweight: FontWeight.w500,
-                                                  ),
-                                                ],
-                                              ),
-                                              const Spacer(),
-                                              InkWell(
-                                                onTap: () async {
-                                                  Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                          builder: (context) =>
-                                                              DropLocation(
-                                                                  from:
-                                                                      'favourite',
-                                                                  favName:
-                                                                      'Home'))).then(
-                                                      (_) async {
-                                                    await getFavLocations();
-                                                  });
-                                                },
-                                                child: Icon(
-                                                  Icons.add_circle_outline,
-                                                  color: (isDarkTheme == true)
-                                                      ? Colors.white
-                                                      : Colors.black,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  )
+                                ?SizedBox()
                                 : AddressCard(
                                   icon: Icons.home_filled,
                                   label: home[0]
@@ -235,100 +119,7 @@ class _FavAddressPageState extends State<FavAddressPage> {
                                   },
                                 ),
                             (work.isEmpty)
-                                ? Padding(
-                                    padding:
-                                        const EdgeInsets.fromLTRB(2, 2, 2, 8),
-                                    child: InkWell(
-                                      onTap: () {
-                                        Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        DropLocation(
-                                                            from: 'favourite',
-                                                            favName: '')))
-                                            .then((_) async {
-                                          await getFavLocations();
-                                        });
-                                      },
-                                      child: Container(
-                                        height: media.width * 0.15,
-                                        decoration: BoxDecoration(
-                                          border: Border.all(
-                                              color:
-                                                  borderLines.withOpacity(0.5)),
-                                          boxShadow: const [
-                                            BoxShadow(
-                                              spreadRadius: 1,
-                                              blurRadius: 2,
-                                              color: Colors.black12,
-                                            )
-                                          ],
-                                          color: page,
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                        ),
-                                        child: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 10),
-                                          child: Row(
-                                            children: [
-                                              const CircleAvatar(
-                                                child: Icon(Icons.work),
-                                              ),
-                                              const SizedBox(width: 15),
-                                              Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: [
-                                                  MyText(
-                                                    text: languages[
-                                                            choosenLanguage]
-                                                        ['text_work'],
-                                                    size:
-                                                        media.width * fourteen,
-                                                    fontweight: FontWeight.w500,
-                                                  ),
-                                                  MyText(
-                                                    text: languages[
-                                                            choosenLanguage][
-                                                        'text_tap_add_address'],
-                                                    size: media.width * ten,
-                                                    fontweight: FontWeight.w500,
-                                                  ),
-                                                ],
-                                              ),
-                                              const Spacer(),
-                                              InkWell(
-                                                onTap: () async {
-                                                  Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                          builder: (context) =>
-                                                              DropLocation(
-                                                                  from:
-                                                                      'favourite',
-                                                                  favName:
-                                                                      'Work'))).then(
-                                                      (_) async {
-                                                    await getFavLocations();
-                                                  });
-                                                },
-                                                child: Icon(
-                                                  Icons.add_circle_outline,
-                                                  color: (isDarkTheme == true)
-                                                      ? Colors.white
-                                                      : Colors.black,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  )
+                                ? SizedBox()
                                 : AddressCard(
                               icon: Icons.work,
                               label:work[0]
@@ -393,6 +184,71 @@ class _FavAddressPageState extends State<FavAddressPage> {
                         ),
                       ),
                     ),
+
+                    if (others.length < 4)
+                      Positioned(
+                        bottom: 25,
+                        left: 0,
+                        right: 0,
+                        child: InkWell(
+                          onTap: () {
+                            setState(() {
+                              newAddressController.text = '';
+                            });
+
+                            // showDialog(
+                            //   context: context,
+                            //   builder: (context) {
+                            //     return addDialoge(context);
+                            //   },
+                            // ).then((_) async {
+                            //   await getFavLocations();
+                            // });
+
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        DropLocation(
+                                            from: 'favourite',
+                                            favName: '')))
+                                .then((_) async {
+                              await getFavLocations();
+                            });
+                          },
+                          child: Center(
+                            child: Container(
+                              // margin: EdgeInsets.symmetric(vertical: 10),
+                              padding: EdgeInsets.symmetric(vertical: 04,horizontal: 15),
+                              decoration: BoxDecoration(
+                                color: whiteColors,
+                                borderRadius: BorderRadius.circular(18.0),
+                                border: Border.all(
+                                    color:
+                                    borderLines.withOpacity(0.5)),
+                                boxShadow: const [
+                                  BoxShadow(
+                                    spreadRadius: 0.5,
+                                    blurRadius: 1,
+                                    color: Colors.black12,
+                                  )
+                                ],
+                                // border: Border.all(
+                                //   color: const  Color(0xffeaeaea),
+                                // )
+                              ),
+                              child: Wrap(
+                                children: [
+                                  Icon(Icons.add, color: Color(0xff141B34),size: 20,),
+                                  SizedBox(width: 05,),
+                                  MyText(text: "Add New",fontweight: FontWeight.w500, color: Color(0xff080204), size: font13Size),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+
                     (_isLoading == true)
                         ? const Positioned(child: Loading())
                         : Container(),
@@ -518,6 +374,103 @@ class _FavAddressPageState extends State<FavAddressPage> {
           height: media.width * 0.1,
         ),
       ],
+    );
+  }
+}
+
+
+
+class AddressCard extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final String address;
+  final VoidCallback onEdit;
+  final VoidCallback onDelete;
+
+  const AddressCard({
+    Key? key,
+    required this.icon,
+    required this.label,
+    required this.address,
+    required this.onEdit,
+    required this.onDelete,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.symmetric(vertical: 10),
+      decoration: BoxDecoration(
+        color: whiteColors,
+        borderRadius: BorderRadius.circular(12.0),
+        border: Border.all(
+            color:
+            borderLines.withOpacity(0.5)),
+        boxShadow: const [
+          BoxShadow(
+            spreadRadius: 0.5,
+            blurRadius: 1,
+            color: Colors.black12,
+          )
+        ],
+        // border: Border.all(
+        //   color: const  Color(0xffeaeaea),
+        // )
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 20,horizontal: 20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(icon, size: font24Size, color: Color(0xff000000)),
+                const SizedBox(width: 12.0),
+                MyText(text: label,
+                    color: headingColors,
+                    fontweight: FontWeight.w600,
+                    size: font16Size),
+
+                const Spacer(),
+
+                GestureDetector(
+                  onTap: onDelete,
+                  child: CircleAvatar(
+                    backgroundColor:  Color(0xffECECEC),
+                    radius: 15,
+                    child: Icon(
+                      Icons.delete_rounded,
+                      color: iconGrayColors,
+                      size: 18,
+                    ),
+                  ),
+                ),
+
+                SizedBox(width: 10,),
+
+                GestureDetector(
+                  onTap: onEdit,
+                  child: CircleAvatar(
+                    backgroundColor:  Color(0xffECECEC),
+                    radius: 15,
+                    child: Icon(
+                      Icons.edit,
+                      color: iconGrayColors,
+                      size: 18,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8.0),
+            MyText(text: address,
+                color: Color(0xff575864),
+                fontweight: FontWeight.w400,
+                size: font16Size),
+
+          ],
+        ),
+      ),
     );
   }
 }

@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_user/pages/login/login.dart';
 import 'package:flutter_user/translations/translation.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../functions/functions.dart';
 import '../../styles/styles.dart';
+import '../../widgets/appbar.dart';
+import '../../widgets/bottom_sheet_content.dart';
 import '../../widgets/widgets.dart';
 import '../loadingPage/loading.dart';
 import '../login/loginScreen.dart';
+import '../profile/selectContact.dart';
 import 'pickcontacts.dart';
 
 class Sos extends StatefulWidget {
@@ -27,6 +31,16 @@ class _SosState extends State<Sos> {
           MaterialPageRoute(builder: (context) => const Loginscreen()),
           (route) => false);
     });
+  }
+
+  String getInitials(String fullName) {
+    // Split the name by spaces
+    List<String> words = fullName.split(' ');
+
+    // Extract the first character from each word, convert to uppercase
+    String initials = words.map((word) => word[0].toUpperCase()).join();
+
+    return initials;
   }
 
   @override
@@ -61,60 +75,89 @@ class _SosState extends State<Sos> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           SizedBox(
-                              height: MediaQuery.of(context).padding.top +
-                                  media.width * 0.05),
+                              height: media.width * 0.01),
                           Stack(
                             children: [
-                              Container(
-                                padding:
-                                    EdgeInsets.only(bottom: media.width * 0.05),
-                                width: media.width * 1,
-                                alignment: Alignment.center,
-                                child: MyText(
-                                  text: languages[choosenLanguage]['text_sos'],
-                                  size: media.width * twenty,
-                                  fontweight: FontWeight.w600,
-                                ),
-                              ),
+                              // Container(
+                              //   padding:
+                              //       EdgeInsets.only(bottom: media.width * 0.05),
+                              //   width: media.width * 1,
+                              //   alignment: Alignment.center,
+                              //   child: MyText(
+                              //     text: languages[choosenLanguage]['text_sos'],
+                              //     size: media.width * twenty,
+                              //     fontweight: FontWeight.w600,
+                              //   ),
+                              // ),
                               Positioned(
-                                  child: InkWell(
-                                      onTap: () {
+                                  child: appBarWidget(context: context,
+                                      onTaps: (){
                                         Navigator.pop(context, true);
                                       },
-                                      child: Icon(Icons.arrow_back_ios,
-                                          color: textColor)))
+                                      backgroundIcon: Color(0xffECECEC), title: "",iconColors: iconGrayColors),
+
+                              )
                             ],
                           ),
-                          SizedBox(
-                            height: media.width * 0.03,
-                          ),
-                          MyText(
-                            text: languages[choosenLanguage]
-                                    ['text_add_trust_contact']
-                                .toString()
-                                .toUpperCase(),
-                            size: media.width * twelve,
-                            fontweight: FontWeight.w600,
-                          ),
+                          (sosData
+                              .where((element) =>
+                          element['user_type'] != 'admin')
+                              .isNotEmpty)?
+                          Column(children: [
+                            SizedBox(
+                              height: media.width * 0.03,
+                            ),
+                            Center(
+                                child: Container(
+                                  height: media.width * 0.3,
+                                  width: media.width * 0.3,
+                                  child: Image.asset("assets/icons/emergencyContact.png",fit: BoxFit.cover,),
+                                )
+                            ),
 
-                          SizedBox(
-                            height: media.width * 0.02,
-                          ),
-                          MyText(
-                            text: languages[choosenLanguage]
-                                ['text_trust_contact_4'],
-                            size: media.width * twelve,
-                            textAlign: TextAlign.start,
-                            color: hintColor,
-                          ),
-                          SizedBox(
-                            height: media.width * 0.05,
-                          ),
+
+                            Center(
+                              child: MyText(
+                                text: 'Set Emergency Contact',
+                                size: font22Size,
+                                fontweight: FontWeight.w700,
+                                textAlign: TextAlign.center,
+                                color: Color(0xff303030),
+                              ),
+                            ),
+
+                            SizedBox(
+                              height: media.width * 0.03,
+                            ),
+
+                            Center(
+                              child: Padding(
+                                padding:  EdgeInsets.symmetric(horizontal: media.width * 0.04),
+                                child: MyText(
+                                  text: '''Please enter your emergency contact numbers so that you can be called instantly during any services
+                            ''',
+                                  size: font16Size,
+                                  fontweight: FontWeight.w400,
+                                  textAlign: TextAlign.center,
+                                  color: normalText1Colors,
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                              height: media.width * 0.02,
+                            ),
+                          ],):SizedBox(),
+
                           Expanded(
                             child: SingleChildScrollView(
                               physics: const BouncingScrollPhysics(),
                               child: Column(
                                 children: [
+                                  (sosData
+                                      .where((element) =>
+                                  element['user_type'] != 'admin')
+                                      .isNotEmpty)?
+                                  Divider(color: Color(0xffEBEBEB),):SizedBox(),
                                   SizedBox(
                                     height: media.width * 0.025,
                                   ),
@@ -131,14 +174,18 @@ class _SosState extends State<Sos> {
                                                     (sosData[i]['user_type'] !=
                                                             'admin')
                                                         ? Container(
-                                                            padding: EdgeInsets
-                                                                .all(media
-                                                                        .width *
-                                                                    0.02),
+                                                      padding: EdgeInsets.symmetric(vertical: media
+                                                                      .width *
+                                                                  0.02),
+                                                            // padding: EdgeInsets
+                                                            //     .all(media
+                                                            //             .width *
+                                                            //         0.02),
                                                             decoration: BoxDecoration(
-                                                                border: Border.all(
-                                                                    color:
-                                                                        hintColor)),
+                                                                // border: Border.all(
+                                                                //     color:
+                                                                //         hintColor)
+                                                            ),
                                                             margin: EdgeInsets.only(
                                                                 bottom: media
                                                                         .width *
@@ -149,37 +196,20 @@ class _SosState extends State<Sos> {
                                                                       .spaceBetween,
                                                               children: [
                                                                 Container(
-                                                                  height: media
-                                                                          .width *
-                                                                      0.13,
-                                                                  width: media
-                                                                          .width *
-                                                                      0.13,
-                                                                  decoration:
-                                                                      BoxDecoration(
-                                                                    shape: BoxShape
-                                                                        .circle,
-                                                                    color: hintColor
-                                                                        .withOpacity(
-                                                                            0.2),
+                                                                  height: media.width * 0.13,
+                                                                  width: media.width * 0.13,
+                                                                  decoration: BoxDecoration(
+                                                                    shape: BoxShape.circle,
+                                                                    color: normalText1Colors,
                                                                   ),
-                                                                  alignment:
-                                                                      Alignment
-                                                                          .center,
+                                                                  alignment: Alignment.center,
                                                                   child: MyText(
-                                                                    text: sosData[i]
-                                                                            [
-                                                                            'name']
-                                                                        .toString()
-                                                                        .substring(
-                                                                            0,
-                                                                            1),
-                                                                    size: media
-                                                                            .width *
-                                                                        twenty,
-                                                                    fontweight:
-                                                                        FontWeight
-                                                                            .bold,
+                                                                    text: getInitials(sosData[i]['name']
+                                                                        .toString()),
+
+                                                                    size: font16Size,
+                                                                    fontweight: FontWeight.w600,
+                                                                    color: whiteColors,
                                                                   ),
                                                                 ),
                                                                 SizedBox(
@@ -193,33 +223,24 @@ class _SosState extends State<Sos> {
                                                                           .start,
                                                                   children: [
                                                                     SizedBox(
-                                                                      width: media
-                                                                              .width *
-                                                                          0.6,
+                                                                      width: media.width * 0.6,
                                                                       child:
-                                                                          MyText(
-                                                                        text: sosData[i]
-                                                                            [
-                                                                            'name'],
-                                                                        size: media.width *
-                                                                            sixteen,
-                                                                        fontweight:
-                                                                            FontWeight.w600,
+                                                                          MyText(text: sosData[i]['name'],
+                                                                            size: font16Size,
+                                                                            fontweight: FontWeight.w600,
+                                                                            color: Color(0xff303030),
                                                                       ),
                                                                     ),
                                                                     SizedBox(
                                                                       height: media
                                                                               .width *
-                                                                          0.02,
+                                                                          0.01,
                                                                     ),
                                                                     MyText(
-                                                                      text: sosData[
-                                                                              i]
-                                                                          [
-                                                                          'number'],
-                                                                      size: media
-                                                                              .width *
-                                                                          twelve,
+                                                                      text: sosData[i]['number'],
+                                                                      size: font16Size,
+                                                                      fontweight: FontWeight.w400,
+                                                                      color: Color(0xff697176),
                                                                     ),
                                                                     SizedBox(
                                                                       height: media
@@ -230,19 +251,137 @@ class _SosState extends State<Sos> {
                                                                 ),
                                                                 InkWell(
                                                                     onTap: () {
-                                                                      setState(
-                                                                          () {
-                                                                        _deleteId =
-                                                                            sosData[i]['id'];
-                                                                        _isDeleting =
-                                                                            true;
-                                                                      });
-                                                                    },
+
+                                                                      showDialog(
+                                                                          context: context,
+                                                                          builder: (context) =>
+                                                                          Dialog(
+                                                                            backgroundColor: Colors.white,
+                                                                            shape: RoundedRectangleBorder(
+                                                                              borderRadius: BorderRadius.circular(16),
+                                                                            ),
+                                                                            child: Padding(
+                                                                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+                                                                              child: Column(
+                                                                                mainAxisSize: MainAxisSize.min,
+                                                                                crossAxisAlignment: CrossAxisAlignment.center,
+                                                                                children: [
+                                                                                  SizedBox(height: media.width*0.03),
+                                                                                  Container(
+                                                                                      width: media.width*0.15,
+                                                                                      height: media.width*0.15,
+                                                                                      child: Image.asset('assets/icons/remove.png'.toString(),fit: BoxFit.cover,)),
+                                                                                  const SizedBox(height: 05),
+                                                                                  Padding(
+                                                                                    padding: const EdgeInsets.all(8.0),
+                                                                                    child: MyText(text: 'Remove?',
+                                                                                        textAlign: TextAlign.center,
+                                                                                      size: font24Size,
+                                                                                        fontweight: FontWeight.w800,
+                                                                                        color: headingColors
+                                                                                    )
+
+                                                                                  ),
+                                                                                  const SizedBox(height: 8),
+                                                                                  Padding(
+                                                                                    padding:  EdgeInsets.symmetric(horizontal: media.width*0.04),
+                                                                                    child: MyText(text: '''Are you sire do you want to remove from emergency Contact list''',
+                                                                                        textAlign: TextAlign.center,
+                                                                                        size: font16Size,
+                                                                                        fontweight: FontWeight.w400,
+                                                                                        color: headingColors
+                                                                                    )
+
+                                                                                  ),
+                                                                                  const SizedBox(height: 35),
+                                                                                  Padding(
+                                                                                    padding:  EdgeInsets.symmetric(horizontal: media.width*0.04),
+                                                                                    child: SizedBox(
+                                                                                      width: double.infinity,
+                                                                                      child: ElevatedButton(
+                                                                                        style: ElevatedButton.styleFrom(
+                                                                                          backgroundColor: iconColors,
+                                                                                          shape: RoundedRectangleBorder(
+                                                                                            borderRadius: BorderRadius.circular(10),
+                                                                                          ),
+                                                                                          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                                                                                        ),
+                                                                                        onPressed: () async{
+
+                                                                                            setState(() {
+                                                                                              _deleteId =
+                                                                                              sosData[i]['id'];
+
+                                                                                            });
+
+                                                                                            var val =
+                                                                                                await deleteSos(_deleteId);
+                                                                                            if (val == 'success') {
+                                                                                              setState(() {
+                                                                                                Navigator.pop(context);
+                                                                                              });
+                                                                                            } else if (val == 'logout') {
+                                                                                              navigateLogout();
+                                                                                            }
+
+
+
+
+                                                                                        },
+                                                                                        child: MyText(text: 'Yes,Remove',
+                                                                                            textAlign: TextAlign.center,
+                                                                                            size: font18Size,
+                                                                                            fontweight: FontWeight.w600,
+                                                                                            color: Colors.white
+                                                                                        )
+
+                                                                                      ),
+                                                                                    ),
+                                                                                  ),
+                                                                                  SizedBox(height: media.width*0.05),
+                                                                                  Padding(
+                                                                                    padding:  EdgeInsets.symmetric(horizontal: media.width*0.04),
+                                                                                    child: SizedBox(
+                                                                                      width: double.infinity,
+                                                                                      child: ElevatedButton(
+
+                                                                                        style: ElevatedButton.styleFrom(
+                                                                                          backgroundColor: Colors.white,
+                                                                                          shape: RoundedRectangleBorder(
+                                                                                            borderRadius: BorderRadius.circular(10),
+                                                                                          ),
+                                                                                          side:  BorderSide(
+                                                                                            color: Color(0xffC6C6C6), // Set your border color
+                                                                                          ),
+                                                                                          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                                                                                        ),
+                                                                                        onPressed: () {
+                                                                                          Navigator.pop(context);
+                                                                                          // Handle account deactivation
+                                                                                        },
+                                                                                        child:  MyText(text: 'Cancel',
+                                                                                            textAlign: TextAlign.center,
+                                                                                            size: font16Size,
+                                                                                            fontweight: FontWeight.w700,
+                                                                                            color:Color(0xff5E5E5E)
+                                                                                        )
+
+                                                                                      ),
+                                                                                    ),
+                                                                                  ),
+                                                                                  SizedBox(height: media.width*0.03),
+
+                                                                                ],
+                                                                              ),
+                                                                            ),
+
+                                                                          )
+                                                                      );
+                                                                      },
                                                                     child: Icon(
-                                                                        Icons
-                                                                            .delete,
-                                                                        color:
-                                                                            textColor))
+                                                                        Icons.remove_circle_outline_rounded,
+                                                                        size: 25,
+                                                                        color: Color(0xffFF176B)))
                                                               ],
                                                             ),
                                                           )
@@ -251,123 +390,98 @@ class _SosState extends State<Sos> {
                                               .values
                                               .toList(),
                                         )
-                                      : Column(
-                                          children: [
-                                            InkWell(
-                                              onTap: () async {
-                                                var nav = await Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                        builder: (context) =>
-                                                            const PickContact(
-                                                              from: '1',
-                                                            )));
-                                                if (nav) {
-                                                  setState(() {});
-                                                }
-                                              },
-                                              child: Container(
-                                                padding: EdgeInsets.all(
-                                                    media.width * 0.04),
-                                                width: media.width * 0.9,
+                                      : Container(
+                                        height:media.height*0.7 ,
+                                        child: Column(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        children: [
+                                        SizedBox(
+                                          height: media.width * 0.03,
+                                        ),
+                                        Container(
+                                          height: media.width * 0.3,
+                                          width: media.width * 0.3,
+                                          child: Image.asset("assets/icons/emergencyContact.png",fit: BoxFit.cover,),
+                                        ),
+                                        MyText(
+                                          text: 'Set Emergency Contact',
+                                          size: font22Size,
+                                          fontweight: FontWeight.w700,
+                                          textAlign: TextAlign.center,
+                                          color: Color(0xff303030),
+                                        ),
+
+                                        SizedBox(
+                                          height: media.width * 0.03,
+                                        ),
+                                        Padding(
+                                          padding:  EdgeInsets.symmetric(horizontal: media.width * 0.04),
+                                          child: MyText(
+                                            text: '''Please enter your emergency contact numbers so that you can be called instantly during any services
+                                                                    ''',
+                                            size: font16Size,
+                                            fontweight: FontWeight.w400,
+                                            textAlign: TextAlign.center,
+                                            color: normalText1Colors,
+                                          ),
+                                        ),
+                                          (sosData
+                                              .where((element) =>
+                                          element['user_type'] != 'admin')
+                                              .length <
+                                              4 || sosData
+                                              .where((element) =>
+                                          element['user_type'] != 'admin')
+                                              .isNotEmpty)
+                                              ?
+                                          GestureDetector(
+                                            onTap: () async {
+
+                                              var nav = await Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                      const PickContact(
+                                                        from: '1',
+                                                      )));
+
+                                              // var nav = await Navigator.push(
+                                              //     context,
+                                              //     MaterialPageRoute(
+                                              //         builder: (context) =>
+                                              //          SelectContactScreen(
+                                              //           // from: '1',
+                                              //         )));
+
+                                              if (nav) {
+                                                setState(() {});
+                                              }
+                                            },
+                                            child: Container(
+                                              // width: (widget.width != null) ? widget.width : media.width * 0.9,
+                                                padding: EdgeInsets.symmetric(horizontal: media.width * 0.035,
+                                                    vertical: media.width * 0.025),
                                                 decoration: BoxDecoration(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            media.width * 0.02),
-                                                    border: Border.all(
-                                                        color: hintColor)),
-                                                child: Row(
-                                                  children: [
-                                                    Container(
-                                                      decoration: BoxDecoration(
-                                                          color: online,
-                                                          shape:
-                                                              BoxShape.circle),
-                                                      child: Icon(
-                                                        Icons.add,
-                                                        color: Colors.white,
-                                                        size: media.width *
-                                                            sixteen,
-                                                      ),
-                                                    ),
-                                                    SizedBox(
-                                                      width: media.width * 0.05,
-                                                    ),
-                                                    MyText(
-                                                        text: languages[choosenLanguage]
-                                                            [
-                                                            'text_new_connection'],
-                                                        color: textColor
-                                                            .withOpacity(0.7),
-                                                        size: media.width *
-                                                            fourteen)
-                                                  ],
+                                                  borderRadius: BorderRadius.circular(12.0),
+                                                  color:buttonColors ,
                                                 ),
-                                              ),
+
+                                                child: Wrap(
+                                                  children: [
+                                                    Icon(Icons.person_add_alt_1,size: 20,color: Color(0xff080204),),
+                                                    SizedBox(width: 10,),
+                                                    MyText(text: "Add Contact",size:font13Size,
+                                                      fontweight: FontWeight.w500,color: Color(0xff080204),),
+                                                  ],
+                                                )
+
                                             ),
-                                            SizedBox(
-                                              height: media.width * 0.02,
-                                            ),
-                                            SizedBox(
-                                              height: media.height * 0.6,
-                                              child: Column(
-                                                children: [
-                                                  SizedBox(
-                                                    height: media.width * 0.2,
-                                                  ),
-                                                  Container(
-                                                    alignment: Alignment.center,
-                                                    height: media.width * 0.6,
-                                                    width: media.width * 0.6,
-                                                    decoration: BoxDecoration(
-                                                        image: DecorationImage(
-                                                            image: AssetImage(
-                                                                (isDarkTheme)
-                                                                    ? 'assets/images/sosdark.gif'
-                                                                    : 'assets/images/sos.gif'),
-                                                            fit: BoxFit
-                                                                .contain)),
-                                                  ),
-                                                  SizedBox(
-                                                    width: media.width * 0.9,
-                                                    child: Column(
-                                                      children: [
-                                                        MyText(
-                                                            text: languages[
-                                                                    choosenLanguage]
-                                                                [
-                                                                'text_no_contact'],
-                                                            textAlign: TextAlign
-                                                                .center,
-                                                            fontweight:
-                                                                FontWeight.w600,
-                                                            color: isDarkTheme
-                                                                ? Colors.white
-                                                                : Colors.black,
-                                                            size: media.width *
-                                                                sixteen),
-                                                        MyText(
-                                                            text: languages[
-                                                                    choosenLanguage]
-                                                                [
-                                                                'text_add_contact_safety'],
-                                                            textAlign: TextAlign
-                                                                .center,
-                                                            fontweight:
-                                                                FontWeight.w500,
-                                                            color: isDarkTheme
-                                                                ? Colors.white
-                                                                : Colors.grey,
-                                                            size: media.width *
-                                                                fourteen),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ],
-                                        )
+                                          ):SizedBox(),
+                                            ],
+                                     ),
+                                      ),
+
                                 ],
                               ),
                             ),
@@ -378,118 +492,61 @@ class _SosState extends State<Sos> {
                                       .where((element) =>
                                           element['user_type'] != 'admin')
                                       .length <
-                                  4)
-                              ? Container(
-                                  padding: EdgeInsets.only(
-                                      top: media.width * 0.05,
-                                      bottom: media.width * 0.05),
-                                  child: Button(
-                                      onTap: () async {
-                                        var nav = await Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    const PickContact(
-                                                      from: '1',
-                                                    )));
-                                        if (nav) {
-                                          setState(() {});
-                                        }
-                                      },
-                                      text: languages[choosenLanguage]
-                                          ['text_add_contact']))
-                              : Container()
+                                  4 && sosData
+                              .where((element) =>
+                          element['user_type'] != 'admin')
+                              .isNotEmpty)
+                              ? Center(
+                                child: GestureDetector(
+                                  onTap: () async {
+                                    // var nav = await Navigator.push(
+                                    //     context,
+                                    //     MaterialPageRoute(
+                                    //         builder: (context) =>
+                                    //             SelectContactScreen(
+                                    //               // from: '1',
+                                    //             )));
+                                var nav = await Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                        const PickContact(
+                                          from: '1',
+                                        )));
+                                if (nav) {
+                                  setState(() {});
+                                }
+                                                            },
+                                  child: Container(
+                                 // width: (widget.width != null) ? widget.width : media.width * 0.9,
+                                  padding: EdgeInsets.symmetric(horizontal: media.width * 0.035,
+                                      vertical: media.width * 0.025),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(12.0),
+                                    color:buttonColors ,
+                                  ),
+
+                                  child: Wrap(
+                                    children: [
+                                      Icon(Icons.person_add_alt_1,size: 20,color: Color(0xff080204),),
+                                      SizedBox(width: 10,),
+                                      MyText(text: "Add Contact",size:font13Size,
+                                        fontweight: FontWeight.w500,color: Color(0xff080204),),
+                                    ],
+                                  )
+
+                                                            ),
+                                ),
+                              ) : Container(),
+                          SizedBox(
+                            height: media.height * 0.04,
+                          ),
                         ],
+
                       ),
                     ),
 
-                    //delete sos
-                    (_isDeleting == true)
-                        ? Positioned(
-                            top: 0,
-                            child: Container(
-                              height: media.height * 1,
-                              width: media.width * 1,
-                              color: Colors.transparent.withOpacity(0.6),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  SizedBox(
-                                    width: media.width * 0.9,
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        Container(
-                                            height: media.height * 0.1,
-                                            width: media.width * 0.1,
-                                            decoration: BoxDecoration(
-                                                border: Border.all(
-                                                    color: borderLines
-                                                        .withOpacity(0.5)),
-                                                shape: BoxShape.circle,
-                                                color: page),
-                                            child: InkWell(
-                                                onTap: () {
-                                                  setState(() {
-                                                    _isDeleting = false;
-                                                  });
-                                                },
-                                                child: Icon(
-                                                    Icons.cancel_outlined,
-                                                    color: textColor))),
-                                      ],
-                                    ),
-                                  ),
-                                  Container(
-                                    padding: EdgeInsets.all(media.width * 0.05),
-                                    width: media.width * 0.9,
-                                    decoration: BoxDecoration(
-                                        border: Border.all(
-                                            color:
-                                                borderLines.withOpacity(0.5)),
-                                        borderRadius: BorderRadius.circular(12),
-                                        color: page),
-                                    child: Column(
-                                      children: [
-                                        MyText(
-                                          text: languages[choosenLanguage]
-                                              ['text_removeSos'],
-                                          size: media.width * sixteen,
-                                          fontweight: FontWeight.w600,
-                                          textAlign: TextAlign.center,
-                                        ),
-                                        SizedBox(
-                                          height: media.width * 0.05,
-                                        ),
-                                        Button(
-                                            onTap: () async {
-                                              setState(() {
-                                                _isLoading = true;
-                                              });
 
-                                              var val =
-                                                  await deleteSos(_deleteId);
-                                              if (val == 'success') {
-                                                setState(() {
-                                                  _isDeleting = false;
-                                                });
-                                              } else if (val == 'logout') {
-                                                navigateLogout();
-                                              }
-                                              setState(() {
-                                                _isLoading = false;
-                                              });
-                                            },
-                                            text: languages[choosenLanguage]
-                                                ['text_confirm'])
-                                      ],
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-                          )
-                        : Container(),
 
                     //loader
                     (_isLoading == true)

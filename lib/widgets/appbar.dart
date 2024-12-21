@@ -33,8 +33,35 @@ appBarWidget(
       ),
     ],
   );
+}
 
-
+appBarWithoutHeightWidget(
+    {required BuildContext context,
+      required Color backgroundIcon,
+      required Color iconColors,
+      required String title,
+      required Function() onTaps,
+    }){
+  var media = MediaQuery.of(context).size;
+  return Column(
+    children: [
+      GestureDetector(
+        onTap: onTaps,
+        child: CircleAvatar(
+          backgroundColor: backgroundIcon,
+          radius: 18,
+          child: Padding(
+            padding:  EdgeInsets.only(left: 09),
+            child: Icon(
+              Icons.arrow_back_ios,
+              color: iconColors,
+              size: 20,
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
 }
 
 appBarTitleWidget(

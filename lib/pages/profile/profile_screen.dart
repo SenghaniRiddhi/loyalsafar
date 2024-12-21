@@ -319,6 +319,8 @@ import '../../functions/functions.dart';
 import '../../widgets/widgets.dart';
 import '../NavigatorPages/editprofile.dart';
 import '../NavigatorPages/makecomplaint.dart';
+import '../NavigatorPages/referral.dart';
+import '../NavigatorPages/sos.dart';
 import '../language/languages.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -469,7 +471,7 @@ class ProfileScreen extends StatelessWidget {
                       children: [
                         GestureDetector(
                           onTap:(){
-                           Navigator.push(context, MaterialPageRoute(builder: (context)=>AddressesScreen()));
+                           Navigator.push(context, MaterialPageRoute(builder: (context)=>AdressesScreen()));
                             },
                           child: Container(
                             width: media.width*0.27,
@@ -645,8 +647,17 @@ class ProfileScreen extends StatelessWidget {
                 Navigator.push(context, MaterialPageRoute(builder: (context)=>Languages()));
 
               }else if(index==2){
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                         ReferralPage()));
 
               }else if(index==3){
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>  Sos()));
 
               }else if(index==4){
                 Navigator.push(context, MaterialPageRoute(builder: (context)=>MakeComplaint()));

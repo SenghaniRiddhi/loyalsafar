@@ -6,6 +6,7 @@ import 'package:permission_handler/permission_handler.dart';
 import '../../functions/functions.dart';
 import '../../styles/styles.dart';
 import '../../translations/translation.dart';
+import '../../widgets/appbar.dart';
 import '../../widgets/widgets.dart';
 import '../login/loginScreen.dart';
 import '../noInternet/nointernet.dart';
@@ -26,6 +27,9 @@ class _PickContactState extends State<PickContact> {
   bool _isLoading = false;
   bool _contactDenied = false;
   bool _noPermission = false;
+  final TextEditingController _searchController = TextEditingController();
+
+  List<dynamic>  filteredContacts = [];
 
   @override
   void initState() {
@@ -56,12 +60,22 @@ class _PickContactState extends State<PickContact> {
         Iterable<Contact> contactsList = await ContactsService.getContacts();
 
         // ignore: avoid_function_literals_in_foreach_calls
+
         contactsList.forEach((contact) {
           contact.phones!.toSet().forEach((phone) {
+
             contacts.add({
               'name': contact.displayName ?? contact.givenName,
               'phone': phone.value
             });
+            filteredContacts.add({
+              'name': contact.displayName ?? contact.givenName,
+              'phone': phone.value
+            });
+            // setState(() {
+            //   filteredContacts=contacts;
+            // });
+
           });
         });
         if (mounted) {
@@ -89,6 +103,26 @@ class _PickContactState extends State<PickContact> {
         context, MaterialPageRoute(builder: (context) => const Loginscreen()));
   }
 
+  void _filterContacts(String query) {
+    final lowerCaseQuery = query.toLowerCase();
+    setState(() {
+      filteredContacts = contacts.where((contact) {
+        final name = contact['name']!.toLowerCase();
+        return name.contains(lowerCaseQuery);
+      }).toList();
+    });
+  }
+
+  String getInitials(String fullName) {
+    // Split the name by spaces
+    List<String> words = fullName.split(' ');
+
+    // Extract the first character from each word, convert to uppercase
+    String initials = words.map((word) => word[0].toUpperCase()).join();
+
+    return initials;
+  }
+
   @override
   Widget build(BuildContext context) {
     var media = MediaQuery.of(context).size;
@@ -106,50 +140,105 @@ class _PickContactState extends State<PickContact> {
                 width: media.width * 1,
                 color: page,
                 padding: EdgeInsets.only(
-                    left: media.width * 0.05, right: media.width * 0.05),
+                    left: media.width * 0.04, right: media.width * 0.04),
                 child: Column(children: [
-                  SizedBox(
-                      height: MediaQuery.of(context).padding.top +
-                          media.width * 0.05),
+                  // SizedBox(
+                  //     height: MediaQuery.of(context).padding.top +
+                  //         media.width * 0.05),
                   Stack(
                     children: [
-                      Container(
-                        padding: EdgeInsets.only(bottom: media.width * 0.05),
-                        width: media.width * 1,
-                        alignment: Alignment.center,
-                        child: Text(
-                          (widget.from == '1')
-                              ? languages[choosenLanguage]['text_sos']
-                              : languages[choosenLanguage]['text_pick_contact'],
-                          style: GoogleFonts.notoSans(
-                              fontSize: media.width * twenty,
-                              fontWeight: FontWeight.w600,
-                              color: textColor),
-                        ),
-                      ),
+
                       Positioned(
-                          child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          InkWell(
-                              onTap: () {
-                                Navigator.pop(context, true);
-                              },
-                              child:
-                                  Icon(Icons.arrow_back_ios, color: textColor)),
-                          InkWell(
-                              onTap: () {
-                                setState(() {
-                                  _isLoading = true;
-                                  contacts.clear();
-                                });
-                                getContact();
-                              },
-                              child: Icon(Icons.replay_outlined,
-                                  color: textColor)),
-                        ],
-                      ))
+                          child: Padding(
+                            padding:  EdgeInsets.only(top: media.height * 0.05),
+                            child: Row(
+                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                             children: [
+
+                               appBarWithoutHeightWidget(context: context,
+                                onTaps: (){
+                                  Navigator.pop(context, true);
+                                },
+                                backgroundIcon: Color(0xffECECEC), title: "",iconColors: iconGrayColors),
+
+                               MyText(text: (widget.from == '1')
+                                   ? "Select Contact"
+                                   : languages[choosenLanguage]['text_pick_contact'],
+                                 fontweight: FontWeight.w600,
+                                 size: font18Size,color: headingColors,),
+
+
+                            InkWell(
+                                onTap: () async{
+                                  if (!_isLoading) {
+                                    contacts.clear();
+                                    // setState(() {
+                                    //   _isLoading = true;
+                                    // });
+                                    var val =
+                                        await addSos(pickedName, pickedNumber);
+                                    if (val == 'success') {
+                                      pop();
+                                    } else if (val == 'logout') {
+                                      navigateLogout();
+                                    }
+                                    // setState(() {
+                                    //   _isLoading = false;
+                                    // });
+                                  }
+                                },
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(vertical: 05,horizontal: 15),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(15.0),
+                                    color: buttonColors
+                                  ),
+                                    child: MyText(text: "Done",
+                                      fontweight: FontWeight.w500,
+                                      size: font13Size,color: Color(0xff080204),))
+                            ),
+                                                    ],
+                                                  ),
+                          ))
                     ],
+                  ),
+                  SizedBox(
+                    height: media.width * 0.06,
+                  ),
+                  TextFormField(
+                    controller: _searchController,
+                    decoration: InputDecoration(
+                      prefixIcon:  Icon(Icons.search,color: Color(0xff4F4F4F),size: 25,),
+                      hintText: 'Search Contact',
+                      hintStyle: GoogleFonts.inter(
+                        color: Color(0xff494949),
+                        fontSize: font14Size,
+                        fontWeight: FontWeight.w400
+                      ),
+                      fillColor: Color(0xffF7F7F7),
+                      filled: true, // Enable the fill color
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12.0), // Adjust corner radius
+                        borderSide: BorderSide.none, // Remove border outline
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(vertical: 15.0),
+                    ),
+                    onChanged: _filterContacts,
+                  ),
+                  SizedBox(
+                    height: media.width * 0.02,
+                  ),
+                  Divider(color: Color(0xffEBEBEB),),
+                  SizedBox(
+                    height: media.width * 0.02,
+                  ),
+                  filteredContacts.isEmpty
+                      ?SizedBox():
+                  Container(
+                    alignment: Alignment.topLeft,
+                    child: MyText(text: "${contacts.length} Contacts",
+                      fontweight: FontWeight.w600,
+                      size: font16Size,color: Color(0xff919191),),
                   ),
                   SizedBox(
                     height: media.width * 0.02,
@@ -158,18 +247,27 @@ class _PickContactState extends State<PickContact> {
                     child: (contacts.isNotEmpty)
                         ? SingleChildScrollView(
                             physics: const BouncingScrollPhysics(),
-                            child: Column(
+                            child:
+                            filteredContacts.isEmpty
+                                ? Center(
+                              child: Text(
+                                'No contacts available',
+                                style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+                              ),
+                            ):
+                            Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
-                              children: contacts
+                              children: filteredContacts
                                   .asMap()
                                   .map((i, value) {
-                                    return MapEntry(
+                                    return
+                                      MapEntry(
                                         i,
                                         (sosData
                                                 .map((e) => e['number'])
                                                 .toString()
                                                 .replaceAll(' ', '')
-                                                .contains(contacts[i]['phone']
+                                                .contains(filteredContacts[i]['phone']
                                                     .toString()
                                                     .replaceAll(' ', '')))
                                             ? Container()
@@ -180,89 +278,90 @@ class _PickContactState extends State<PickContact> {
                                                   onTap: () {
                                                     setState(() {
                                                       pickedName =
-                                                          contacts[i]['name'];
+                                                      filteredContacts[i]['name'];
                                                       pickedNumber =
-                                                          contacts[i]['phone'];
+                                                      filteredContacts[i]['phone'];
                                                     });
                                                   },
                                                   child: Row(
                                                     mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceBetween,
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
                                                     children: [
-                                                      SizedBox(
-                                                        width:
-                                                            media.width * 0.7,
-                                                        child: Column(
-                                                          crossAxisAlignment:
-                                                              CrossAxisAlignment
-                                                                  .start,
-                                                          children: [
-                                                            Text(
-                                                              contacts[i]
-                                                                  ['name'],
-                                                              maxLines: 1,
-                                                              overflow:
-                                                                  TextOverflow
-                                                                      .ellipsis,
-                                                              style: GoogleFonts.notoSans(
-                                                                  fontSize: media
-                                                                          .width *
-                                                                      fourteen,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w600,
-                                                                  color:
-                                                                      textColor),
-                                                            ),
-                                                            SizedBox(
-                                                              height:
-                                                                  media.width *
-                                                                      0.01,
-                                                            ),
-                                                            Text(
-                                                              contacts[i]
-                                                                  ['phone'],
-                                                              style: GoogleFonts.notoSans(
-                                                                  fontSize: media
-                                                                          .width *
-                                                                      twelve,
-                                                                  color:
-                                                                      textColor),
-                                                            )
-                                                          ],
+                                                      Container(
+                                                        height: media.width * 0.13,
+                                                        width: media.width * 0.13,
+                                                        decoration: BoxDecoration(
+                                                          shape: BoxShape.circle,
+                                                          color: normalText1Colors,
+                                                        ),
+                                                        alignment: Alignment.center,
+                                                        child: MyText(
+                                                          text: getInitials(filteredContacts[i]['name']
+                                                              .toString()),
+                                                          size: font16Size,
+                                                          fontweight: FontWeight.w600,
+                                                          color: whiteColors,
                                                         ),
                                                       ),
+                                                      SizedBox(
+                                                        width: media
+                                                            .width *
+                                                            0.05,
+                                                      ),
+                                                      Column(
+                                                        crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                        children: [
+                                                          SizedBox(
+                                                            width: media.width * 0.6,
+                                                            child:
+                                                            MyText(text: filteredContacts[i]['name'],
+                                                              size: font16Size,
+                                                              fontweight: FontWeight.w600,
+                                                              color: Color(0xff303030),
+                                                            ),
+                                                          ),
+                                                          SizedBox(
+                                                            height: media
+                                                                .width *
+                                                                0.01,
+                                                          ),
+                                                          MyText(
+                                                            text: filteredContacts[i]['phone'],
+                                                            size: font16Size,
+                                                            fontweight: FontWeight.w400,
+                                                            color: Color(0xff697176),
+                                                          ),
+                                                          SizedBox(
+                                                            height: media
+                                                                .width *
+                                                                0.01,
+                                                          ),
+                                                        ],
+                                                      ),
                                                       Container(
-                                                        height:
-                                                            media.width * 0.05,
-                                                        width:
-                                                            media.width * 0.05,
+                                                        height: media.width * 0.06,
+                                                        width: media.width * 0.06,
                                                         decoration: BoxDecoration(
                                                             shape:
-                                                                BoxShape.circle,
+                                                            BoxShape.circle,
+                                                            color: (pickedName ==
+                                                                filteredContacts[i]
+                                                                ['name'])
+                                                                ? Colors.black:Colors.white,
                                                             border: Border.all(
                                                                 color:
-                                                                    textColor,
-                                                                width: 1.2)),
+                                                                textColor,
+                                                                width: 1.2)
+                                                        ),
                                                         alignment:
-                                                            Alignment.center,
+                                                        Alignment.center,
                                                         child: (pickedName ==
-                                                                contacts[i]
-                                                                    ['name'])
-                                                            ? Container(
-                                                                height: media
-                                                                        .width *
-                                                                    0.03,
-                                                                width: media
-                                                                        .width *
-                                                                    0.03,
-                                                                decoration: BoxDecoration(
-                                                                    shape: BoxShape
-                                                                        .circle,
-                                                                    color:
-                                                                        textColor),
-                                                              )
+                                                            filteredContacts[i]
+                                                            ['name'])
+                                                            ? Center(child: Icon(Icons.check,color: Colors.white,size: 17,))
                                                             : Container(),
                                                       )
                                                     ],
@@ -423,34 +522,34 @@ class _PickContactState extends State<PickContact> {
                                   )
                                 : Container(),
                   ),
-                  (pickedName != '')
-                      ? Container(
-                          padding: EdgeInsets.only(
-                              top: media.width * 0.05,
-                              bottom: media.width * 0.05),
-                          child: Button(
-                              onTap: () async {
-                                if (!_isLoading) {
-                                  contacts.clear();
-                                  setState(() {
-                                    _isLoading = true;
-                                  });
-                                  var val =
-                                      await addSos(pickedName, pickedNumber);
-                                  if (val == 'success') {
-                                    pop();
-                                  } else if (val == 'logout') {
-                                    navigateLogout();
-                                  }
-                                  setState(() {
-                                    _isLoading = false;
-                                  });
-                                }
-                              },
-                              color: (_isLoading) ? Colors.grey : textColor,
-                              text: languages[choosenLanguage]['text_confirm']),
-                        )
-                      : Container()
+                  // (pickedName != '')
+                  //     ? Container(
+                  //         padding: EdgeInsets.only(
+                  //             top: media.width * 0.05,
+                  //             bottom: media.width * 0.05),
+                  //         child: Button(
+                  //             onTap: () async {
+                  //               if (!_isLoading) {
+                  //                 contacts.clear();
+                  //                 setState(() {
+                  //                   _isLoading = true;
+                  //                 });
+                  //                 var val =
+                  //                     await addSos(pickedName, pickedNumber);
+                  //                 if (val == 'success') {
+                  //                   pop();
+                  //                 } else if (val == 'logout') {
+                  //                   navigateLogout();
+                  //                 }
+                  //                 setState(() {
+                  //                   _isLoading = false;
+                  //                 });
+                  //               }
+                  //             },
+                  //             color: (_isLoading) ? Colors.grey : textColor,
+                  //             text: languages[choosenLanguage]['text_confirm']),
+                  //       )
+                  //     : Container()
                 ]),
               ),
 

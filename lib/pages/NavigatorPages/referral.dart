@@ -5,6 +5,7 @@ import 'package:share_plus/share_plus.dart';
 import '../../functions/functions.dart';
 import '../../styles/styles.dart';
 import '../../translations/translation.dart';
+import '../../widgets/appbar.dart';
 import '../../widgets/widgets.dart';
 import '../loadingPage/loading.dart';
 import '../noInternet/noInternet.dart';
@@ -97,32 +98,29 @@ class _ReferralPageState extends State<ReferralPage> {
                                           ),
                                         ),
                                         Positioned(
-                                            child: InkWell(
-                                                onTap: () {
+                                            child:appBarWithoutHeightWidget(context: context,
+                                                onTaps: (){
                                                   Navigator.pop(context);
                                                 },
-                                                child: Icon(
-                                                    Icons.arrow_back_ios,
-                                                    color: textColor)))
+                                                backgroundIcon: Color(0xffECECEC), title: "",iconColors: iconGrayColors),
+                                        )
                                       ],
                                     ),
-                                    SizedBox(
-                                      height: media.width * 0.05,
-                                    ),
+
                                     Row(
                                       children: [
                                         MyText(
                                           text: languages[choosenLanguage]
-                                                  ['text_referral']
-                                              .toString()
-                                              .toUpperCase(),
-                                          size: media.width * sixteen,
-                                          fontweight: FontWeight.w700,
+                                          ['text_referral']
+                                              .toString(),
+                                          size: font26Size,
+                                          color: headingColors,
+                                          fontweight: FontWeight.w800,
                                         ),
                                       ],
                                     ),
                                     SizedBox(
-                                      height: media.width * 0.03,
+                                      height: media.width * 0.04,
                                     ),
                                     SizedBox(
                                       width: media.width * 0.9,
@@ -152,7 +150,7 @@ class _ReferralPageState extends State<ReferralPage> {
                                     Container(
                                         width: media.width * 0.9,
                                         padding:
-                                            EdgeInsets.all(media.width * 0.05),
+                                            EdgeInsets.all(media.width * 0.03),
                                         decoration: BoxDecoration(
                                             border: Border.all(
                                                 color: borderLines, width: 1.2),
@@ -190,6 +188,9 @@ class _ReferralPageState extends State<ReferralPage> {
                                     top: media.width * 0.05,
                                     bottom: media.width * 0.05),
                                 child: Button(
+                                  color: buttonColors,
+                                    borcolor: buttonColors,
+                                    textcolor: Color(0xff030303),
                                     onTap: () async {
                                       await Share.share(
                                           // ignore: prefer_interpolation_to_compose_strings
@@ -209,7 +210,8 @@ class _ReferralPageState extends State<ReferralPage> {
                                               iosUrl);
                                     },
                                     text: languages[choosenLanguage]
-                                        ['text_invite']),
+                                        ['text_invite'],
+                                ),
                               )
                             ],
                           )

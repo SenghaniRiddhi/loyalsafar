@@ -7,6 +7,7 @@ import '../../widgets/appbar.dart';
 import '../../widgets/bottom_sheet_content.dart';
 import '../../widgets/success_dialog_content.dart';
 import '../../widgets/widgets.dart';
+import '../NavigatorPages/contactus.dart';
 import '../NavigatorPages/faq.dart';
 import '../login/loginScreen.dart';
 
@@ -76,8 +77,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     icon: Icons.mail_outline,
                     title: 'Contact Us',
                     onTap: () {
-                     // Navigator.push(context, MaterialPageRoute(builder: (context)=>ContactUsScreen()));
-                      Navigator.push(context, MaterialPageRoute(builder: (context)=>Loginscreen()));
+                     Navigator.push(context, MaterialPageRoute(builder: (context)=>ContactUsScreen()));
+                     //  Navigator.push(context, MaterialPageRoute(builder: (context)=>Loginscreen()));
 
                       // Navigate to Contact Us
                     },
