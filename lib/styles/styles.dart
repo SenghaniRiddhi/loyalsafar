@@ -57,7 +57,9 @@ Color iconColors = const Color(0xff1D1B20);
 Color iconGrayColors = const Color(0xff6D6D6D);
 Color normalTextColors = const Color(0xff494A52);
 Color normalText1Colors = const Color(0xff5E5E5E);
+Color buttonTextColors = const Color(0xff030303);
 Color whiteColors = const Color(0xffFFFFFF);
+Color dividerColors = const Color(0xffEBEBEB);
 
 double font13Size =13;
 double font14Size = 14;
@@ -70,6 +72,7 @@ double font26Size = 26;
 double font15Size = 15;
 double font22Size = 22;
 double font27Size = 27;
+double font40Size =40;
 
 
 

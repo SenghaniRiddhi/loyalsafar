@@ -318,10 +318,13 @@ import 'package:flutter_user/widgets/appbar.dart';
 import '../../functions/functions.dart';
 import '../../widgets/widgets.dart';
 import '../NavigatorPages/editprofile.dart';
+import '../NavigatorPages/fav_address.dart';
 import '../NavigatorPages/makecomplaint.dart';
 import '../NavigatorPages/referral.dart';
 import '../NavigatorPages/sos.dart';
+import '../NavigatorPages/walletpage.dart';
 import '../language/languages.dart';
+import 'AlertsPage.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -388,7 +391,7 @@ class ProfileScreen extends StatelessWidget {
                             fontweight: FontWeight.w700,
                           ),
                           MyText(
-                            text: userDetails['mobile'],
+                            text: userDetails['email'],
                             size: font16Size,
                             color: Color(0xff697176),
                             fontweight: FontWeight.w400,
@@ -416,53 +419,75 @@ class ProfileScreen extends StatelessWidget {
         
                   const SizedBox(height: 20),
                   // Wallet Balance Section
-                  Container(
-                    padding:  EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: whiteColors,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children:  [
-                            Icon(Icons.account_balance_wallet, color: Colors.black , size: 24,),
-                            SizedBox(width: 8),
-                            MyText(
-                              text:  "Wallet Balance",
-                              size: font16Size,
-                              color: headingColors,
-                              fontweight: FontWeight.w500,
-                            ),
 
-                          ],
-                        ),
-        
-                        Container(
-                          padding:  EdgeInsets.symmetric(
-                              vertical: 8, horizontal: 08),
+                  (userDetails['owner_id'] == null &&
+                      userDetails['show_wallet_feature_on_mobile_app']
+                          .toString() ==
+                          '1')?
+                  Column(
+                    children: [
+                      GestureDetector(
+                        onTap: (){
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                   WalletPage()));
+                         // Navigator.push(context, MaterialPageRoute(builder: (context)=> AlertsPage()));
+                        },
+                        child: Container(
+                          padding:  EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: buttonColors,
-                            borderRadius: BorderRadius.circular(18),
+                            color: whiteColors,
+                            borderRadius: BorderRadius.circular(12),
                           ),
                           child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              MyText(
-                                text:  "\$420",
-                                size: font16Size,
-                                color: headingColors,
-                                fontweight: FontWeight.w600,
+                              Row(
+                                children:  [
+                                  Icon(Icons.account_balance_wallet, color: Colors.black , size: 24,),
+                                  SizedBox(width: 8),
+                                  MyText(
+                                    text:  "Wallet Balance",
+                                    size: font16Size,
+                                    color: headingColors,
+                                    fontweight: FontWeight.w500,
+                                  ),
+
+                                ],
                               ),
-                              SizedBox(width: 05,),
-                              Icon(Icons.arrow_forward_ios_outlined,color: Colors.black,size: 18,)
+
+                              Container(
+                                padding:  EdgeInsets.symmetric(
+                                    vertical: 8, horizontal: 08),
+                                decoration: BoxDecoration(
+                                  color: buttonColors,
+                                  borderRadius: BorderRadius.circular(18),
+                                ),
+                                child: Row(
+                                  children: [
+                                    MyText(
+                                      text:  walletBalance['currency_symbol'] + ' ' + walletBalance[
+                                          'wallet_balance']
+                                              .toString(),
+                                      size: font16Size,
+                                      color: headingColors,
+                                      fontweight: FontWeight.w600,
+                                    ),
+                                    SizedBox(width: 05,),
+                                    Icon(Icons.arrow_forward_ios_outlined,color: Colors.black,size: 18,)
+                                  ],
+                                ),
+                              ),
                             ],
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 20),
+                      ),
+                       SizedBox(height: 20),
+                    ],
+                  ) : SizedBox(),
+
         
                   Padding(
                     padding: const EdgeInsets.all(04.0),
@@ -471,7 +496,12 @@ class ProfileScreen extends StatelessWidget {
                       children: [
                         GestureDetector(
                           onTap:(){
-                           Navigator.push(context, MaterialPageRoute(builder: (context)=>AdressesScreen()));
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                    const FavAddressPage()));
+                           // Navigator.push(context, MaterialPageRoute(builder: (context)=>AdressesScreen()));
                             },
                           child: Container(
                             width: media.width*0.27,

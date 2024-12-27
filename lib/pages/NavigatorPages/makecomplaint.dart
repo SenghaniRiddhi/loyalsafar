@@ -326,8 +326,8 @@ class _MakeComplaintState extends State<MakeComplaint> {
                                   Container(
                                     width: media.width * 0.8,
                                     padding: EdgeInsets.only(
-                                        top: media.width * 0.025,
-                                        bottom: media.width * 0.025),
+                                        top: media.width * 0.02,
+                                        bottom: media.width * 0.01),
                                     child: MyText(
                                       text: _error,
                                       size: media.width * fourteen,

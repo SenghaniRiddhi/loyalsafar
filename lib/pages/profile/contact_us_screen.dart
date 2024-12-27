@@ -1,7 +1,13 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_user/functions/functions.dart';
+import 'package:flutter_user/widgets/widgets.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
+
+import '../../styles/styles.dart';
+import '../../widgets/appbar.dart';
 
 class ContactUsScreen extends StatefulWidget {
   @override
@@ -28,87 +34,232 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var media = MediaQuery.of(context).size;
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Contact Us'),
-        leading: BackButton(),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
+      backgroundColor: whiteColors,
+      body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Padding(padding: EdgeInsets.symmetric(horizontal: media.width * 0.04),
+              child: appBarWidget(context: context,
+                  onTaps: (){
+                    Navigator.pop(context, true);
+                  },
+                  backgroundIcon: Color(0xffECECEC), title: "",iconColors: iconGrayColors),
+            ),
+        
+        
             Center(
               child: Column(
                 children: [
-                  Icon(Icons.email, size: 48, color: Colors.blue),
-                  Text(
-                    'Contact Us',
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  SizedBox(height:media.height*0.010),
+                  Center(
+                      child: Container(
+                        height: media.width * 0.20,
+                        width: media.width * 0.20,
+                        child: Image.asset("assets/icons/contactUs.png",fit: BoxFit.cover,),
+                      )
                   ),
-                  SizedBox(height: 8),
-                  Text(
-                    'Send us a message describing your issue\nand we will get back to you shortly.',
+                  SizedBox(height:media.height*0.015),
+        
+                  MyText(text: 'Contact Us',
+                    size: font25Size,fontweight: FontWeight.w700,color: Color(0xff06213F),),
+        
+                  SizedBox(height:media.height*0.015),
+                  MyText(text: 'Send us a message describing your issue\nand we will get back to you shortly.',
+                    size: font16Size,fontweight: FontWeight.w400,color: Color(0xff5E5E5E),
                     textAlign: TextAlign.center,
-                    style: TextStyle(color: Colors.grey),
                   ),
+        
                 ],
               ),
             ),
-            SizedBox(height: 20),
-            TextField(
-              controller: _subjectController,
-              decoration: InputDecoration(labelText: 'Subject', border: OutlineInputBorder()),
-            ),
-            SizedBox(height: 16),
-            TextField(
-              controller: _emailController,
-              decoration: InputDecoration(labelText: 'Email', border: OutlineInputBorder()),
-            ),
-            SizedBox(height: 16),
-            TextField(
-              controller: _descriptionController,
-              maxLines: 4,
-              decoration: InputDecoration(labelText: 'Description', border: OutlineInputBorder()),
-            ),
-            SizedBox(height: 16),
-            Row(
-              children: [
-                GestureDetector(
-                  onTap: _pickImage,
-                  child: Container(
-                    width: 80,
-                    height: 80,
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey),
-                      borderRadius: BorderRadius.circular(8),
+            SizedBox(height: media.height * 0.04),
+        
+            Padding(
+              padding:  EdgeInsets.symmetric(horizontal: media.width * 0.04),
+              child: Column(children: [
+        
+                Container(
+                  // padding: const EdgeInsets.symmetric(horizontal: 15,vertical: 03),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(09),
+                      border: Border.all(
+                        color: hintColor,
+                      )),
+                  // width: width ?? media.width * 0.9,
+                  alignment: Alignment.centerLeft,
+                  padding: EdgeInsets.symmetric(horizontal: 12),
+                  // padding: const EdgeInsets.only(right: 5, bottom: 5),
+                  child:  TextField(
+                    controller: _subjectController,
+                    decoration: InputDecoration(
+                        labelText: 'Subject',
+                        labelStyle: GoogleFonts.inter(
+                          color: Color(0xff5C6266),
+                          fontSize: font16Size,
+                          fontWeight: FontWeight.w400,
+                        ) ,
+                        hintStyle: GoogleFonts.inter(
+                          color: Color(0xff5C6266),
+                          fontSize: font16Size,
+                          fontWeight: FontWeight.w400,
+                        ),
+                        border: InputBorder.none
                     ),
-                    child: _selectedImage == null
-                        ? Icon(Icons.add, size: 40, color: Colors.grey)
-                        : Image.file(File(_selectedImage!.path), fit: BoxFit.cover),
+                    style: GoogleFonts.inter(
+                      color: Color(0xff303030),
+                      fontSize: font16Size,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    // onChanged: (val) {
+                    //   setState(() {});
+                    // },
                   ),
                 ),
-                if (_selectedImage != null)
-                  IconButton(
-                    icon: Icon(Icons.cancel, color: Colors.red),
-                    onPressed: () {
-                      setState(() {
-                        _selectedImage = null;
-                      });
+                SizedBox(height: media.height * 0.025),
+                Container(
+                  // padding: const EdgeInsets.symmetric(horizontal: 15,vertical: 03),
+        
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(09),
+                      border: Border.all(
+                        color: hintColor,
+                      )),
+                  // width: width ?? media.width * 0.9,
+                  alignment: Alignment.centerLeft,
+                  padding: EdgeInsets.symmetric(horizontal: 12),
+                  // padding: const EdgeInsets.only(right: 5, bottom: 5),
+                  child:  TextField(
+                    controller: _emailController,
+        
+                    decoration: InputDecoration(
+                        labelText: 'Email',
+                        labelStyle: GoogleFonts.inter(
+                          color: Color(0xff5C6266),
+                          fontSize: font16Size,
+                          fontWeight: FontWeight.w400,
+                        ) ,
+                        hintStyle: GoogleFonts.inter(
+                          color: Color(0xff5C6266),
+                          fontSize: font16Size,
+                          fontWeight: FontWeight.w400,
+                        ),
+                        border: InputBorder.none
+                    ),
+                    style: GoogleFonts.inter(
+                      color: Color(0xff303030),
+                      fontSize: font16Size,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    // onChanged: (val) {
+                    //   setState(() {});
+                    // },
+                  ),
+                ),
+                SizedBox(height: media.height * 0.025),
+                Container(
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(09),
+                      border: Border.all(
+                        color: hintColor,
+                      )),
+                  // width: width ?? media.width * 0.9,
+                  alignment: Alignment.centerLeft,
+                  padding: EdgeInsets.symmetric(horizontal: 12),
+                  // padding: const EdgeInsets.only(right: 5, bottom: 5),
+                  child:  TextField(
+                    controller: _descriptionController,
+                    readOnly: false,
+                    maxLines: 6,
+                    decoration: InputDecoration(
+                        labelText: "Description",
+                        alignLabelWithHint: true,
+                        labelStyle: GoogleFonts.inter(
+                          color: Color(0xff5C6266),
+                          fontSize: font16Size,
+                          fontWeight: FontWeight.w400,
+                        ) ,
+        
+                        hintStyle: GoogleFonts.inter(
+                          color: Color(0xff5C6266),
+                          fontSize: font16Size,
+                          fontWeight: FontWeight.w400,
+                        ),
+                        border: InputBorder.none
+                    ),
+                    style: GoogleFonts.inter(
+                      color: Color(0xff303030),
+                      fontSize: font16Size,
+                      fontWeight: FontWeight.w400,
+                    ),
+                    // onChanged: (val) {
+                    //   setState(() {});
+                    // },
+                  ),
+                ),
+                SizedBox(height: media.height * 0.025),
+        
+                Container(
+                  alignment: Alignment.topLeft,
+                  child: MyText(text: 'Attachment',
+                    size: font16Size,fontweight: FontWeight.w400,color: Color(0xff5C6266),
+                    textAlign: TextAlign.start,
+                  ),
+                ),
+        
+                SizedBox(height: media.height * 0.01),
+        
+                Row(
+                  children: [
+                    GestureDetector(
+                      onTap: _pickImage,
+                      child: Container(
+                        width: 64,
+                        height: 64,
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Color(0xffefeeee)),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: _selectedImage == null
+                            ? Icon(Icons.add, size: 25, color: hintColor)
+                            : Image.file(File(_selectedImage!.path), fit: BoxFit.cover),
+                      ),
+                    ),
+                    if (_selectedImage != null)
+                      IconButton(
+                        icon: Icon(Icons.cancel, color: Colors.red),
+                        onPressed: () {
+                          setState(() {
+                            _selectedImage = null;
+                          });
+                        },
+                      ),
+                  ],
+                ),
+        
+                SizedBox(height: media.height * 0.02),
+        
+                Container(
+                  padding: EdgeInsets.only(
+                      top: media.width * 0.05,
+                      bottom: media.width * 0.05),
+                  child: Button(
+                    color: buttonColors,
+                    borcolor: buttonColors,
+                    textcolor: Color(0xff030303),
+                    onTap: () async {
+
+                      ContactUsData(subject: _subjectController.text,
+                          email: _emailController.text, des: _descriptionController.text,
+                          files: _selectedImage?.path,context: context);
                     },
+                    text: "Submit",
                   ),
-              ],
-            ),
-            SizedBox(height: 20),
-            Center(
-              child: ElevatedButton(
-                onPressed: _submitForm,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.lightGreen,
-                  minimumSize: Size(double.infinity, 50),
-                ),
-                child: Text('Submit'),
-              ),
+                )
+        
+              ],),
             ),
           ],
         ),

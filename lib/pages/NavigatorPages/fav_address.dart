@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_user/functions/functions.dart';
+import 'package:flutter_user/pages/NavigatorPages/add_edit_address.dart';
 import 'package:flutter_user/pages/loadingPage/loading.dart';
 import 'package:flutter_user/pages/onTripPage/drop_loc_select.dart';
 import 'package:flutter_user/styles/styles.dart';
@@ -209,7 +210,7 @@ class _FavAddressPageState extends State<FavAddressPage> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) =>
-                                        DropLocation(
+                                        AddEditAddress(
                                             from: 'favourite',
                                             favName: '')))
                                 .then((_) async {
@@ -364,7 +365,7 @@ class _FavAddressPageState extends State<FavAddressPage> {
             await Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => DropLocation(
+                    builder: (context) => AddEditAddress(
                         from: 'favourite',
                         favName: newAddressController.text)));
             await getFavLocations();

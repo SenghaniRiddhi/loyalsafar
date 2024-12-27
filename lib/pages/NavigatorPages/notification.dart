@@ -92,39 +92,44 @@ class _NotificationPageState extends State<NotificationPage> {
                             ? Colors.white
                             : Colors.black
                         : page,
-                    padding: EdgeInsets.fromLTRB(media.width * 0.05,
-                        media.width * 0.05, media.width * 0.05, 0),
+
                     child: Column(
                       children: [
                         SizedBox(height: MediaQuery.of(context).padding.top),
                         Stack(
                           children: [
                             Container(
-                              padding:
-                                  EdgeInsets.only(bottom: media.width * 0.05),
+                              padding: EdgeInsets.fromLTRB(media.width * 0.05,
+                                  media.width * 0.05, media.width * 0.05, 0),
                               width: media.width * 1,
-                              alignment: Alignment.center,
+                              alignment: Alignment.topLeft,
                               child: MyText(
-                                text: languages[choosenLanguage]
-                                    ['text_notification'],
-                                size: media.width * twenty,
-                                fontweight: FontWeight.w600,
+                                text: "Alerts",
+                                color: headingColors,
+                                size: font26Size,
+                                fontweight: FontWeight.w700,
                               ),
                             ),
-                            Positioned(
-                                child: InkWell(
-                                    onTap: () async {
-                                      Navigator.pop(context);
-                                    },
-                                    child: Icon(Icons.arrow_back_ios,
-                                        color: textColor)))
+
+                            // Positioned(
+                            //     child: InkWell(
+                            //         onTap: () async {
+                            //           Navigator.pop(context);
+                            //         },
+                            //         child: Icon(Icons.arrow_back_ios,
+                            //             color: textColor)))
                           ],
                         ),
+                        // SizedBox(height: MediaQuery.of(context).padding.top),
+                        Divider(color: dividerColors,),
+                        SizedBox(height: MediaQuery.of(context).size.height*0.02),
+
                         Expanded(
                             child: SingleChildScrollView(
                           physics: const BouncingScrollPhysics(),
                           child: Column(
                             children: [
+
                               //wallet history
                               (notificationHistory.isNotEmpty)
                                   ? Column(
@@ -253,107 +258,117 @@ class _NotificationPageState extends State<NotificationPage> {
                                                               margin: EdgeInsets.only(
                                                                   top: media
                                                                           .width *
-                                                                      0.02,
+                                                                      0.01,
                                                                   bottom: media
                                                                           .width *
                                                                       0.02),
                                                               width:
                                                                   media.width *
                                                                       0.9,
-                                                              padding: EdgeInsets
-                                                                  .all(media
-                                                                          .width *
-                                                                      0.025),
+
                                                               decoration: BoxDecoration(
-                                                                  border: Border.all(
-                                                                      color:
-                                                                          borderLines,
-                                                                      width:
-                                                                          1.2),
-                                                                  borderRadius:
-                                                                      BorderRadius
-                                                                          .circular(
-                                                                              12),
                                                                   color: page),
                                                               child: Column(
                                                                 children: [
                                                                   Row(
+                                                                    crossAxisAlignment: CrossAxisAlignment.start,
                                                                     children: [
-                                                                      Container(
-                                                                          height: media.width *
-                                                                              0.1067,
-                                                                          width: media.width *
-                                                                              0.1067,
-                                                                          decoration: BoxDecoration(
-                                                                              borderRadius: BorderRadius.circular(
-                                                                                  10),
-                                                                              color: const Color(0xff000000).withOpacity(
-                                                                                  0.05)),
-                                                                          alignment: Alignment
-                                                                              .center,
-                                                                          child:
-                                                                              const Icon(Icons.notifications)),
+
+                                                                      notificationHistory[i]
+                                                                      ['image'] != null?
+                                                                      CircleAvatar(
+                                                                        radius: 30,
+                                                                        backgroundImage: NetworkImage(
+                                                                          notificationHistory[i]['image'],
+                                                                        ),
+                                                                        backgroundColor: Colors.transparent, // Optional, makes the background clear
+                                                                      ):CircleAvatar(
+                                                                        radius: 30,
+                                                                        backgroundColor: Color(
+                                                                            0xffeeebeb),
+                                                                        child: Icon(Icons.notifications,color: iconColors,),
+                                                                      ),
+                                                                      // Container(
+                                                                      //     height: media.width *
+                                                                      //         0.1067,
+                                                                      //     width: media.width *
+                                                                      //         0.1067,
+                                                                      //     decoration: BoxDecoration(
+                                                                      //         borderRadius: BorderRadius.circular(
+                                                                      //             10),
+                                                                      //         color: const Color(0xff000000).withOpacity(
+                                                                      //             0.05)),
+                                                                      //     alignment: Alignment
+                                                                      //         .center,
+                                                                      //     child:
+                                                                      //         const Icon(Icons.notifications)),
                                                                       SizedBox(
                                                                         width: media.width *
-                                                                            0.025,
+                                                                            0.045,
                                                                       ),
                                                                       Column(
                                                                         crossAxisAlignment:
                                                                             CrossAxisAlignment.start,
                                                                         children: [
-                                                                          SizedBox(
-                                                                              width: media.width * 0.55,
-                                                                              child: MyText(
-                                                                                text: notificationHistory[i]['title'].toString(),
-                                                                                size: media.width * fourteen,
-                                                                                fontweight: FontWeight.w600,
-                                                                                overflow: TextOverflow.ellipsis,
-                                                                              )),
+
+                                                                          Container(
+                                                                            width: media.width * 0.70,
+                                                                            child: Row(
+                                                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                              children: [
+                                                                              SizedBox(
+                                                                                  width: media.width * 0.50,
+                                                                                  child: MyText(
+                                                                                    text: notificationHistory[i]['title'].toString(),
+                                                                                    size: media.width * fourteen,
+                                                                                    fontweight: FontWeight.w600,
+                                                                                    overflow: TextOverflow.ellipsis,
+                                                                                    maxLines: 2,
+                                                                                  )),
+
+                                                                              Container(
+                                                                                  alignment: Alignment.centerRight,
+                                                                                  // width: media.width * 0.15,
+                                                                                  child: IconButton(
+                                                                                    onPressed: () {
+                                                                                      setState(() {
+                                                                                        error = true;
+                                                                                        notificationid = notificationHistory[i]['id'];
+                                                                                      });
+                                                                                    },
+                                                                                    icon: const Icon(Icons.delete_outline,size: 25,),
+                                                                                  ))
+                                                                            ],),
+                                                                          ),
+
                                                                           SizedBox(
                                                                             height:
                                                                                 media.width * 0.01,
                                                                           ),
                                                                           SizedBox(
-                                                                              width: media.width * 0.55,
+                                                                              width: media.width * 0.70,
                                                                               child: MyText(
                                                                                 text: notificationHistory[i]['body'].toString(),
-                                                                                size: media.width * twelve,
-                                                                                color: hintColor,
+                                                                                size: font14Size,
+                                                                                color: Color(0xff484848),
+                                                                                fontweight: FontWeight.w400,
                                                                               )),
                                                                           SizedBox(
                                                                             height:
-                                                                                media.width * 0.01,
+                                                                                media.width * 0.02,
                                                                           ),
                                                                           SizedBox(
                                                                               width: media.width * 0.55,
                                                                               child: MyText(
                                                                                 text: notificationHistory[i]['converted_created_at'].toString(),
-                                                                                size: media.width * twelve,
-                                                                                fontweight: FontWeight.w600,
+                                                                                size: font14Size,
+                                                                                color: Color(0xff919191),
+                                                                                fontweight: FontWeight.w400,
                                                                                 overflow: TextOverflow.ellipsis,
                                                                               )),
                                                                         ],
                                                                       ),
-                                                                      Expanded(
-                                                                          child:
-                                                                              Row(
-                                                                        mainAxisAlignment:
-                                                                            MainAxisAlignment.end,
-                                                                        children: [
-                                                                          Container(
-                                                                              alignment: Alignment.centerRight,
-                                                                              width: media.width * 0.15,
-                                                                              child: IconButton(
-                                                                                onPressed: () {
-                                                                                  setState(() {
-                                                                                    error = true;
-                                                                                    notificationid = notificationHistory[i]['id'];
-                                                                                  });
-                                                                                },
-                                                                                icon: const Icon(Icons.delete_forever),
-                                                                              ))
-                                                                        ],
-                                                                      ))
+
                                                                     ],
                                                                   ),
                                                                   SizedBox(
@@ -361,26 +376,9 @@ class _NotificationPageState extends State<NotificationPage> {
                                                                             .width *
                                                                         0.02,
                                                                   ),
-                                                                  if (notificationHistory[
-                                                                              i]
-                                                                          [
-                                                                          'image'] !=
-                                                                      null)
-                                                                    Image
-                                                                        .network(
-                                                                      notificationHistory[
-                                                                              i]
-                                                                          [
-                                                                          'image'],
-                                                                      height:
-                                                                          media.width *
-                                                                              0.1,
-                                                                      width: media
-                                                                              .width *
-                                                                          0.8,
-                                                                      fit: BoxFit
-                                                                          .contain,
-                                                                    )
+
+                                                                  Divider(color: dividerColors,),
+
                                                                 ],
                                                               ),
                                                             ),

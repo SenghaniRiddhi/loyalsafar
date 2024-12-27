@@ -60,11 +60,11 @@ class _FaqState extends State<Faq> {
     var media = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: Colors.grey.shade200,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        title: Text("FAQ'S"),
-        leading: BackButton(),
-      ),
+      // appBar: AppBar(
+      //   backgroundColor: Colors.white,
+      //   title: Text("FAQ'S"),
+      //   leading: BackButton(),
+      // ),
       body: Material(
         
         child: ValueListenableBuilder(
@@ -84,7 +84,38 @@ class _FaqState extends State<Faq> {
                           color: Colors.white,
                           child: Column(
                             children: [
-                    
+                              SizedBox(height: media.width*0.08,),
+                              Container(
+                                padding:  EdgeInsets.symmetric(horizontal: media.width*0.04, ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                  InkWell(
+                                    onTap: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: CircleAvatar(
+                                      backgroundColor: Color(0xffECECEC),
+                                      radius: 18,
+                                      child: Padding(
+                                        padding:  EdgeInsets.only(left: 09),
+                                        child: Icon(
+                                          Icons.arrow_back_ios,
+                                          color: iconGrayColors,
+                                          size: 20,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                    SizedBox(width: media.width*0.25,),
+                                  MyText(text: "FAQ'S",size: font18Size,
+                                    fontweight: FontWeight.w600,
+                                    color: headingColors,
+                                  ),
+                                ],),
+                              ),
+
+                              SizedBox(width: media.width*0.05,),
                               Padding(
                                 padding:  EdgeInsets.symmetric(horizontal: media.width*0.04,vertical:media.width*0.05 ),
                                 child: TextField(
@@ -112,7 +143,7 @@ class _FaqState extends State<Faq> {
                               children: [
                                               
                                 SizedBox(height: 16),
-                                Padding(
+                                (faqData.isNotEmpty)? Padding(
                                   padding:  EdgeInsets.symmetric(horizontal: media.width*0.04,vertical:media.width*0.02 ),
                                   child: Text(
                                     'How can we help you?',
@@ -121,7 +152,7 @@ class _FaqState extends State<Faq> {
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                ),
+                                ):SizedBox(),
                                 SizedBox(height: 10),
                                 (faqData.isNotEmpty)
                                     ? SingleChildScrollView(
@@ -229,12 +260,17 @@ class _FaqState extends State<Faq> {
                                         ),
                                     )
                                     : (_faqCompleted == true)
-                                        ? MyText(
-                                            text: languages[choosenLanguage]
-                                                ['text_noDataFound'],
-                                            size: media.width * eighteen,
-                                            fontweight: FontWeight.w600,
-                                          )
+                                        ? Center(
+                                          child: Padding(
+                                            padding:  EdgeInsets.symmetric(vertical: media.height * 0.3),
+                                            child: MyText(
+                                                text: languages[choosenLanguage]
+                                                    ['text_noDataFound'],
+                                                size: media.width * eighteen,
+                                                fontweight: FontWeight.w600,
+                                              ),
+                                          ),
+                                        )
                                         : Container()
                               ],
                             ),

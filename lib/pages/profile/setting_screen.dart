@@ -9,7 +9,9 @@ import '../../widgets/success_dialog_content.dart';
 import '../../widgets/widgets.dart';
 import '../NavigatorPages/contactus.dart';
 import '../NavigatorPages/faq.dart';
+import '../login/login.dart';
 import '../login/loginScreen.dart';
+import '../onTripPage/map_page.dart';
 
 class SettingsScreen extends StatefulWidget {
   @override
@@ -17,6 +19,16 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
+
+  navigateLogout() {
+    Future.delayed(const Duration(seconds: 2), () {
+      Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const Loginscreen()),
+              (route) => false);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     var media = MediaQuery.of(context).size;
@@ -150,43 +162,44 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
 
                   // Deactivate Account
-                  SettingsTile(
-                    icon: Icons.person_off_outlined,
-                    title: 'Deactivate my Account',
-                    onTap: () {
+                  // SettingsTile(
+                  //   icon: Icons.person_off_outlined,
+                  //   title: 'Deactivate my Account',
+                  //   onTap: () {
+                  //
+                  //     showModalBottomSheet(
+                  //       context: context,
+                  //       backgroundColor: Colors.white,
+                  //       shape: const RoundedRectangleBorder(
+                  //         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+                  //       ),
+                  //       isScrollControlled: true,
+                  //       builder: (context) =>BottomSheetContent(image: 'assets/icons/deactivate.png',
+                  //           title: 'Deactivate your account?', description:'Deactivating your account '
+                  //               'will permanently delete your profile, ride history, '
+                  //               'and personal information associated with the account.'
+                  //           ,
+                  //           button1: 'Deactivate', button2: 'Cancel',onClick: (){
+                  //
+                  //           showDialog(
+                  //             context: context,
+                  //             builder: (context) => SuccessDialogContent(image: '',
+                  //                 title: '''We're sorry to see you go!''', description: 'Your account has been deactivated.If you decide to reactivate it, simply log back in to our platform. Thank you for using our app!"'),
+                  //           );
+                  //         },),
+                  //     );
+                  //
+                  //     // showDialog(
+                  //     //   context: context,
+                  //     //   builder: (context) => DeactivateAccountDialogContent(),
+                  //     // );
+                  //     // Navigate to Deactivate Account
+                  //   },
+                  // ),
 
-                      showModalBottomSheet(
-                        context: context,
-                        backgroundColor: Colors.white,
-                        shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-                        ),
-                        isScrollControlled: true,
-                        builder: (context) =>BottomSheetContent(image: 'assets/icons/deactivate.png',
-                            title: 'Deactivate your account?', description:'Deactivating your account '
-                                'will permanently delete your profile, ride history, '
-                                'and personal information associated with the account.'
-                            ,
-                            button1: 'Deactivate', button2: 'Cancel',onClick: (){
-
-                            showDialog(
-                              context: context,
-                              builder: (context) => SuccessDialogContent(image: '',
-                                  title: '''We're sorry to see you go!''', description: 'Your account has been deactivated.If you decide to reactivate it, simply log back in to our platform. Thank you for using our app!"'),
-                            );
-                          },),
-                      );
-
-                      // showDialog(
-                      //   context: context,
-                      //   builder: (context) => DeactivateAccountDialogContent(),
-                      // );
-                      // Navigate to Deactivate Account
-                    },
-                  ),
                   // Delete Account
 
-                  horizontalDivider(),
+                  // horizontalDivider(),
                   SettingsTile(
                     icon: Icons.delete_outline,
                     title: 'Delete Account',
@@ -202,13 +215,25 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         isScrollControlled: true,
                         builder: (context) =>BottomSheetContent(image: 'assets/icons/delete.png',
                             title: '''Are you sure you want to delete your account?''', description:'''Please note that this action cannot be undone. If you proceed, all your data will be lost, and you will need to create a new account if you wish to use our services in the future.
-                            ''', button1: 'Delete My Account', button2: 'Cancel',onClick: (){
+                            ''', button1: 'Delete My Account', button2: 'Cancel',onClick: ()async{
+
                             showDialog(
                               context: context,
                               builder: (context) => SuccessDialogContent(image: '',
-                                  title:'''Account has been successfully deleted.''', description: '''Thank you for being a part of our community. We appreciate your contributions and wish you all the best in your future endeavors.'''),
+                                  title:'''Account has been successfully deleted.''',
+                                  description: '''Thank you for being a part of our community. We appreciate your contributions and wish you all the best in your future endeavors.'''),
                             );
-                          },),
+                            // var result = await userDelete();
+                            // if (result == 'success') {
+                            //   await getUserDetails();
+                            //   deleteAccount = false;
+                            // } else if (result == 'logout') {
+                            //   navigateLogout();
+                            // } else {
+                            //   deleteAccount = true;
+                            // }
+                          },
+                        ),
                       );
 
                       // Navigate to Delete Account
@@ -225,8 +250,27 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
             Center(
               child: TextButton(
-                onPressed: () {
+                onPressed: () async{
                   // Handle sign out
+                  valueNotifierHome.incrementNotifier();
+                  var result = await userLogout();
+                  if (result == 'success' ||
+                      result == 'logout') {
+                    setState(() {
+                      Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                              const Loginscreen()),
+                              (route) => false);
+                      userDetails.clear();
+                    });
+                  } else {
+                    setState(() {
+                      // _loading = false;
+                      logout = true;
+                    });
+                  }
                 },
                 child: const Text(
                   'Sign out',

@@ -13,6 +13,7 @@ import 'package:http/http.dart' as http;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:geolocator/geolocator.dart';
@@ -147,28 +148,28 @@ StreamSubscription<Position>? positionStream;
 
 LocationSettings locationSettings = (platform == TargetPlatform.android)
     ? AndroidSettings(
-        accuracy: LocationAccuracy.high,
-        distanceFilter: 100,
-      )
+  accuracy: LocationAccuracy.high,
+  distanceFilter: 100,
+)
     : AppleSettings(
-        accuracy: LocationAccuracy.high,
-        activityType: ActivityType.otherNavigation,
-        distanceFilter: 100,
-      );
+  accuracy: LocationAccuracy.high,
+  activityType: ActivityType.otherNavigation,
+  distanceFilter: 100,
+);
 
 positionStreamData() {
   positionStream =
       Geolocator.getPositionStream(locationSettings: locationSettings)
           .handleError((error) {
-    positionStream = null;
-    positionStream?.cancel();
-  }).listen((Position? position) {
-    if (position != null) {
-      currentLocation = LatLng(position.latitude, position.longitude);
-    } else {
-      positionStream!.cancel();
-    }
-  });
+        positionStream = null;
+        positionStream?.cancel();
+      }).listen((Position? position) {
+        if (position != null) {
+          currentLocation = LatLng(position.latitude, position.longitude);
+        } else {
+          positionStream!.cancel();
+        }
+      });
 }
 
 //validate email already exist
@@ -179,6 +180,7 @@ validateEmail(email) async {
     var response = await http.post(
         Uri.parse('${url}api/v1/user/validate-mobile'),
         body: (values == 0) ? {'mobile': email} : {'email': email});
+    print("validate-mobile::- ${Uri.parse('${url}api/v1/user/validate-mobile')}  statusCode:- ${response.statusCode}");
     if (response.statusCode == 200) {
       if (jsonDecode(response.body)['success'] == true) {
         result = 'success';
@@ -224,7 +226,7 @@ List languagesCode = [
   {'name': 'Czech', 'code': 'cs'},
   {'name': 'Danish', 'code': 'da'},
   {'name': 'Dutch', 'code': 'nl'},
-  {'name': 'English', 'code': 'en'},
+  {'name': 'English (US)', 'code': 'en'},
   {'name': 'Estonian', 'code': 'et'},
   {'name': 'Filipino', 'code': 'fil'},
   {'name': 'Finnish', 'code': 'fi'},
@@ -249,7 +251,7 @@ List languagesCode = [
   {'name': 'Norwegian', 'code': 'no'},
   {'name': 'Polish', 'code': 'pl'},
   {
-    'name': 'Portuguese',
+    'name': 'Portuguese (Portugal)',
     'code': 'pt' //pt-PT
   },
   {'name': 'Romanian', 'code': 'ro'},
@@ -282,14 +284,14 @@ getCountryCode() async {
   dynamic result;
   try {
     final response = await http.get(Uri.parse('${url}api/v1/countries-new'));
-
+    print("countries-new::- ${Uri.parse('${url}api/v1/countries-new')}  statusCode:- ${response.statusCode}");
     if (response.statusCode == 200) {
       countries = jsonDecode(response.body)['data']['countries']['data'];
 
       phcode =
-          (countries.where((element) => element['default'] == true).isNotEmpty)
-              ? countries.indexWhere((element) => element['default'] == true)
-              : 0;
+      (countries.where((element) => element['default'] == true).isNotEmpty)
+          ? countries.indexWhere((element) => element['default'] == true)
+          : 0;
       result = 'success';
     } else {
       debugPrint(response.body);
@@ -441,10 +443,9 @@ registerUser() async {
     var token = await FirebaseMessaging.instance.getToken();
     var fcm = token.toString();
     final response =
-        http.MultipartRequest('POST', Uri.parse('${url}api/v1/user/register'));
+    http.MultipartRequest('POST', Uri.parse('${url}api/v1/user/register'));
 
     response.headers.addAll({'Content-Type': 'application/json'});
-    print("rigister::- ${Uri.parse('${url}api/v1/user/register')} ");
     if (proImageFile1 != null) {
       response.files.add(
           await http.MultipartFile.fromPath('profile_picture', proImageFile1));
@@ -461,14 +462,13 @@ registerUser() async {
       'gender': (gender == 'male')
           ? 'male'
           : (gender == 'female')
-              ? 'female'
-              : 'others',
+          ? 'female'
+          : 'others',
     });
-    print("body:: ${response.fields}");
     var request = await response.send();
     var respon = await http.Response.fromStream(request);
     // print(choosenLanguage.toString());
-
+    print("countries-new::- ${Uri.parse('${url}api/v1/user/register')}  statusCode:- ${request.statusCode}");
     if (request.statusCode == 200) {
       var jsonVal = jsonDecode(respon.body);
       // if (ischeckownerordriver == 'driver') {
@@ -516,12 +516,13 @@ updateReferral() async {
   dynamic result;
   try {
     var response =
-        await http.post(Uri.parse('${url}api/v1/update/user/referral'),
-            headers: {
-              'Authorization': 'Bearer ${bearerToken[0].token}',
-              'Content-Type': 'application/json'
-            },
-            body: jsonEncode({"refferal_code": referralCode}));
+    await http.post(Uri.parse('${url}api/v1/update/user/referral'),
+        headers: {
+          'Authorization': 'Bearer ${bearerToken[0].token}',
+          'Content-Type': 'application/json'
+        },
+        body: jsonEncode({"refferal_code": referralCode}));
+    print("referral::- ${Uri.parse('${url}api/v1/update/user/referral')}  statusCode:- ${response.statusCode}");
     if (response.statusCode == 200) {
       if (jsonDecode(response.body)['success'] == true) {
         result = 'true';
@@ -549,6 +550,7 @@ otpCall() async {
   dynamic result;
   try {
     var otp = await FirebaseDatabase.instance.ref().child('call_FB_OTP').get();
+    print("otp call::- ${otp}");
     result = otp;
   } catch (e) {
     if (e is SocketException) {
@@ -571,18 +573,17 @@ verifyUser(String number, int login, String password, String email, isOtp,
         body: (number != '' && email != '')
             ? {"mobile": number, "email": email}
             : (login == 0)
-                ? {
-                    "mobile": number,
-                  }
-                : {
-                    "email": number,
-                  });
+            ? {
+          "mobile": number,
+        }
+            : {
+          "email": number,
+        });
 
-    print("login::- ${Uri.parse('${url}api/v1/user/validate-mobile-for-login')} body:-- ${{"mobile": number, "email": email}}");
+    print("validate-mobile-for-login::- ${Uri.parse('${url}api/v1/user/validate-mobile-for-login')} "
+        " statusCode:- ${response.statusCode}");
     if (response.statusCode == 200) {
-      print("response::- ${response.body}");
       val = jsonDecode(response.body)['success'];
-      print("val::- ${val}");
       if (val == true) {
         if ((number != '' && email != '') || forgot == true) {
           if (forgot == true) {
@@ -615,7 +616,6 @@ verifyUser(String number, int login, String password, String email, isOtp,
           .replaceAll(']', '')
           .toString();
     } else {
-      print("debugPrint ${response.body}");
       debugPrint(response.body);
       val = jsonDecode(response.body)['message'];
     }
@@ -632,13 +632,14 @@ acceptRequest(body) async {
   dynamic result;
   try {
     var response =
-        await http.post(Uri.parse('${url}api/v1/request/respond-for-bid'),
-            headers: {
-              'Authorization': 'Bearer ${bearerToken[0].token}',
-              'Content-Type': 'application/json',
-            },
-            body: body);
-
+    await http.post(Uri.parse('${url}api/v1/request/respond-for-bid'),
+        headers: {
+          'Authorization': 'Bearer ${bearerToken[0].token}',
+          'Content-Type': 'application/json',
+        },
+        body: body);
+    print("respond-for-bid::- ${Uri.parse('${url}api/v1/request/respond-for-bid')} "
+        " statusCode:- ${response.statusCode}");
     if (response.statusCode == 200) {
       ismulitipleride = true;
       await getUserDetails(id: userRequestData['id']);
@@ -664,11 +665,15 @@ updatePassword(email, password, loginby) async {
 
   try {
     var response =
-        await http.post(Uri.parse('${url}api/v1/user/update-password'), body: {
+    await http.post(Uri.parse('${url}api/v1/user/update-password'), body: {
       if (loginby == true) 'email': email,
       if (loginby == false) 'mobile': email,
       'password': password
     });
+
+    print("update-password::- ${Uri.parse('${url}api/v1/user/update-password')} "
+        " statusCode:- ${response.statusCode}");
+
     if (response.statusCode == 200) {
       if (jsonDecode(response.body)['success'] == true) {
         result = true;
@@ -701,31 +706,34 @@ userLogin(number, login, password, isOtp) async {
         headers: {
           'Content-Type': 'application/json',
         },
+
         body: (isOtp == false)
             ? jsonEncode({
-                if (login == 0) "mobile": number,
-                if (login == 1) "email": number,
-                'password': password,
-                'device_token': fcm,
-                "login_by":
-                    (platform == TargetPlatform.android) ? 'android' : 'ios',
-              })
+          if (login == 0) "mobile": number,
+          if (login == 1) "email": number,
+          'password': password,
+          'device_token': fcm,
+          "login_by":
+          (platform == TargetPlatform.android) ? 'android' : 'ios',
+        })
             : (login == 0)
-                ? jsonEncode({
-                    "mobile": number,
-                    'device_token': fcm,
-                    "login_by": (platform == TargetPlatform.android)
-                        ? 'android'
-                        : 'ios',
-                  })
-                : jsonEncode({
-                    "email": number,
-                    "otp": password,
-                    'device_token': fcm,
-                    "login_by": (platform == TargetPlatform.android)
-                        ? 'android'
-                        : 'ios',
-                  }));
+            ? jsonEncode({
+          "mobile": number,
+          'device_token': fcm,
+          "login_by": (platform == TargetPlatform.android)
+              ? 'android'
+              : 'ios',
+        })
+            : jsonEncode({
+          "email": number,
+          "otp": password,
+          'device_token': fcm,
+          "login_by": (platform == TargetPlatform.android)
+              ? 'android'
+              : 'ios',
+        }));
+    print("login::- ${Uri.parse('${url}api/v1/user/login')} "
+        " statusCode:- ${response.statusCode}");
     if (response.statusCode == 200) {
       var jsonVal = jsonDecode(response.body);
       bearerToken.add(BearerClass(
@@ -785,9 +793,15 @@ getUserDetails({id}) async {
         'Authorization': 'Bearer ${bearerToken[0].token}'
       },
     );
+    print("token::- ${bearerToken[0].token}");
+    print("user::- ${Uri.parse('${url}api/v1/user')} "
+        "statusCode:- ${response.statusCode}");
+    print("current_ride::- ${Uri.parse('${url}api/v1/user?current_ride=$id')} "
+        "statusCode:- ${response.statusCode}");
+
     if (response.statusCode == 200) {
       userDetails =
-          Map<String, dynamic>.from(jsonDecode(response.body)['data']);
+      Map<String, dynamic>.from(jsonDecode(response.body)['data']);
 
       favAddress = userDetails['favouriteLocations']['data'];
       sosData = userDetails['sos']['data'];
@@ -829,7 +843,7 @@ getUserDetails({id}) async {
           choosenTransportType = 1;
         }
         tripStops =
-            userDetails['onTripRequest']['data']['requestStops']['data'];
+        userDetails['onTripRequest']['data']['requestStops']['data'];
         addressList.add(AddressList(
             id: '1',
             type: 'pickup',
@@ -848,7 +862,7 @@ getUserDetails({id}) async {
                 pickup: false,
                 address: tripStops[i]['address'],
                 latlng:
-                    LatLng(tripStops[i]['latitude'], tripStops[i]['longitude']),
+                LatLng(tripStops[i]['latitude'], tripStops[i]['longitude']),
                 name: tripStops[i]['poc_name'],
                 number: tripStops[i]['poc_mobile'],
                 instructions: tripStops[i]['poc_instruction']));
@@ -912,7 +926,7 @@ getUserDetails({id}) async {
                 pickup: false,
                 address: tripStops[i]['address'],
                 latlng:
-                    LatLng(tripStops[i]['latitude'], tripStops[i]['longitude']),
+                LatLng(tripStops[i]['latitude'], tripStops[i]['longitude']),
                 name: tripStops[i]['poc_name'],
                 number: tripStops[i]['poc_mobile'],
                 instructions: tripStops[i]['poc_instruction']));
@@ -1057,7 +1071,7 @@ ValueNotifyingHome valueNotifierHome = ValueNotifyingHome();
 ValueNotifyingChat valueNotifierChat = ValueNotifyingChat();
 ValueNotifyingKey valueNotifierKey = ValueNotifyingKey();
 ValueNotifyingNotification valueNotifierNotification =
-    ValueNotifyingNotification();
+ValueNotifyingNotification();
 ValueNotifyingLogin valueNotifierLogin = ValueNotifyingLogin();
 ValueNotifyingTimer valueNotifierTimer = ValueNotifyingTimer();
 
@@ -1114,6 +1128,8 @@ geoCoding(double lat, double lng) async {
             'https://nominatim.openstreetmap.org/reverse?lat=$lat&lon=$lng&format=json'),
       );
     }
+    print("geocode::- ${Uri.parse('https://maps.googleapis.com/maps/api/geocode/json?latlng=$lat,$lng&key=$mapkey')}"
+        "statusCode:- ${val.statusCode}");
     if (val.statusCode == 200) {
       if (mapType == 'google') {
         result = jsonDecode(val.body)['results'][0]['formatted_address'];
@@ -1130,19 +1146,72 @@ geoCoding(double lat, double lng) async {
   }
   return result;
 }
+//contact us
+ContactUsData({required String subject ,required String email ,
+  required String des ,required String? files,required BuildContext context}) async {
+  dynamic result;
+  try {
+
+    final request = http.MultipartRequest('POST', Uri.parse('${url}api/v1/contact-us/store'));
+    request.fields['subject'] = subject;
+     request.fields['email'] = email;
+     request.fields['description'] = des;
+
+    if (files != null) {
+      request.files.add(await http.MultipartFile.fromPath('file', files));
+    }
+
+    final response = await request.send();
+
+    print("contact-us ${Uri.parse('${url}api/v1/contact-us/store')}"
+        " statusCode:- ${response.statusCode}");
+    final responseBody = await response.stream.bytesToString();
+    final decodedResponse = jsonDecode(responseBody);
+    if (response.statusCode == 200) {
+      if (decodedResponse['success'] == true) {
+       print("success data ${decodedResponse['data  ']}");
+        result = 'success';
+        Navigator.pop(context);
+      } else {
+        debugPrint("Failed response: $responseBody");
+        result = 'failed';
+      }
+    } else if (response.statusCode == 401) {
+      result = 'logout';
+    } else if (response.statusCode == 422) {
+      debugPrint("Failed response: $responseBody");
+      var error = decodedResponse['errors'];
+      result = error[error.keys.toList()[0]]
+          .toString()
+          .replaceAll('[', '')
+          .replaceAll(']', '')
+          .toString();
+    } else {
+      debugPrint("else response: $responseBody");
+      result = decodedResponse['message'];
+    }
+  } catch (e) {
+    if (e is SocketException) {
+      internet = false;
+      result = 'no internet';
+    }
+  }
+  return result;
+}
 
 //lang
 getlangid() async {
   dynamic result;
   try {
     var response =
-        await http.post(Uri.parse('${url}api/v1/user/update-my-lang'),
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': 'Bearer ${bearerToken[0].token}',
-            },
-            body: jsonEncode({"lang": choosenLanguage}));
-
+    await http.post(Uri.parse('${url}api/v1/user/update-my-lang'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${bearerToken[0].token}',
+        },
+        body: jsonEncode({"lang": choosenLanguage}));
+    print("update-my-lang::- ${Uri.parse('${url}api/v1/user/update-my-lang')}"
+        "statusCode:- ${response.statusCode}");
     if (response.statusCode == 200) {
       if (jsonDecode(response.body)['success'] == true) {
         result = 'success';
@@ -1196,6 +1265,9 @@ getAutocomplete(input, sessionToken, lat, lng) async {
                 'https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$input&key=$mapkey&location=$lat%2C$lng&radius=10000&sessionToken=$sessionToken'),
             headers: {'X-IOS-Bundle-Identifier': packageName});
       }
+      print("getAutocomplete::- ${Uri.parse(
+          'https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$input&key=$mapkey&location=$lat%2C$lng&radius=10000&sessionToken=$sessionToken')}"
+          "statusCode:- ${val.statusCode}");
 
       if (val.statusCode == 200) {
         var result = jsonDecode(val.body);
@@ -1258,6 +1330,9 @@ geoCodingForLatLng(id, sessionToken) async {
               'https://maps.googleapis.com/maps/api/place/details/json?placeid=$id&key=$mapkey&sessionToken=$sessionToken'),
           headers: {'X-IOS-Bundle-Identifier': packageName});
     }
+    print("geoCodingForLatLng::- ${Uri.parse(
+        'https://maps.googleapis.com/maps/api/place/details/json?placeid=$id&key=$mapkey&sessionToken=$sessionToken')}"
+        "statusCode:- ${val.statusCode}");
 
     if (val.statusCode == 200) {
       var result = jsonDecode(val.body)['result']['geometry']['location'];
@@ -1282,13 +1357,13 @@ class AddressList {
 
   AddressList(
       {required this.id,
-      required this.address,
-      required this.latlng,
-      required this.pickup,
-      this.type,
-      this.name,
-      this.number,
-      this.instructions});
+        required this.address,
+        required this.latlng,
+        required this.pickup,
+        this.type,
+        this.name,
+        this.number,
+        this.instructions});
 
   toJson() {}
 }
@@ -1331,9 +1406,12 @@ getPolylines(plat, plng, dlat, dlng) async {
                 headers: {'X-IOS-Bundle-Identifier': packageName});
           }
 
+          print("getPolylines::- ${Uri.parse(
+              'https://maps.googleapis.com/maps/api/directions/json?origin=$pickLat%2C$pickLng&destination=$dropLat%2C$dropLng&avoid=ferries|indoor&alternatives=true&mode=driving&key=$mapkey')}"
+              "statusCode:- ${value.statusCode}");
           if (value.statusCode == 200) {
             var steps = jsonDecode(value.body)['routes'][0]['overview_polyline']
-                ['points'];
+            ['points'];
 
             if (i == 1) {
               polyString = steps;
@@ -1376,7 +1454,7 @@ getPolylines(plat, plng, dlat, dlng) async {
       }
       if (value.statusCode == 200) {
         var steps =
-            jsonDecode(value.body)['routes'][0]['overview_polyline']['points'];
+        jsonDecode(value.body)['routes'][0]['overview_polyline']['points'];
 
         // printWrapped(steps.toString());
         polyString = steps;
@@ -1456,13 +1534,13 @@ class PointLatLng {
   /// [longitude].
   ///
   const PointLatLng(double latitude, double longitude)
-      // ignore: unnecessary_null_comparison
+  // ignore: unnecessary_null_comparison
       : assert(latitude != null),
-        // ignore: unnecessary_null_comparison
+  // ignore: unnecessary_null_comparison
         assert(longitude != null),
-        // ignore: unnecessary_this, prefer_initializing_formals
+  // ignore: unnecessary_this, prefer_initializing_formals
         this.latitude = latitude,
-        // ignore: unnecessary_this, prefer_initializing_formals
+  // ignore: unnecessary_this, prefer_initializing_formals
         this.longitude = longitude;
 
   /// The latitude in degrees.
@@ -1485,6 +1563,8 @@ getGoodsList() async {
   goodsTypeList.clear();
   try {
     var response = await http.get(Uri.parse('${url}api/v1/common/goods-types'));
+    print("goods-types::- ${Uri.parse('${url}api/v1/common/goods-types')}"
+        "statusCode:- ${response.statusCode}");
     if (response.statusCode == 200) {
       goodsTypeList = jsonDecode(response.body)['data'];
       valueNotifierBook.incrementNotifier();
@@ -1516,22 +1596,22 @@ class DropStops {
 
   DropStops(
       {required this.order,
-      required this.latitude,
-      required this.longitude,
-      this.pocName,
-      this.pocNumber,
-      this.pocInstruction,
-      required this.address});
+        required this.latitude,
+        required this.longitude,
+        this.pocName,
+        this.pocNumber,
+        this.pocInstruction,
+        required this.address});
 
   Map<String, dynamic> toJson() => {
-        'order': order,
-        'latitude': latitude,
-        'longitude': longitude,
-        'poc_name': pocName,
-        'poc_mobile': pocNumber,
-        'poc_instruction': pocInstruction,
-        'address': address,
-      };
+    'order': order,
+    'latitude': latitude,
+    'longitude': longitude,
+    'poc_name': pocName,
+    'poc_mobile': pocNumber,
+    'poc_instruction': pocInstruction,
+    'address': address,
+  };
 }
 
 List etaDetails = [];
@@ -1548,101 +1628,125 @@ etaRequest({transport, outstation}) async {
           'Content-Type': 'application/json',
         },
         body: (addressList
-                    .where((element) => element.type == 'drop')
-                    .isNotEmpty &&
-                dropStopList.isEmpty)
+            .where((element) => element.type == 'drop')
+            .isNotEmpty &&
+            dropStopList.isEmpty)
             ? jsonEncode({
-                'pick_lat': (userRequestData.isNotEmpty)
-                    ? userRequestData['pick_lat']
-                    : addressList
-                        .firstWhere((e) => e.type == 'pickup')
-                        .latlng
-                        .latitude,
-                'pick_lng': (userRequestData.isNotEmpty)
-                    ? userRequestData['pick_lng']
-                    : addressList
-                        .firstWhere((e) => e.type == 'pickup')
-                        .latlng
-                        .longitude,
-                'drop_lat': (userRequestData.isNotEmpty)
-                    ? userRequestData['drop_lat']
-                    : addressList
-                        .lastWhere((e) => e.type == 'drop')
-                        .latlng
-                        .latitude,
-                'drop_lng': (userRequestData.isNotEmpty)
-                    ? userRequestData['drop_lng']
-                    : addressList
-                        .lastWhere((e) => e.type == 'drop')
-                        .latlng
-                        .longitude,
-                'ride_type': 1,
-                'transport_type': (transport == null)
-                    ? (choosenTransportType == 0)
-                        ? 'taxi'
-                        : 'delivery'
-                    : transport,
-                'is_outstation': outstation
-              })
+          'pick_lat': (userRequestData.isNotEmpty)
+              ? userRequestData['pick_lat']
+              : addressList
+              .firstWhere((e) => e.type == 'pickup')
+              .latlng
+              .latitude,
+          'pick_lng': (userRequestData.isNotEmpty)
+              ? userRequestData['pick_lng']
+              : addressList
+              .firstWhere((e) => e.type == 'pickup')
+              .latlng
+              .longitude,
+          'drop_lat': (userRequestData.isNotEmpty)
+              ? userRequestData['drop_lat']
+              : addressList
+              .lastWhere((e) => e.type == 'drop')
+              .latlng
+              .latitude,
+          'drop_lng': (userRequestData.isNotEmpty)
+              ? userRequestData['drop_lng']
+              : addressList
+              .lastWhere((e) => e.type == 'drop')
+              .latlng
+              .longitude,
+          'ride_type': 1,
+          'transport_type': (transport == null)
+              ? (choosenTransportType == 0)
+              ? 'taxi'
+              : 'delivery'
+              : transport,
+          'is_outstation': outstation
+        })
             : (dropStopList.isNotEmpty &&
-                    addressList
-                        .where((element) => element.type == 'drop')
-                        .isNotEmpty)
-                ? jsonEncode({
-                    'pick_lat': (userRequestData.isNotEmpty)
-                        ? userRequestData['pick_lat']
-                        : addressList
-                            .firstWhere((e) => e.type == 'pickup')
-                            .latlng
-                            .latitude,
-                    'pick_lng': (userRequestData.isNotEmpty)
-                        ? userRequestData['pick_lng']
-                        : addressList
-                            .firstWhere((e) => e.type == 'pickup')
-                            .latlng
-                            .longitude,
-                    'drop_lat': (userRequestData.isNotEmpty)
-                        ? userRequestData['drop_lat']
-                        : addressList
-                            .lastWhere((e) => e.type == 'drop')
-                            .latlng
-                            .latitude,
-                    'drop_lng': (userRequestData.isNotEmpty)
-                        ? userRequestData['drop_lng']
-                        : addressList
-                            .lastWhere((e) => e.type == 'drop')
-                            .latlng
-                            .longitude,
-                    'stops': jsonEncode(dropStopList),
-                    'ride_type': 1,
-                    'transport_type':
-                        (choosenTransportType == 0) ? 'taxi' : 'delivery',
-                    'is_outstation': outstation
-                  })
-                : jsonEncode({
-                    'pick_lat': (userRequestData.isNotEmpty)
-                        ? userRequestData['pick_lat']
-                        : addressList
-                            .firstWhere((e) => e.type == 'pickup')
-                            .latlng
-                            .latitude,
-                    'pick_lng': (userRequestData.isNotEmpty)
-                        ? userRequestData['pick_lng']
-                        : addressList
-                            .firstWhere((e) => e.type == 'pickup')
-                            .latlng
-                            .longitude,
-                    'ride_type': 1,
-                    'transport_type':
-                        (choosenTransportType == 0) ? 'taxi' : 'delivery',
-                    'is_outstation': outstation
-                  }));
+            addressList
+                .where((element) => element.type == 'drop')
+                .isNotEmpty)
+            ? jsonEncode({
+          'pick_lat': (userRequestData.isNotEmpty)
+              ? userRequestData['pick_lat']
+              : addressList
+              .firstWhere((e) => e.type == 'pickup')
+              .latlng
+              .latitude,
+          'pick_lng': (userRequestData.isNotEmpty)
+              ? userRequestData['pick_lng']
+              : addressList
+              .firstWhere((e) => e.type == 'pickup')
+              .latlng
+              .longitude,
+          'drop_lat': (userRequestData.isNotEmpty)
+              ? userRequestData['drop_lat']
+              : addressList
+              .lastWhere((e) => e.type == 'drop')
+              .latlng
+              .latitude,
+          'drop_lng': (userRequestData.isNotEmpty)
+              ? userRequestData['drop_lng']
+              : addressList
+              .lastWhere((e) => e.type == 'drop')
+              .latlng
+              .longitude,
+          'stops': jsonEncode(dropStopList),
+          'ride_type': 1,
+          'transport_type':
+          (choosenTransportType == 0) ? 'taxi' : 'delivery',
+          'is_outstation': outstation
+        })
+            : jsonEncode({
+          'pick_lat': (userRequestData.isNotEmpty)
+              ? userRequestData['pick_lat']
+              : addressList
+              .firstWhere((e) => e.type == 'pickup')
+              .latlng
+              .latitude,
+          'pick_lng': (userRequestData.isNotEmpty)
+              ? userRequestData['pick_lng']
+              : addressList
+              .firstWhere((e) => e.type == 'pickup')
+              .latlng
+              .longitude,
+          'ride_type': 1,
+          'transport_type':
+          (choosenTransportType == 0) ? 'taxi' : 'delivery',
+          'is_outstation': outstation
+        }));
 
+    print("token::- ${bearerToken[0].token}");
+    print("drop::- ${addressList
+        .where((element) => element.type == 'drop')
+        .isNotEmpty} dropStopList::- ${dropStopList.isEmpty}");
+
+    print("is_outstation:${outstation}  ride_type:${1}  transport_type:${transport == null}  ${choosenTransportType == 0}");
+
+    print("userRequestData.isNotEmpty ${userRequestData.isNotEmpty}");
+    print("pick_lat:${addressList
+        .firstWhere((e) => e.type == 'pickup')
+        .latlng
+        .latitude}  pick_lng:${addressList
+        .firstWhere((e) => e.type == 'pickup')
+        .latlng
+        .longitude}");
+    print("drop_lat: ${addressList
+        .lastWhere((e) => e.type == 'drop')
+        .latlng
+        .latitude}  drop_lng: ${addressList
+        .lastWhere((e) => e.type == 'drop')
+        .latlng
+        .longitude}");
+    print("eta::- ${Uri.parse('${url}api/v1/request/eta')}"
+        " statusCode:- ${response.statusCode}");
     if (response.statusCode == 200) {
       etaDetails = jsonDecode(response.body)['data'];
       choosenVehicle = (etaDetails
-              .where((element) => element['is_default'] == true)
-              .isNotEmpty)
+          .where((element) => element['is_default'] == true)
+          .isNotEmpty)
           ? etaDetails.indexWhere((element) => element['is_default'] == true)
           : 0;
       result = true;
@@ -1676,76 +1780,77 @@ etaRequestWithPromo({outstation}) async {
           'Content-Type': 'application/json',
         },
         body: (addressList
-                    .where((element) => element.type == 'drop')
-                    .isNotEmpty &&
-                dropStopList.isEmpty)
+            .where((element) => element.type == 'drop')
+            .isNotEmpty &&
+            dropStopList.isEmpty)
             ? jsonEncode({
-                'pick_lat': addressList
-                    .firstWhere((e) => e.type == 'pickup')
-                    .latlng
-                    .latitude,
-                'pick_lng': addressList
-                    .firstWhere((e) => e.type == 'pickup')
-                    .latlng
-                    .longitude,
-                'drop_lat': addressList
-                    .firstWhere((e) => e.type == 'drop')
-                    .latlng
-                    .latitude,
-                'drop_lng': addressList
-                    .firstWhere((e) => e.type == 'drop')
-                    .latlng
-                    .longitude,
-                'ride_type': 1,
-                'promo_code': promoCode,
-                'transport_type':
-                    (choosenTransportType == 0) ? 'taxi' : 'delivery',
-                'is_outstation': outstation
-              })
+          'pick_lat': addressList
+              .firstWhere((e) => e.type == 'pickup')
+              .latlng
+              .latitude,
+          'pick_lng': addressList
+              .firstWhere((e) => e.type == 'pickup')
+              .latlng
+              .longitude,
+          'drop_lat': addressList
+              .firstWhere((e) => e.type == 'drop')
+              .latlng
+              .latitude,
+          'drop_lng': addressList
+              .firstWhere((e) => e.type == 'drop')
+              .latlng
+              .longitude,
+          'ride_type': 1,
+          'promo_code': promoCode,
+          'transport_type':
+          (choosenTransportType == 0) ? 'taxi' : 'delivery',
+          'is_outstation': outstation
+        })
             : (dropStopList.isNotEmpty &&
-                    addressList
-                        .where((element) => element.type == 'drop')
-                        .isNotEmpty)
-                ? jsonEncode({
-                    'pick_lat': addressList
-                        .firstWhere((e) => e.type == 'pickup')
-                        .latlng
-                        .latitude,
-                    'pick_lng': addressList
-                        .firstWhere((e) => e.type == 'pickup')
-                        .latlng
-                        .longitude,
-                    'drop_lat': addressList
-                        .firstWhere((e) => e.type == 'drop')
-                        .latlng
-                        .latitude,
-                    'drop_lng': addressList
-                        .firstWhere((e) => e.type == 'drop')
-                        .latlng
-                        .longitude,
-                    'stops': jsonEncode(dropStopList),
-                    'ride_type': 1,
-                    'promo_code': promoCode,
-                    'transport_type':
-                        (choosenTransportType == 0) ? 'taxi' : 'delivery',
-                    'is_outstation': outstation
-                  })
-                : jsonEncode({
-                    'pick_lat': addressList
-                        .firstWhere((e) => e.type == 'pickup')
-                        .latlng
-                        .latitude,
-                    'pick_lng': addressList
-                        .firstWhere((e) => e.type == 'pickup')
-                        .latlng
-                        .longitude,
-                    'ride_type': 1,
-                    'promo_code': promoCode,
-                    'transport_type':
-                        (choosenTransportType == 0) ? 'taxi' : 'delivery',
-                    'is_outstation': outstation
-                  }));
-
+            addressList
+                .where((element) => element.type == 'drop')
+                .isNotEmpty)
+            ? jsonEncode({
+          'pick_lat': addressList
+              .firstWhere((e) => e.type == 'pickup')
+              .latlng
+              .latitude,
+          'pick_lng': addressList
+              .firstWhere((e) => e.type == 'pickup')
+              .latlng
+              .longitude,
+          'drop_lat': addressList
+              .firstWhere((e) => e.type == 'drop')
+              .latlng
+              .latitude,
+          'drop_lng': addressList
+              .firstWhere((e) => e.type == 'drop')
+              .latlng
+              .longitude,
+          'stops': jsonEncode(dropStopList),
+          'ride_type': 1,
+          'promo_code': promoCode,
+          'transport_type':
+          (choosenTransportType == 0) ? 'taxi' : 'delivery',
+          'is_outstation': outstation
+        })
+            : jsonEncode({
+          'pick_lat': addressList
+              .firstWhere((e) => e.type == 'pickup')
+              .latlng
+              .latitude,
+          'pick_lng': addressList
+              .firstWhere((e) => e.type == 'pickup')
+              .latlng
+              .longitude,
+          'ride_type': 1,
+          'promo_code': promoCode,
+          'transport_type':
+          (choosenTransportType == 0) ? 'taxi' : 'delivery',
+          'is_outstation': outstation
+        }));
+    print("etaRequestWithPromo::- ${Uri.parse('${url}api/v1/request/eta')}"
+        "statusCode:- ${response.statusCode}");
     if (response.statusCode == 200) {
       etaDetails = jsonDecode(response.body)['data'];
       promoCode = '';
@@ -1776,28 +1881,40 @@ rentalEta() async {
   dynamic result;
   try {
     var response =
-        await http.post(Uri.parse('${url}api/v1/request/list-packages'),
-            headers: {
-              'Authorization': 'Bearer ${bearerToken[0].token}',
-              'Content-Type': 'application/json',
-            },
-            body: jsonEncode({
-              'pick_lat': (userRequestData.isNotEmpty)
-                  ? userRequestData['pick_lat']
-                  : addressList
-                      .firstWhere((e) => e.type == 'pickup')
-                      .latlng
-                      .latitude,
-              'pick_lng': (userRequestData.isNotEmpty)
-                  ? userRequestData['pick_lng']
-                  : addressList
-                      .firstWhere((e) => e.type == 'pickup')
-                      .latlng
-                      .longitude,
-              'transport_type':
-                  (choosenTransportType == 0) ? 'taxi' : 'delivery'
-            }));
+    await http.post(Uri.parse('${url}api/v1/request/list-packages'),
+        headers: {
+          'Authorization': 'Bearer ${bearerToken[0].token}',
+          'Content-Type': 'application/json',
+        },
 
+        body: jsonEncode({
+          'pick_lat': (userRequestData.isNotEmpty)
+              ? userRequestData['pick_lat']
+              : addressList
+              .firstWhere((e) => e.type == 'pickup')
+              .latlng
+              .latitude,
+          'pick_lng': (userRequestData.isNotEmpty)
+              ? userRequestData['pick_lng']
+              : addressList
+              .firstWhere((e) => e.type == 'pickup')
+              .latlng
+              .longitude,
+          'transport_type':
+          (choosenTransportType == 0) ? 'taxi' : 'delivery'
+        }));
+
+    print("token::- ${bearerToken[0].token}");
+    print("userRequestData.isNotEmpty ${userRequestData.isNotEmpty}  transport_type:${(choosenTransportType == 0)}");
+    print("pick_lat: ${addressList
+        .firstWhere((e) => e.type == 'pickup')
+        .latlng
+        .latitude} pick_lng:${addressList
+        .firstWhere((e) => e.type == 'pickup')
+        .latlng
+        .longitude}");
+    print("list-packages::- ${Uri.parse('${url}api/v1/request/list-packages')}"
+        " statusCode:- ${response.statusCode}");
     if (response.statusCode == 200) {
       etaDetails = jsonDecode(response.body)['data'];
       rentalOption = etaDetails[0]['typesWithPrice']['data'];
@@ -1831,7 +1948,7 @@ rentalRequestWithPromo() async {
         },
         body: jsonEncode({
           'pick_lat':
-              addressList.firstWhere((e) => e.type == 'pickup').latlng.latitude,
+          addressList.firstWhere((e) => e.type == 'pickup').latlng.latitude,
           'pick_lng': addressList
               .firstWhere((e) => e.type == 'pickup')
               .latlng
@@ -1841,6 +1958,8 @@ rentalRequestWithPromo() async {
           'transport_type': (choosenTransportType == 0) ? 'taxi' : 'delivery'
         }));
 
+    print("rentalRequestWithPromo::- ${Uri.parse('${url}api/v1/request/list-packages')}"
+        "statusCode:- ${response.statusCode}");
     if (response.statusCode == 200) {
       etaDetails = jsonDecode(response.body)['data'];
       rentalOption = etaDetails[0]['typesWithPrice']['data'];
@@ -1892,6 +2011,9 @@ createRequest(value, api) async {
           'Content-Type': 'application/json',
         },
         body: value);
+    print("body::- ${value}");
+    print("createRequest::- ${Uri.parse('$url$api')}"
+        " statusCode:- ${response.statusCode}");
     if (response.statusCode == 200) {
       userRequestData = jsonDecode(response.body)['data'];
       streamRequest();
@@ -1933,6 +2055,8 @@ createRequestLater(val, api) async {
           'Content-Type': 'application/json',
         },
         body: val);
+    print("createRequestLater::- ${Uri.parse('$url$api')}"
+        "statusCode:- ${response.statusCode}");
     if (response.statusCode == 200) {
       result = 'success';
       userRequestData = jsonDecode(response.body)['data'];
@@ -1973,36 +2097,39 @@ createRequestLaterPromo() async {
         },
         body: jsonEncode({
           'pick_lat':
-              addressList.firstWhere((e) => e.id == 'pickup').latlng.latitude,
+          addressList.firstWhere((e) => e.id == 'pickup').latlng.latitude,
           'pick_lng':
-              addressList.firstWhere((e) => e.id == 'pickup').latlng.longitude,
+          addressList.firstWhere((e) => e.id == 'pickup').latlng.longitude,
           'drop_lat':
-              addressList.firstWhere((e) => e.id == 'drop').latlng.latitude,
+          addressList.firstWhere((e) => e.id == 'drop').latlng.latitude,
           'drop_lng':
-              addressList.firstWhere((e) => e.id == 'drop').latlng.longitude,
+          addressList.firstWhere((e) => e.id == 'drop').latlng.longitude,
           'vehicle_type': etaDetails[choosenVehicle]['zone_type_id'],
           'ride_type': 1,
           'payment_opt': (etaDetails[choosenVehicle]['payment_type']
-                      .toString()
-                      .split(',')
-                      .toList()[payingVia] ==
-                  'card')
+              .toString()
+              .split(',')
+              .toList()[payingVia] ==
+              'card')
               ? 0
               : (etaDetails[choosenVehicle]['payment_type']
-                          .toString()
-                          .split(',')
-                          .toList()[payingVia] ==
-                      'cash')
-                  ? 1
-                  : 2,
+              .toString()
+              .split(',')
+              .toList()[payingVia] ==
+              'cash')
+              ? 1
+              : 2,
           'pick_address':
-              addressList.firstWhere((e) => e.id == 'pickup').address,
+          addressList.firstWhere((e) => e.id == 'pickup').address,
           'drop_address': addressList.firstWhere((e) => e.id == 'drop').address,
           'promocode_id': etaDetails[choosenVehicle]['promocode_id'],
           'trip_start_time': choosenDateTime.toString().substring(0, 19),
           'is_later': true,
           'request_eta_amount': etaDetails[choosenVehicle]['total']
         }));
+
+    print("createRequestLaterPromo::- ${Uri.parse('${url}api/v1/request/create')}"
+        "statusCode:- ${response.statusCode}");
     if (response.statusCode == 200) {
       myMarkers.clear();
       streamRequest();
@@ -2043,29 +2170,32 @@ createRentalRequest() async {
         },
         body: jsonEncode({
           'pick_lat':
-              addressList.firstWhere((e) => e.id == 'pickup').latlng.latitude,
+          addressList.firstWhere((e) => e.id == 'pickup').latlng.latitude,
           'pick_lng':
-              addressList.firstWhere((e) => e.id == 'pickup').latlng.longitude,
+          addressList.firstWhere((e) => e.id == 'pickup').latlng.longitude,
           'vehicle_type': rentalOption[choosenVehicle]['zone_type_id'],
           'ride_type': 1,
           'payment_opt': (rentalOption[choosenVehicle]['payment_type']
-                      .toString()
-                      .split(',')
-                      .toList()[payingVia] ==
-                  'card')
+              .toString()
+              .split(',')
+              .toList()[payingVia] ==
+              'card')
               ? 0
               : (rentalOption[choosenVehicle]['payment_type']
-                          .toString()
-                          .split(',')
-                          .toList()[payingVia] ==
-                      'cash')
-                  ? 1
-                  : 2,
+              .toString()
+              .split(',')
+              .toList()[payingVia] ==
+              'cash')
+              ? 1
+              : 2,
           'pick_address':
-              addressList.firstWhere((e) => e.id == 'pickup').address,
+          addressList.firstWhere((e) => e.id == 'pickup').address,
           'request_eta_amount': rentalOption[choosenVehicle]['fare_amount'],
           'rental_pack_id': etaDetails[rentalChoosenOption]['id']
         }));
+
+    print("createRentalRequest::- ${Uri.parse('${url}api/v1/request/create')}"
+        "statusCode:- ${response.statusCode}");
     if (response.statusCode == 200) {
       userRequestData = jsonDecode(response.body)['data'];
       streamRequest();
@@ -2105,30 +2235,33 @@ createRentalRequestWithPromo() async {
         },
         body: jsonEncode({
           'pick_lat':
-              addressList.firstWhere((e) => e.id == 'pickup').latlng.latitude,
+          addressList.firstWhere((e) => e.id == 'pickup').latlng.latitude,
           'pick_lng':
-              addressList.firstWhere((e) => e.id == 'pickup').latlng.longitude,
+          addressList.firstWhere((e) => e.id == 'pickup').latlng.longitude,
           'vehicle_type': rentalOption[choosenVehicle]['zone_type_id'],
           'ride_type': 1,
           'payment_opt': (rentalOption[choosenVehicle]['payment_type']
-                      .toString()
-                      .split(',')
-                      .toList()[payingVia] ==
-                  'card')
+              .toString()
+              .split(',')
+              .toList()[payingVia] ==
+              'card')
               ? 0
               : (rentalOption[choosenVehicle]['payment_type']
-                          .toString()
-                          .split(',')
-                          .toList()[payingVia] ==
-                      'cash')
-                  ? 1
-                  : 2,
+              .toString()
+              .split(',')
+              .toList()[payingVia] ==
+              'cash')
+              ? 1
+              : 2,
           'pick_address':
-              addressList.firstWhere((e) => e.id == 'pickup').address,
+          addressList.firstWhere((e) => e.id == 'pickup').address,
           'promocode_id': rentalOption[choosenVehicle]['promocode_id'],
           'request_eta_amount': rentalOption[choosenVehicle]['fare_amount'],
           'rental_pack_id': etaDetails[rentalChoosenOption]['id']
         }));
+
+    print("createRentalRequestWithPromo::- ${Uri.parse('${url}api/v1/request/create')}"
+        "statusCode:- ${response.statusCode}");
     if (response.statusCode == 200) {
       userRequestData = jsonDecode(response.body)['data'];
       streamRequest();
@@ -2167,31 +2300,35 @@ createRentalRequestLater() async {
         },
         body: jsonEncode({
           'pick_lat':
-              addressList.firstWhere((e) => e.id == 'pickup').latlng.latitude,
+          addressList.firstWhere((e) => e.id == 'pickup').latlng.latitude,
           'pick_lng':
-              addressList.firstWhere((e) => e.id == 'pickup').latlng.longitude,
+          addressList.firstWhere((e) => e.id == 'pickup').latlng.longitude,
           'vehicle_type': rentalOption[choosenVehicle]['zone_type_id'],
           'ride_type': 1,
           'payment_opt': (rentalOption[choosenVehicle]['payment_type']
-                      .toString()
-                      .split(',')
-                      .toList()[payingVia] ==
-                  'card')
+              .toString()
+              .split(',')
+              .toList()[payingVia] ==
+              'card')
               ? 0
               : (rentalOption[choosenVehicle]['payment_type']
-                          .toString()
-                          .split(',')
-                          .toList()[payingVia] ==
-                      'cash')
-                  ? 1
-                  : 2,
+              .toString()
+              .split(',')
+              .toList()[payingVia] ==
+              'cash')
+              ? 1
+              : 2,
           'pick_address':
-              addressList.firstWhere((e) => e.id == 'pickup').address,
+          addressList.firstWhere((e) => e.id == 'pickup').address,
           'trip_start_time': choosenDateTime.toString().substring(0, 19),
           'is_later': true,
           'request_eta_amount': rentalOption[choosenVehicle]['fare_amount'],
           'rental_pack_id': etaDetails[rentalChoosenOption]['id']
         }));
+
+    print("createRentalRequestLater::- ${Uri.parse('${url}api/v1/request/create')}"
+        "statusCode:- ${response.statusCode}");
+
     if (response.statusCode == 200) {
       result = 'success';
       streamRequest();
@@ -2228,32 +2365,36 @@ createRentalRequestLaterPromo() async {
         },
         body: jsonEncode({
           'pick_lat':
-              addressList.firstWhere((e) => e.id == 'pickup').latlng.latitude,
+          addressList.firstWhere((e) => e.id == 'pickup').latlng.latitude,
           'pick_lng':
-              addressList.firstWhere((e) => e.id == 'pickup').latlng.longitude,
+          addressList.firstWhere((e) => e.id == 'pickup').latlng.longitude,
           'vehicle_type': rentalOption[choosenVehicle]['zone_type_id'],
           'ride_type': 1,
           'payment_opt': (rentalOption[choosenVehicle]['payment_type']
-                      .toString()
-                      .split(',')
-                      .toList()[payingVia] ==
-                  'card')
+              .toString()
+              .split(',')
+              .toList()[payingVia] ==
+              'card')
               ? 0
               : (rentalOption[choosenVehicle]['payment_type']
-                          .toString()
-                          .split(',')
-                          .toList()[payingVia] ==
-                      'cash')
-                  ? 1
-                  : 2,
+              .toString()
+              .split(',')
+              .toList()[payingVia] ==
+              'cash')
+              ? 1
+              : 2,
           'pick_address':
-              addressList.firstWhere((e) => e.id == 'pickup').address,
+          addressList.firstWhere((e) => e.id == 'pickup').address,
           'promocode_id': rentalOption[choosenVehicle]['promocode_id'],
           'trip_start_time': choosenDateTime.toString().substring(0, 19),
           'is_later': true,
           'request_eta_amount': rentalOption[choosenVehicle]['fare_amount'],
           'rental_pack_id': etaDetails[rentalChoosenOption]['id'],
         }));
+
+    print("createRentalRequestLaterPromo::- ${Uri.parse('${url}api/v1/request/create')}"
+        "statusCode:- ${response.statusCode}");
+
     if (response.statusCode == 200) {
       myMarkers.clear();
       streamRequest();
@@ -2299,28 +2440,28 @@ class RequestCreate {
 
   RequestCreate(
       {this.pickLat,
-      this.pickLng,
-      this.dropLat,
-      this.dropLng,
-      this.vehicleType,
-      this.rideType,
-      this.paymentOpt,
-      this.pickAddress,
-      this.dropAddress,
-      this.promoCodeId});
+        this.pickLng,
+        this.dropLat,
+        this.dropLng,
+        this.vehicleType,
+        this.rideType,
+        this.paymentOpt,
+        this.pickAddress,
+        this.dropAddress,
+        this.promoCodeId});
 
   Map<String, dynamic> toJson() => {
-        'pick_lat': pickLat,
-        'pick_lng': pickLng,
-        'drop_lat': dropLat,
-        'drop_lng': dropLng,
-        'vehicle_type': vehicleType,
-        'ride_type': rideType,
-        'payment_opt': paymentOpt,
-        'pick_address': pickAddress,
-        'drop_address': dropAddress,
-        'promocode_id': promoCodeId
-      };
+    'pick_lat': pickLat,
+    'pick_lng': pickLng,
+    'drop_lat': dropLat,
+    'drop_lng': dropLng,
+    'vehicle_type': vehicleType,
+    'ride_type': rideType,
+    'payment_opt': paymentOpt,
+    'pick_address': pickAddress,
+    'drop_address': dropAddress,
+    'promocode_id': promoCodeId
+  };
 }
 
 //user cancel request
@@ -2334,6 +2475,9 @@ cancelRequest() async {
           'Content-Type': 'application/json',
         },
         body: jsonEncode({'request_id': userRequestData['id']}));
+    print("token:-- ${bearerToken[0].token}");
+    print("request_id::- ${userRequestData['id']}");
+    print("cancel::- ${Uri.parse('${url}api/v1/request/cancel')}");
     if (response.statusCode == 200) {
       userCancelled = true;
       if (userRequestData['is_bid_ride'] == 1) {
@@ -2378,6 +2522,9 @@ cancelLaterRequest(val) async {
           'Content-Type': 'application/json',
         },
         body: jsonEncode({'request_id': val}));
+    print("val::- ${val}");
+    print("cancelLaterRequest::- ${Uri.parse('${url}api/v1/request/cancel')}"
+        " statusCode:- ${response.statusCode}");
     if (response.statusCode == 200) {
       userRequestData = {};
       if (requestStreamStart?.isPaused == false ||
@@ -2415,6 +2562,8 @@ cancelRequestWithReason(reason) async {
         },
         body: jsonEncode(
             {'request_id': userRequestData['id'], 'reason': reason}));
+    print("cancelRequestWithReason::- ${Uri.parse('${url}api/v1/request/cancel')}"
+        "statusCode:- ${response.statusCode}");
     if (response.statusCode == 200) {
       cancelRequestByUser = true;
       // FirebaseDatabase.instance
@@ -2472,6 +2621,8 @@ cancelReason(reason) async {
       },
     );
 
+    print("cancelReason::- ${Uri.parse('${url}api/v1/common/cancallation/reasons?arrived=$reason&transport_type=${userRequestData['transport_type']}')}"
+        "statusCode:- ${response.statusCode}");
     if (response.statusCode == 200) {
       cancelReasonsList = jsonDecode(response.body)['data'];
       result = true;
@@ -2518,6 +2669,7 @@ userRating() async {
           'rating': review,
           'comment': feedback
         }));
+    print("rating::- ${Uri.parse('${url}api/v1/request/rating')}  statusCode:- ${response.statusCode}");
     if (response.statusCode == 200) {
       ismulitipleride = false;
       await getUserDetails();
@@ -2548,10 +2700,10 @@ class NearByDriver {
 
   NearByDriver(
       {required this.bearing,
-      required this.g,
-      required this.id,
-      required this.l,
-      required this.updatedAt});
+        required this.g,
+        required this.id,
+        required this.l,
+        required this.updatedAt});
 
   factory NearByDriver.fromJson(Map<String, dynamic> json) {
     return NearByDriver(
@@ -2580,6 +2732,12 @@ addFavLocation(lat, lng, add, name) async {
           'pick_address': add,
           'address_name': name
         }));
+
+    print("token::- ${bearerToken[0].token}");
+    print("url::- ${Uri.parse('${url}api/v1/user/add-favourite-location')} "
+        "body::- pick_lat:${lat} pick_lng:${lng} pick_address:${add} address_name:${name}"
+        "token::- ${bearerToken[0].token} ");
+    print("response.statusCode ${response.statusCode} body::- ${response.body}");
     if (response.statusCode == 200) {
       result = true;
       await getUserDetails();
@@ -2611,6 +2769,9 @@ getSosData(lat, lng) async {
         'Content-Type': 'application/json'
       },
     );
+
+    print("getSosData::- ${Uri.parse('${url}api/v1/common/sos/list/$lat/$lng')}"
+        "statusCode:- ${response.statusCode}");
 
     if (response.statusCode == 200) {
       sosData = jsonDecode(response.body)['data'];
@@ -2665,6 +2826,8 @@ getCurrentMessages() async {
         'Content-Type': 'application/json'
       },
     );
+    print("chat-history::- ${Uri.parse('${url}api/v1/request/chat-history/${userRequestData['id']}')}"
+        "statusCode:- ${response.statusCode}");
     if (response.statusCode == 200) {
       if (jsonDecode(response.body)['success'] == true) {
         if (chatList.where((element) => element['from_type'] == 2).length !=
@@ -2702,7 +2865,9 @@ sendMessage(chat) async {
           'Content-Type': 'application/json'
         },
         body:
-            jsonEncode({'request_id': userRequestData['id'], 'message': chat}));
+        jsonEncode({'request_id': userRequestData['id'], 'message': chat}));
+    print("sendMessage::- ${Uri.parse('${url}api/v1/request/send}')}"
+        "statusCode:- ${response.statusCode}");
     if (response.statusCode == 200) {
       await getCurrentMessages();
       FirebaseDatabase.instance
@@ -2732,6 +2897,8 @@ messageSeen() async {
         'Content-Type': 'application/json'
       },
       body: jsonEncode({'request_id': userRequestData['id']}));
+  print("messageSeen::- ${Uri.parse('${url}api/v1/request/seen')}"
+      "statusCode:- ${response.statusCode}");
   if (response.statusCode == 200) {
     // getCurrentMessages();
   } else {
@@ -2747,11 +2914,11 @@ streamAdminchat() async {
   chatStream = FirebaseDatabase.instance
       .ref()
       .child(
-          'chats/${(adminChatList.length > 2) ? userDetails['chat_id'] : chatid}')
+      'chats/${(adminChatList.length > 2) ? userDetails['chat_id'] : chatid}')
       .onValue
       .listen((event) async {
     var value =
-        Map<String, dynamic>.from(jsonDecode(jsonEncode(event.snapshot.value)));
+    Map<String, dynamic>.from(jsonDecode(jsonEncode(event.snapshot.value)));
     if (value['to_id'].toString() == userDetails['id'].toString()) {
       adminChatList.add(jsonDecode(jsonEncode(event.snapshot.value)));
     }
@@ -2782,6 +2949,8 @@ getadminCurrentMessages() async {
         'Content-Type': 'application/json'
       },
     );
+    print("admin-chat-history::- ${Uri.parse('${url}api/v1/request/admin-chat-history')}"
+        " statusCode:- ${response.statusCode}");
     if (response.statusCode == 200) {
       adminChatList.clear();
       isnewchat = jsonDecode(response.body)['data']['new_chat'];
@@ -2812,18 +2981,22 @@ sendadminMessage(chat) async {
   dynamic result;
   try {
     var response =
-        await http.post(Uri.parse('${url}api/v1/request/send-message'),
-            headers: {
-              'Authorization': 'Bearer ${bearerToken[0].token}',
-              'Content-Type': 'application/json'
-            },
-            body: (isnewchat == 1)
-                ? jsonEncode({'new_chat': isnewchat, 'message': chat})
-                : jsonEncode({
-                    'new_chat': 0,
-                    'message': chat,
-                    'chat_id': chatid,
-                  }));
+    await http.post(Uri.parse('${url}api/v1/request/send-message'),
+        headers: {
+          'Authorization': 'Bearer ${bearerToken[0].token}',
+          'Content-Type': 'application/json'
+        },
+        body: (isnewchat == 1)
+            ? jsonEncode({'new_chat': isnewchat, 'message': chat})
+            : jsonEncode({
+          'new_chat': 0,
+          'message': chat,
+          'chat_id': chatid,
+        }));
+    print("isnewchat ${(isnewchat == 1)}");
+    print("message:${chat} chat_id:${chatid}");
+    print("send-message::- ${Uri.parse('${url}api/v1/request/send-message')}"
+        " statusCode:- ${response.statusCode}");
     if (response.statusCode == 200) {
       chatid = jsonDecode(response.body)['data']['chat_id'];
       adminChatList.add({
@@ -2864,7 +3037,8 @@ adminmessageseen() async {
         'Content-Type': 'application/json',
       },
     );
-
+    print("adminmessageseen::- ${Uri.parse('${url}api/v1/request/update-notification-count?chat_id=$chatid')}"
+        "statusCode:- ${response.statusCode}");
     if (response.statusCode == 200) {
       result = true;
     } else if (response.statusCode == 401) {
@@ -2893,7 +3067,8 @@ addSos(name, number) async {
           'Content-Type': 'application/json'
         },
         body: jsonEncode({'name': name, 'number': number}));
-
+    print("addSos::- ${Uri.parse('${url}api/v1/common/sos/store')}"
+        "statusCode:- ${response.statusCode}");
     if (response.statusCode == 200) {
       await getUserDetails();
       result = 'success';
@@ -2922,6 +3097,8 @@ deleteSos(id) async {
       'Authorization': 'Bearer ${bearerToken[0].token}',
       'Content-Type': 'application/json'
     });
+    print("deleteSos::- ${Uri.parse('${url}api/v1/common/sos/delete/$id')}"
+        "statusCode:- ${response.statusCode}");
     if (response.statusCode == 200) {
       await getUserDetails();
       result = 'success';
@@ -2944,11 +3121,9 @@ deleteSos(id) async {
 
 openBrowser(browseUrl) async {
   // ignore: deprecated_member_use
-  if (await canLaunch(browseUrl,
-    )) {
+  if (await canLaunch(browseUrl)) {
     // ignore: deprecated_member_use
-    await launch(browseUrl,forceWebView: true, // Open in WebView
-        enableJavaScript: true);
+    await launch(browseUrl);
   } else {
     throw 'Could not launch $browseUrl';
   }
@@ -2966,6 +3141,8 @@ getFaqData(lat, lng) async {
       'Authorization': 'Bearer ${bearerToken[0].token}',
       'Content-Type': 'application/json'
     });
+    print("getFaqData::- ${Uri.parse('${url}api/v1/common/faq/list/$lat/$lng')}"
+        " statusCode:- ${response.statusCode}");
     if (response.statusCode == 200) {
       faqData = jsonDecode(response.body)['data'];
       myFaqPage = jsonDecode(response.body)['meta'];
@@ -2990,10 +3167,12 @@ getFaqPages(id) async {
   dynamic result;
   try {
     var response =
-        await http.get(Uri.parse('${url}api/v1/common/faq/list/$id'), headers: {
+    await http.get(Uri.parse('${url}api/v1/common/faq/list/$id'), headers: {
       'Authorization': 'Bearer ${bearerToken[0].token}',
       'Content-Type': 'application/json'
     });
+    print("getFaqPages::- ${Uri.parse('${url}api/v1/common/faq/list/$id')}"
+        "statusCode:- ${response.statusCode}");
     if (response.statusCode == 200) {
       var val = jsonDecode(response.body)['data'];
       val.forEach((element) {
@@ -3028,6 +3207,8 @@ removeFavAddress(id) async {
           'Authorization': 'Bearer ${bearerToken[0].token}',
           'Content-Type': 'application/json'
         });
+    print("removeFavAddress::- ${Uri.parse('${url}api/v1/user/delete-favourite-location/$id')}"
+        "statusCode:- ${response.statusCode}");
     if (response.statusCode == 200) {
       await getUserDetails();
       result = 'success';
@@ -3053,10 +3234,12 @@ getReferral() async {
   dynamic result;
   try {
     var response =
-        await http.get(Uri.parse('${url}api/v1/get/referral'), headers: {
+    await http.get(Uri.parse('${url}api/v1/get/referral'), headers: {
       'Authorization': 'Bearer ${bearerToken[0].token}',
       'Content-Type': 'application/json'
     });
+    print("getReferral::- ${Uri.parse('${url}api/v1/get/referral')}"
+        " statusCode:- ${response.statusCode}");
     if (response.statusCode == 200) {
       result = 'success';
       myReferralCode = jsonDecode(response.body)['data'];
@@ -3085,6 +3268,8 @@ userLogout() async {
       'Authorization': 'Bearer ${bearerToken[0].token}',
       'Content-Type': 'application/json'
     });
+    print("userLogout::- ${Uri.parse('${url}api/v1/logout')}"
+        "statusCode:- ${response.statusCode}");
     if (response.statusCode == 200) {
       pref.remove('Bearer');
 
@@ -3123,6 +3308,10 @@ getHistory() async {
           Uri.parse('${url}api/v1/request/history?$historyFiltter'),
           headers: {'Authorization': 'Bearer ${bearerToken[0].token}'});
     }
+
+    print("token::- ${bearerToken[0].token}");
+    print("getHistory::- ${Uri.parse('${url}api/v1/request/history?on_trip=0')}"
+        " statusCode:- ${response.statusCode}");
     if (response.statusCode == 200) {
       myHistory = jsonDecode(response.body)['data'];
       myHistoryPage = jsonDecode(response.body)['meta'];
@@ -3153,6 +3342,8 @@ getHistoryPages(id) async {
   try {
     var response = await http.get(Uri.parse('${url}api/v1/request/history?$id'),
         headers: {'Authorization': 'Bearer ${bearerToken[0].token}'});
+    print("getHistoryPages::- ${Uri.parse('${url}api/v1/request/history?$id')}"
+        " statusCode:- ${response.statusCode}");
     if (response.statusCode == 200) {
       List list = jsonDecode(response.body)['data'];
       // ignore: avoid_function_literals_in_foreach_calls
@@ -3194,6 +3385,8 @@ getWalletHistory() async {
     var response = await http.get(
         Uri.parse('${url}api/v1/payment/wallet/history'),
         headers: {'Authorization': 'Bearer ${bearerToken[0].token}'});
+    print("getWalletHistory::- ${Uri.parse('${url}api/v1/payment/wallet/history')}"
+        "statusCode:- ${response.statusCode}");
     if (response.statusCode == 200) {
       walletBalance = jsonDecode(response.body);
       walletHistory = walletBalance['wallet_history']['data'];
@@ -3225,6 +3418,8 @@ getWalletHistoryPage(page) async {
     var response = await http.get(
         Uri.parse('${url}api/v1/payment/wallet/history?page=$page'),
         headers: {'Authorization': 'Bearer ${bearerToken[0].token}'});
+    print("getWalletHistoryPage::- ${Uri.parse('${url}api/v1/payment/wallet/history?page=$page')}"
+        "statusCode:- ${response.statusCode}");
     if (response.statusCode == 200) {
       walletBalance = jsonDecode(response.body);
       List list = walletBalance['wallet_history']['data'];
@@ -3261,6 +3456,8 @@ getClientToken() async {
     var response = await http.get(
         Uri.parse('${url}api/v1/payment/client/token'),
         headers: {'Authorization': 'Bearer ${bearerToken[0].token}'});
+    print("getClientToken::- ${Uri.parse('${url}api/v1/payment/client/token')}"
+        "statusCode:- ${response.statusCode}");
     if (response.statusCode == 200) {
       result = 'success';
     } else if (response.statusCode == 401) {
@@ -3286,12 +3483,14 @@ getStripePayment(money) async {
   dynamic results;
   try {
     var response =
-        await http.post(Uri.parse('${url}api/v1/payment/stripe/intent'),
-            headers: {
-              'Authorization': 'Bearer ${bearerToken[0].token}',
-              'Content-Type': 'application/json'
-            },
-            body: jsonEncode({'amount': money}));
+    await http.post(Uri.parse('${url}api/v1/payment/stripe/intent'),
+        headers: {
+          'Authorization': 'Bearer ${bearerToken[0].token}',
+          'Content-Type': 'application/json'
+        },
+        body: jsonEncode({'amount': money}));
+    print("getStripePayment::- ${Uri.parse('${url}api/v1/payment/stripe/intent')}"
+        "statusCode:- ${response.statusCode}");
     if (response.statusCode == 200) {
       results = 'success';
       stripeToken = jsonDecode(response.body)['data'];
@@ -3321,8 +3520,11 @@ addMoneyStripe(amount, nonce) async {
           'Authorization': 'Bearer ${bearerToken[0].token}',
           'Content-Type': 'application/json'
         },
+
         body: jsonEncode(
             {'amount': amount, 'payment_nonce': nonce, 'payment_id': nonce}));
+    print("addMoneyStripe::- ${Uri.parse('${url}api/v1/payment/stripe/add/money')}"
+        "statusCode:- ${response.statusCode}");
     if (response.statusCode == 200) {
       await getWalletHistory();
       await getUserDetails();
@@ -3355,6 +3557,8 @@ payMoneyStripe(nonce) async {
         },
         body: jsonEncode(
             {'request_id': userRequestData['id'], 'payment_id': nonce}));
+    print("payMoneyStripe::- ${Uri.parse('${url}api/v1/payment/stripe/make-payment-for-ride')}"
+        "statusCode:- ${response.statusCode}");
     if (response.statusCode == 200) {
       result = 'success';
     } else if (response.statusCode == 401) {
@@ -3380,12 +3584,14 @@ getPaystackPayment(body) async {
   paystackCode.clear();
   try {
     var response =
-        await http.post(Uri.parse('${url}api/v1/payment/paystack/initialize'),
-            headers: {
-              'Authorization': 'Bearer ${bearerToken[0].token}',
-              'Content-Type': 'application/json'
-            },
-            body: body);
+    await http.post(Uri.parse('${url}api/v1/payment/paystack/initialize'),
+        headers: {
+          'Authorization': 'Bearer ${bearerToken[0].token}',
+          'Content-Type': 'application/json'
+        },
+        body: body);
+    print("getPaystackPayment::- ${Uri.parse('${url}api/v1/payment/paystack/initialize')}"
+        "statusCode:- ${response.statusCode}");
     if (response.statusCode == 200) {
       if (jsonDecode(response.body)['status'] == false) {
         results = jsonDecode(response.body)['message'];
@@ -3419,6 +3625,8 @@ addMoneyPaystack(amount, nonce) async {
         },
         body: jsonEncode(
             {'amount': amount, 'payment_nonce': nonce, 'payment_id': nonce}));
+    print("addMoneyPaystack::- ${Uri.parse('${url}api/v1/payment/paystack/add-money')}"
+        "statusCode:- ${response.statusCode}");
     if (response.statusCode == 200) {
       await getWalletHistory();
       await getUserDetails();
@@ -3452,6 +3660,8 @@ addMoneyFlutterwave(amount, nonce) async {
         },
         body: jsonEncode(
             {'amount': amount, 'payment_nonce': nonce, 'payment_id': nonce}));
+    print("addMoneyFlutterwave::- ${Uri.parse('${url}api/v1/payment/flutter-wave/add-money')}"
+        "statusCode:- ${response.statusCode}");
     if (response.statusCode == 200) {
       await getWalletHistory();
       await getUserDetails();
@@ -3484,6 +3694,8 @@ addMoneyRazorpay(amount, nonce) async {
         },
         body: jsonEncode(
             {'amount': amount, 'payment_nonce': nonce, 'payment_id': nonce}));
+    print("addMoneyRazorpay::- ${Uri.parse('${url}api/v1/payment/razerpay/add-money')}"
+        "statusCode:- ${response.statusCode}");
     if (response.statusCode == 200) {
       await getWalletHistory();
       await getUserDetails();
@@ -3519,6 +3731,8 @@ getCfToken(money, currency) async {
           'Content-Type': 'application/json'
         },
         body: jsonEncode({'order_amount': money, 'order_currency': currency}));
+    print("getCfToken::- ${Uri.parse('${url}api/v1/payment/cashfree/generate-cftoken')}"
+        "statusCode:- ${response.statusCode}");
     if (response.statusCode == 200) {
       if (jsonDecode(response.body)['status'] == 'OK') {
         cftToken = jsonDecode(response.body);
@@ -3563,6 +3777,8 @@ cashFreePaymentSuccess() async {
           'txTime': cfSuccessList['txTime'],
           'signature': cfSuccessList['signature']
         }));
+    print("cashFreePaymentSuccess::- ${Uri.parse('${url}api/v1/payment/cashfree/add-money-to-wallet-webhooks')}"
+        "statusCode:- ${response.statusCode}");
     if (response.statusCode == 200) {
       if (jsonDecode(response.body)['success'] == true) {
         result = 'success';
@@ -3598,6 +3814,7 @@ updateProfile(name, email, usergender) async {
     );
     response.headers
         .addAll({'Authorization': 'Bearer ${bearerToken[0].token}'});
+
     if (profileImageFile != null) {
       response.files.add(await http.MultipartFile.fromPath(
           'profile_picture', profileImageFile));
@@ -3607,11 +3824,13 @@ updateProfile(name, email, usergender) async {
     response.fields['gender'] = (gender == 'male')
         ? 'male'
         : (gender == 'female')
-            ? 'female'
-            : 'others';
+        ? 'female'
+        : 'others';
     var request = await response.send();
     var respon = await http.Response.fromStream(request);
     final val = jsonDecode(respon.body);
+    print("cashFreePaymentSuccess::- ${Uri.parse('${url}api/v1/user/profile')}"
+        "statusCode:- ${request.statusCode}");
     if (request.statusCode == 200) {
       result = 'success';
       if (val['success'] == true) {
@@ -3653,11 +3872,13 @@ updateProfileWithoutImage(name, email, usergender) async {
     response.fields['gender'] = (gender == 'male')
         ? 'male'
         : (gender == 'female')
-            ? 'female'
-            : 'others';
+        ? 'female'
+        : 'others';
     var request = await response.send();
     var respon = await http.Response.fromStream(request);
     final val = jsonDecode(respon.body);
+    print("updateProfileWithoutImage::- ${Uri.parse('${url}api/v1/user/profile')}"
+        "statusCode:- ${request.statusCode}");
     if (request.statusCode == 200) {
       result = 'success';
       if (val['success'] == true) {
@@ -3701,6 +3922,8 @@ getGeneralComplaint(type) async {
       Uri.parse('${url}api/v1/common/complaint-titles?complaint_type=$type'),
       headers: {'Authorization': 'Bearer ${bearerToken[0].token}'},
     );
+    print("getGeneralComplaint::- ${Uri.parse('${url}api/v1/common/complaint-titles?complaint_type=$type')}"
+        " statusCode:- ${response.statusCode}");
     if (response.statusCode == 200) {
       generalComplaintList = jsonDecode(response.body)['data'];
       result = 'success';
@@ -3723,15 +3946,19 @@ makeGeneralComplaint(complaintDesc) async {
   dynamic result;
   try {
     var response =
-        await http.post(Uri.parse('${url}api/v1/common/make-complaint'),
-            headers: {
-              'Authorization': 'Bearer ${bearerToken[0].token}',
-              'Content-Type': 'application/json'
-            },
-            body: jsonEncode({
-              'complaint_title_id': generalComplaintList[complaintType]['id'],
-              'description': complaintDesc,
-            }));
+    await http.post(Uri.parse('${url}api/v1/common/make-complaint'),
+        headers: {
+          'Authorization': 'Bearer ${bearerToken[0].token}',
+          'Content-Type': 'application/json'
+        },
+        body: jsonEncode({
+          'complaint_title_id': generalComplaintList[complaintType]['id'],
+          'description': complaintDesc,
+        }));
+
+    print("make-complaint_title_id: ${generalComplaintList[complaintType]['id']} description: ${complaintDesc}");
+    print("makeGeneralComplaint::- ${Uri.parse('${url}api/v1/common/make-complaint')}"
+        " statusCode:- ${response.statusCode}");
     if (response.statusCode == 200) {
       result = 'success';
     } else if (response.statusCode == 401) {
@@ -3753,16 +3980,18 @@ makeRequestComplaint() async {
   dynamic result;
   try {
     var response =
-        await http.post(Uri.parse('${url}api/v1/common/make-complaint'),
-            headers: {
-              'Authorization': 'Bearer ${bearerToken[0].token}',
-              'Content-Type': 'application/json'
-            },
-            body: jsonEncode({
-              'complaint_title_id': generalComplaintList[complaintType]['id'],
-              'description': complaintDesc,
-              'request_id': myHistory[selectedHistory]['id']
-            }));
+    await http.post(Uri.parse('${url}api/v1/common/make-complaint'),
+        headers: {
+          'Authorization': 'Bearer ${bearerToken[0].token}',
+          'Content-Type': 'application/json'
+        },
+        body: jsonEncode({
+          'complaint_title_id': generalComplaintList[complaintType]['id'],
+          'description': complaintDesc,
+          'request_id': myHistory[selectedHistory]['id']
+        }));
+    print("makeRequestComplaint::- ${Uri.parse('${url}api/v1/common/make-complaint')}"
+        "statusCode:- ${response.statusCode}");
     if (response.statusCode == 200) {
       result = 'success';
     } else if (response.statusCode == 401) {
@@ -3883,6 +4112,8 @@ userDelete() async {
       'Authorization': 'Bearer ${bearerToken[0].token}',
       'Content-Type': 'application/json'
     });
+    print("userDelete::- ${Uri.parse('${url}api/v1/user/delete-user-account')}"
+        "statusCode:- ${response.statusCode}");
     if (response.statusCode == 200) {
       pref.remove('Bearer');
 
@@ -3913,6 +4144,8 @@ getnotificationHistory() async {
     var response = await http.get(
         Uri.parse('${url}api/v1/notifications/get-notification'),
         headers: {'Authorization': 'Bearer ${bearerToken[0].token}'});
+    print("getnotificationHistory::- ${Uri.parse('${url}api/v1/notifications/get-notification')}"
+        "statusCode:- ${response.statusCode}");
     if (response.statusCode == 200) {
       notificationHistory = jsonDecode(response.body)['data'];
       notificationHistoryPage = jsonDecode(response.body)['meta'];
@@ -3944,6 +4177,8 @@ getNotificationPages(id) async {
     var response = await http.get(
         Uri.parse('${url}api/v1/notifications/get-notification?$id'),
         headers: {'Authorization': 'Bearer ${bearerToken[0].token}'});
+    print("getNotificationPages::- ${Uri.parse('${url}api/v1/notifications/get-notification?$id')}"
+        "statusCode:- ${response.statusCode}");
     if (response.statusCode == 200) {
       List list = jsonDecode(response.body)['data'];
       // ignore: avoid_function_literals_in_foreach_calls
@@ -3979,6 +4214,8 @@ deleteNotification(id) async {
     var response = await http.get(
         Uri.parse('${url}api/v1/notifications/delete-notification/$id'),
         headers: {'Authorization': 'Bearer ${bearerToken[0].token}'});
+    print("deleteNotification::- ${Uri.parse('${url}api/v1/notifications/delete-notification/$id')}"
+        "statusCode:- ${response.statusCode}");
     if (response.statusCode == 200) {
       result = 'success';
       valueNotifierHome.incrementNotifier();
@@ -4010,6 +4247,9 @@ sharewalletfun({mobile, role, amount}) async {
           'Authorization': 'Bearer ${bearerToken[0].token}',
         },
         body: jsonEncode({'mobile': mobile, 'role': role, 'amount': amount}));
+    print("token::- ${bearerToken[0].token}");
+    print("sharewalletfun::- ${Uri.parse('${url}api/v1/payment/wallet/transfer-money-from-wallet')}"
+        " statusCode:- ${response.statusCode}");
     if (response.statusCode == 200) {
       if (jsonDecode(response.body)['success'] == true) {
         result = 'success';
@@ -4037,6 +4277,8 @@ sendOTPtoEmail(String email) async {
   try {
     var response = await http
         .post(Uri.parse('${url}api/v1/send-mail-otp'), body: {'email': email});
+    print("sendOTPtoEmail::- ${Uri.parse('${url}api/v1/send-mail-otp')}"
+        "statusCode:- ${response.statusCode}");
     if (response.statusCode == 200) {
       if (jsonDecode(response.body)['success'] == true) {
         result = 'success';
@@ -4068,6 +4310,8 @@ emailVerify(String email, otpNumber) async {
   try {
     var response = await http.post(Uri.parse('${url}api/v1/validate-email-otp'),
         body: {"email": email, "otp": otpNumber});
+    print("emailVerify::- ${Uri.parse('${url}api/v1/validate-email-otp')}"
+        "statusCode:- ${response.statusCode}");
     if (response.statusCode == 200) {
       if (jsonDecode(response.body)['success'] == true) {
         val = 'success';
@@ -4098,21 +4342,24 @@ paymentMethod(payment) async {
   dynamic result;
   try {
     var response =
-        await http.post(Uri.parse('${url}api/v1/request/user/payment-method'),
-            headers: {
-              'Authorization': 'Bearer ${bearerToken[0].token}',
-              'Content-Type': 'application/json',
-            },
-            body: jsonEncode({
-              'request_id': userRequestData['id'],
-              'payment_opt': (payment == 'card')
-                  ? 0
-                  : (payment == 'cash')
-                      ? 1
-                      : (payment == 'wallet')
-                          ? 2
-                          : 4
-            }));
+    await http.post(Uri.parse('${url}api/v1/request/user/payment-method'),
+        headers: {
+          'Authorization': 'Bearer ${bearerToken[0].token}',
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          'request_id': userRequestData['id'],
+          'payment_opt': (payment == 'card')
+              ? 0
+              : (payment == 'cash')
+              ? 1
+              : (payment == 'wallet')
+              ? 2
+              : 4
+        }));
+    print("paymentMethod::- ${Uri.parse('${url}api/v1/request/user/payment-method')}"
+        "statusCode:- ${response.statusCode}");
+
     if (response.statusCode == 200) {
       FirebaseDatabase.instance
           .ref('requests')
@@ -4140,12 +4387,13 @@ String isemailmodule = '1';
 bool isCheckFireBaseOTP = true;
 getemailmodule() async {
   dynamic res;
-  print("enter::-");
   try {
     final response = await http.get(
       Uri.parse('${url}api/v1/common/modules'),
     );
-    print("modules::- ${response.statusCode}");
+
+    print("getemailmodule::- ${Uri.parse('${url}api/v1/common/modules')} "
+        "statusCode:- ${response.statusCode}");
 
     if (response.statusCode == 200) {
       isemailmodule = jsonDecode(response.body)['enable_email_otp'];
@@ -4156,7 +4404,6 @@ getemailmodule() async {
       debugPrint(response.body);
     }
   } catch (e) {
-    print("catch::- ${e}");
     if (e is SocketException) {
       internet = false;
       res = 'no internet';
@@ -4171,6 +4418,9 @@ sendOTPtoMobile(String mobile, String countryCode) async {
   try {
     var response = await http.post(Uri.parse('${url}api/v1/mobile-otp'),
         body: {'mobile': mobile, 'country_code': countryCode});
+
+    print("sendOTPtoMobile::- ${Uri.parse('${url}api/v1/mobile-otp')}"
+        "statusCode:- ${response.statusCode}");
     if (response.statusCode == 200) {
       if (jsonDecode(response.body)['success'] == true) {
         result = 'success';
@@ -4202,6 +4452,9 @@ validateSmsOtp(String mobile, String otp) async {
   try {
     var response = await http.post(Uri.parse('${url}api/v1/validate-otp'),
         body: {'mobile': mobile, 'otp': otp});
+
+    print("validateSmsOtp::- ${Uri.parse('${url}api/v1/validate-otp')}"
+        "statusCode:- ${response.statusCode}");
     if (response.statusCode == 200) {
       if (jsonDecode(response.body)['success'] == true) {
         result = 'success';
@@ -4235,7 +4488,8 @@ outStationListFun() async {
     final response = await http.get(
         Uri.parse('${url}api/v1/request/outstation_rides'),
         headers: {'Authorization': 'Bearer ${bearerToken[0].token}'});
-
+    print("outStationListFun::- ${Uri.parse('${url}api/v1/request/outstation_rides')}"
+        "statusCode:- ${response.statusCode}");
     if (response.statusCode == 200) {
       outStationList = jsonDecode(response.body)['data'];
       result = 'success';
@@ -4265,8 +4519,8 @@ getLandingImages() async {
   dynamic result;
   try {
     final response = await http.get(Uri.parse('${url}api/v1/countries-new'));
-
-    print("response::- ${response.statusCode}");
+    print("getLandingImages::- ${Uri.parse('${url}api/v1/countries-new')} "
+        "statusCode:- ${response.statusCode}");
     if (response.statusCode == 200) {
       countries = jsonDecode(response.body)['data']['countries']['data'];
       loginImages.clear();
@@ -4277,17 +4531,15 @@ getLandingImages() async {
         }
       }
       phcode =
-          (countries.where((element) => element['default'] == true).isNotEmpty)
-              ? countries.indexWhere((element) => element['default'] == true)
-              : 0;
+      (countries.where((element) => element['default'] == true).isNotEmpty)
+          ? countries.indexWhere((element) => element['default'] == true)
+          : 0;
       result = 'success';
     } else {
       debugPrint(response.body);
       result = 'error';
     }
   } catch (e) {
-    print("catch ee::- ${e}");
-
     if (e is SocketException) {
       internet = false;
       result = 'no internet';
@@ -4346,7 +4598,7 @@ outStationPush() async {
               RemoteNotification noti = RemoteNotification(
                   title: languages[choosenLanguage]['text_got_new_driver'],
                   body:
-                      '${v['driver_name']} ${languages[choosenLanguage]['text_bid_ride_amount_of']} ${v['price']}');
+                  '${v['driver_name']} ${languages[choosenLanguage]['text_bid_ride_amount_of']} ${v['price']}');
               showRideNotification(noti);
             }
           });

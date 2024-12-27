@@ -4,6 +4,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_user/pages/onTripPage/map_page.dart';
 import 'package:geolocator/geolocator.dart' as geolocs;
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -18,24 +19,28 @@ import '../../widgets/widgets.dart';
 import '../NavigatorPages/pickcontacts.dart';
 import '../loadingPage/loading.dart';
 import '../login/login.dart';
+import '../login/loginScreen.dart';
 import '../noInternet/noInternet.dart';
-import 'booking_confirmation.dart';
-import 'map_page.dart';
+import '../onTripPage/booking_confirmation.dart';
+import '../profile/edit_adresses_screen.dart';
+
 import 'package:flutter_map/flutter_map.dart' as fm;
 // ignore: depend_on_referenced_packages
 import 'package:latlong2/latlong.dart' as fmlt;
 
 // ignore: must_be_immutable
-class DropLocation extends StatefulWidget {
+class AddEditAddress extends StatefulWidget {
   dynamic from;
   String? favName;
-  DropLocation({super.key, this.from, this.favName});
+  AddEditAddress({super.key, this.from,
+    this.favName
+  });
 
   @override
-  State<DropLocation> createState() => _DropLocationState();
+  State<AddEditAddress> createState() => _AddEditAddressState();
 }
 
-class _DropLocationState extends State<DropLocation>
+class _AddEditAddressState extends State<AddEditAddress>
     with WidgetsBindingObserver {
   GoogleMapController? _controller;
   final fm.MapController _fmController = fm.MapController();
@@ -43,6 +48,8 @@ class _DropLocationState extends State<DropLocation>
   Location location = Location();
   String _state = '';
   bool _isLoading = false;
+  ValueNotifier<String> cityNotifier = ValueNotifier<String>('');
+
   dynamic _sessionToken;
   LatLng _center = const LatLng(41.4219057, -102.0840772);
   LatLng _centerLocation = const LatLng(41.4219057, -102.0840772);
@@ -57,6 +64,13 @@ class _DropLocationState extends State<DropLocation>
   final _debouncer = Debouncer(milliseconds: 1000);
   bool useMyDetails = false;
   bool useMyAddress = false;
+  TextEditingController newAddressController = TextEditingController();
+
+  String addressLine="abc";
+  String area="cdf";
+  String city="dff";
+
+  String selectedAddressType = "";
 
   void _onMapCreated(GoogleMapController controller) {
     setState(() {
@@ -116,16 +130,20 @@ class _DropLocationState extends State<DropLocation>
         _state = '3';
         _isLoading = false;
       });
-    } else if (permission == PermissionStatus.granted ||
+    }
+    else if (permission == PermissionStatus.granted ||
         permission == PermissionStatus.grantedLimited) {
+      print("helooo::-");
       var locs = await geolocs.Geolocator.getLastKnownPosition();
       if (addressList.length != 2 && widget.from == null) {
+        print("helooo 1234::-");
         if (locs != null) {
           setState(() {
             _center = LatLng(double.parse(locs.latitude.toString()),
                 double.parse(locs.longitude.toString()));
             _centerLocation = LatLng(double.parse(locs.latitude.toString()),
                 double.parse(locs.longitude.toString()));
+
           });
         } else {
           var loc = await geolocs.Geolocator.getCurrentPosition(
@@ -135,13 +153,19 @@ class _DropLocationState extends State<DropLocation>
                 double.parse(loc.longitude.toString()));
             _centerLocation = LatLng(double.parse(loc.latitude.toString()),
                 double.parse(loc.longitude.toString()));
+
           });
         }
+        ;
         setState(() {
           _center = addressList[0].latlng;
           dropAddressConfirmation = addressList[0].address;
+          getAddressDetails(latitude: double.parse(locs!.latitude.toString()),
+              longitude: double.parse(locs.longitude.toString()),
+              addressLine: addressLine, area: area, city: city);
         });
-      } else if (widget.from != null &&
+      }
+      else if (widget.from != null &&
           widget.from != 'add stop' &&
           widget.from != 'favourite') {
         setState(() {
@@ -153,8 +177,12 @@ class _DropLocationState extends State<DropLocation>
           _center = addressList[widget.from].latlng;
           _centerLocation = addressList[widget.from].latlng;
           dropAddressConfirmation = addressList[widget.from].address;
+          getAddressDetails(latitude: double.parse(locs!.latitude.toString()),
+              longitude: double.parse(locs.longitude.toString()),
+              addressLine: addressLine, area: area, city: city);
         });
-      } else if (widget.from != null && widget.from == 'favourite') {
+      }
+      else if (widget.from != null && widget.from == 'favourite') {
         var loc = await geolocs.Geolocator.getCurrentPosition(
             desiredAccuracy: geolocs.LocationAccuracy.low);
         setState(() {
@@ -163,7 +191,11 @@ class _DropLocationState extends State<DropLocation>
           _centerLocation = LatLng(double.parse(loc.latitude.toString()),
               double.parse(loc.longitude.toString()));
         });
-      } else if (widget.from == 'add stop') {
+        getAddressDetails(latitude: double.parse(locs!.latitude.toString()),
+            longitude: double.parse(locs.longitude.toString()),
+            addressLine: addressLine, area: area, city: city);
+      }
+      else if (widget.from == 'add stop') {
         if (locs != null) {
           setState(() {
             _center = LatLng(double.parse(locs.latitude.toString()),
@@ -188,10 +220,14 @@ class _DropLocationState extends State<DropLocation>
           dropAddressConfirmation = addressList
               .firstWhere((element) => element.type == 'pickup')
               .address;
+          getAddressDetails(latitude: double.parse(locs!.latitude.toString()),
+              longitude: double.parse(locs.longitude.toString()),
+              addressLine: addressLine, area: area, city: city);
 
           useMyAddress = true;
         });
-      } else {
+      }
+      else {
         setState(() {
           _center = addressList.firstWhere((e) => e.type == 'drop').latlng;
           _centerLocation =
@@ -201,6 +237,9 @@ class _DropLocationState extends State<DropLocation>
                 .firstWhere((element) => element.type == 'drop')
                 .address;
           }
+          getAddressDetails(latitude: double.parse(locs!.latitude.toString()),
+              longitude: double.parse(locs.longitude.toString()),
+              addressLine: addressLine, area: area, city: city);
           useMyAddress = true;
         });
       }
@@ -215,7 +254,7 @@ class _DropLocationState extends State<DropLocation>
   navigateLogout() {
     Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(builder: (context) => const Login()),
+        MaterialPageRoute(builder: (context) => const Loginscreen()),
             (route) => false);
   }
 
@@ -254,281 +293,367 @@ class _DropLocationState extends State<DropLocation>
                   color: page,
                   child: Stack(
                     children: [
-                      SizedBox(
-                        height: media.height * 1,
-                        width: media.width * 1,
-                        child: (_state == '3')
-                            ? (mapType == 'google')
-                            ? GoogleMap(
-                          onMapCreated: _onMapCreated,
-                          initialCameraPosition: CameraPosition(
-                            target: _center,
-                            zoom: 14.0,
-                          ),
-                          onCameraMove: (CameraPosition position) {
-                            //pick current location
-                            // setState(() {
-                            _centerLocation = position.target;
-                            // });
-                          },
-                          onCameraIdle: () async {
-                            if (useMyAddress == false) {
-                              var val = await geoCoding(
-                                  _centerLocation.latitude,
-                                  _centerLocation.longitude);
-                              setState(() {
-                                _center = _centerLocation;
-                                dropAddressConfirmation = val;
-                              });
-                            }
-                            if (useMyAddress == true) {
-                              setState(() {
-                                useMyAddress = false;
-                              });
-                            }
-                          },
-                          minMaxZoomPreference:
-                          const MinMaxZoomPreference(8.0, 20.0),
-                          myLocationButtonEnabled: false,
-                          buildingsEnabled: false,
-                          zoomControlsEnabled: false,
-                          myLocationEnabled: true,
-                        )
-                            : fm.FlutterMap(
-                          mapController: _fmController,
-                          options: fm.MapOptions(
-                              onMapEvent: (v) async {
-                                if (v.source ==
-                                    fm.MapEventSource
-                                        .nonRotatedSizeChange &&
-                                    addressList.isEmpty) {
-                                  _centerLocation = LatLng(
-                                      v.camera.center.latitude,
-                                      v.camera.center.longitude);
-                                  setState(() {});
-
-                                  var val = await geoCoding(
-                                      _centerLocation.latitude,
-                                      _centerLocation.longitude);
-                                  if (val != '') {
-                                    setState(() {
-                                      _center = _centerLocation;
-                                      dropAddressConfirmation = val;
-                                    });
-                                  }
-                                }
-                                if (v.source ==
-                                    fm.MapEventSource.dragEnd) {
-                                  _centerLocation = LatLng(
-                                      v.camera.center.latitude,
-                                      v.camera.center.longitude);
-
-                                  var val = await geoCoding(
-                                      _centerLocation.latitude,
-                                      _centerLocation.longitude);
-                                  if (val != '') {
-                                    setState(() {
-                                      _center = _centerLocation;
-                                      dropAddressConfirmation = val;
-                                    });
-                                  }
-                                }
-                              },
-                              onPositionChanged: (p, l) async {
-                                if (l == false) {
-                                  _centerLocation = LatLng(
-                                      p.center.latitude,
-                                      p.center.longitude);
-                                  setState(() {});
-
-                                  var val = await geoCoding(
-                                      _centerLocation.latitude,
-                                      _centerLocation.longitude);
-                                  if (val != '') {}
-                                }
-                              },
-                              initialCenter: fmlt.LatLng(
-                                  center.latitude, center.longitude),
-                              initialZoom: 16,
-                              onTap: (P, L) {
-                                setState(() {});
-                              }),
-                          children: [
-                            fm.TileLayer(
-                              // minZoom: 10,
-                              urlTemplate:
-                              'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                              userAgentPackageName: 'com.example.app',
-                            ),
-                            const fm.RichAttributionWidget(
-                              attributions: [],
-                            ),
-                          ],
-                        )
-                            : (_state == '2')
-                            ? Container(
-                          height: media.height * 1,
-                          width: media.width * 1,
-                          alignment: Alignment.center,
-                          child: Container(
-                            padding:
-                            EdgeInsets.all(media.width * 0.05),
-                            width: media.width * 0.6,
-                            height: media.width * 0.3,
-                            decoration: BoxDecoration(
-                                color: page,
-                                boxShadow: [
-                                  BoxShadow(
-                                      blurRadius: 5,
-                                      color: Colors.black
-                                          .withOpacity(0.1),
-                                      spreadRadius: 2)
-                                ],
-                                borderRadius:
-                                BorderRadius.circular(10)),
-                            child: Column(
-                              mainAxisAlignment:
-                              MainAxisAlignment.spaceBetween,
+                      Padding(
+                        padding: EdgeInsets.only(left:media.width * 0.04,right: media.width * 0.04,top:  media.width * 0.25),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(15.0),
+                          child: SizedBox(
+                            height: media.height * 0.35,
+                            width: media.width * 1,
+                            child: Stack(
                               children: [
-                                Text(
-                                  languages[choosenLanguage]
-                                  ['text_loc_permission'],
-                                  style: GoogleFonts.notoSans(
-                                      fontSize: media.width * sixteen,
-                                      color: textColor,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                Container(
-                                  alignment: Alignment.centerRight,
-                                  child: InkWell(
-                                    onTap: () async {
-                                      setState(() {
-                                        _state = '';
-                                      });
-                                      await location
-                                          .requestPermission();
-                                      getLocs();
-                                    },
-                                    child: Text(
-                                      languages[choosenLanguage]
-                                      ['text_ok'],
-                                      style: GoogleFonts.notoSans(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize:
-                                          media.width * twenty,
-                                          color: buttonColor),
+                                (_state == '3')
+                                    ? (mapType == 'google')
+                                    ? Stack(
+                                  children: [
+                                    GoogleMap(
+                                      onMapCreated: _onMapCreated,
+                                      initialCameraPosition: CameraPosition(
+                                        target: _center,
+                                        zoom: 14.0,
+                                      ),
+                                      onCameraMove: (CameraPosition position) {
+                                        //pick current location
+                                        // setState(() {
+                                        _centerLocation = position.target;
+                                        // });
+                                      },
+                                      onCameraIdle: () async {
+                                        if (useMyAddress == false) {
+                                          var val = await geoCoding(
+                                              _centerLocation.latitude,
+                                              _centerLocation.longitude);
+                                          setState(() {
+                                            _center = _centerLocation;
+                                            dropAddressConfirmation = val;
+
+                                            getAddressDetails(latitude: _centerLocation.latitude,
+                                                longitude: _centerLocation.longitude,
+                                                addressLine: addressLine, area: area, city: city,cityNotifier: cityNotifier);
+                                          });
+                                        }
+                                        if (useMyAddress == true) {
+                                          setState(() {
+                                            useMyAddress = false;
+                                          });
+                                        }
+                                      },
+                                      minMaxZoomPreference:
+                                      const MinMaxZoomPreference(8.0, 20.0),
+                                      myLocationButtonEnabled: false,
+                                      buildingsEnabled: false,
+                                      zoomControlsEnabled: false,
+                                      myLocationEnabled: true,
+                                    ),
+                                    Positioned.fill(
+                                      // top: 0,
+                                      //   bottom: 0,
+                                        child: Center(
+                                          child: Column(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            children: [
+                                              // SizedBox(
+                                              //   height: (media.height / 2) - media.width * 0.08,
+                                              // ),
+                                              Container(
+                                                child: Image.asset(
+                                                  'assets/images/dropmarker.png',
+                                                  // width: media.width * 0.1,
+                                                  // height: media.width * 0.08,
+                                                  fit: BoxFit.cover,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        )),
+                                  ],
+                                )
+                                    : fm.FlutterMap(
+                                  mapController: _fmController,
+                                  options: fm.MapOptions(
+                                      onMapEvent: (v) async {
+                                        if (v.source ==
+                                            fm.MapEventSource
+                                                .nonRotatedSizeChange &&
+                                            addressList.isEmpty) {
+                                          _centerLocation = LatLng(
+                                              v.camera.center.latitude,
+                                              v.camera.center.longitude);
+                                          setState(() {});
+
+                                          var val = await geoCoding(
+                                              _centerLocation.latitude,
+                                              _centerLocation.longitude);
+                                          if (val != '') {
+                                            setState(() {
+                                              _center = _centerLocation;
+                                              dropAddressConfirmation = val;
+                                            });
+                                          }
+                                        }
+                                        if (v.source ==
+                                            fm.MapEventSource.dragEnd) {
+                                          _centerLocation = LatLng(
+                                              v.camera.center.latitude,
+                                              v.camera.center.longitude);
+
+                                          var val = await geoCoding(
+                                              _centerLocation.latitude,
+                                              _centerLocation.longitude);
+                                          if (val != '') {
+                                            setState(() {
+                                              _center = _centerLocation;
+                                              dropAddressConfirmation = val;
+                                            });
+                                          }
+                                        }
+                                      },
+                                      onPositionChanged: (p, l) async {
+                                        if (l == false) {
+                                          _centerLocation = LatLng(
+                                              p.center.latitude,
+                                              p.center.longitude);
+                                          setState(() {});
+
+                                          var val = await geoCoding(
+                                              _centerLocation.latitude,
+                                              _centerLocation.longitude);
+                                          if (val != '') {}
+                                        }
+                                      },
+                                      initialCenter: fmlt.LatLng(
+                                          center.latitude, center.longitude),
+                                      initialZoom: 16,
+                                      onTap: (P, L) {
+                                        setState(() {});
+                                      }),
+                                  children: [
+                                    fm.TileLayer(
+                                      // minZoom: 10,
+                                      urlTemplate:
+                                      'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                                      userAgentPackageName: 'com.example.app',
+                                    ),
+                                    const fm.RichAttributionWidget(
+                                      attributions: [],
+                                    ),
+                                  ],
+                                )
+                                    : (_state == '2')
+                                    ? Container(
+                                  height: media.height * 1,
+                                  width: media.width * 1,
+                                  alignment: Alignment.center,
+                                  child: Container(
+                                    padding:
+                                    EdgeInsets.all(media.width * 0.05),
+                                    width: media.width * 0.6,
+                                    height: media.width * 0.3,
+                                    decoration: BoxDecoration(
+                                        color: page,
+                                        boxShadow: [
+                                          BoxShadow(
+                                              blurRadius: 5,
+                                              color: Colors.black
+                                                  .withOpacity(0.1),
+                                              spreadRadius: 2)
+                                        ],
+                                        borderRadius:
+                                        BorderRadius.circular(10)),
+                                    child: Column(
+                                      mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          languages[choosenLanguage]
+                                          ['text_loc_permission'],
+                                          style: GoogleFonts.notoSans(
+                                              fontSize: media.width * sixteen,
+                                              color: textColor,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        Container(
+                                          alignment: Alignment.centerRight,
+                                          child: InkWell(
+                                            onTap: () async {
+                                              setState(() {
+                                                _state = '';
+                                              });
+                                              await location
+                                                  .requestPermission();
+                                              getLocs();
+                                            },
+                                            child: Text(
+                                              languages[choosenLanguage]
+                                              ['text_ok'],
+                                              style: GoogleFonts.notoSans(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize:
+                                                  media.width * twenty,
+                                                  color: buttonColor),
+                                            ),
+                                          ),
+                                        )
+                                      ],
                                     ),
                                   ),
                                 )
+                                    : Container(),
+
+
+                                Positioned(
+                                  bottom: media.height*0.042, // Adjust position as needed
+                                  right: media.height*0.025,
+                                  child: InkWell(
+                                    onTap: () async {
+                                      if (locationAllowed == true) {
+                                        if (currentLocation != null) {
+                                          _controller?.animateCamera(
+                                              CameraUpdate.newLatLngZoom(
+                                                  currentLocation, 18.0));
+                                          center = currentLocation;
+                                        } else {
+                                          _controller?.animateCamera(
+                                              CameraUpdate.newLatLngZoom(
+                                                  center, 18.0));
+                                        }
+                                      } else {
+                                        if (serviceEnabled == true) {
+                                          setState(() {
+                                            _locationDenied = true;
+                                          });
+                                        } else {
+                                          // await location.requestService();
+                                          await geolocs.Geolocator
+                                              .getCurrentPosition(
+                                              desiredAccuracy: geolocs
+                                                  .LocationAccuracy
+                                                  .low);
+                                          if (await geolocs
+                                              .GeolocatorPlatform.instance
+                                              .isLocationServiceEnabled()) {
+                                            setState(() {
+                                              _locationDenied = true;
+                                            });
+                                          }
+                                        }
+                                      }
+                                    },
+                                    child: Container(
+                                      height: media.width * 0.1,
+                                      width: media.width * 0.1,
+                                      decoration: BoxDecoration(
+                                          boxShadow: [
+                                            BoxShadow(
+                                                blurRadius: 2,
+                                                color: Colors.black
+                                                    .withOpacity(0.2),
+                                                spreadRadius: 2)
+                                          ],
+                                          color: page,
+                                          borderRadius:
+                                          BorderRadius.circular(
+                                              media.width * 0.06)),
+                                      child: Icon(Icons.my_location_sharp,
+                                          color: textColor),
+                                    ),
+                                  ),
+                                ),
                               ],
                             ),
                           ),
-                        )
-                            : Container(),
+                        ),
                       ),
-                      Positioned(
-                          child: Container(
-                            height: media.height * 1,
-                            width: media.width * 1,
-                            alignment: Alignment.center,
-                            child: Column(
-                              children: [
-                                SizedBox(
-                                  height: (media.height / 2) - media.width * 0.08,
-                                ),
-                                Image.asset(
-                                  'assets/images/dropmarker.png',
-                                  width: media.width * 0.07,
-                                  height: media.width * 0.08,
-                                ),
-                              ],
-                            ),
-                          )),
+
                       Positioned(
                           bottom: 0 + MediaQuery.of(context).viewInsets.bottom,
                           child: (_getDropDetails == false)
                               ? Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Container(
-                                margin: const EdgeInsets.only(
-                                    right: 20, left: 20),
-                                child: InkWell(
-                                  onTap: () async {
-                                    if (locationAllowed == true) {
-                                      if (currentLocation != null) {
-                                        _controller?.animateCamera(
-                                            CameraUpdate.newLatLngZoom(
-                                                currentLocation, 18.0));
-                                        center = currentLocation;
-                                      } else {
-                                        _controller?.animateCamera(
-                                            CameraUpdate.newLatLngZoom(
-                                                center, 18.0));
-                                      }
-                                    } else {
-                                      if (serviceEnabled == true) {
-                                        setState(() {
-                                          _locationDenied = true;
-                                        });
-                                      } else {
-                                        // await location.requestService();
-                                        await geolocs.Geolocator
-                                            .getCurrentPosition(
-                                            desiredAccuracy: geolocs
-                                                .LocationAccuracy
-                                                .low);
-                                        if (await geolocs
-                                            .GeolocatorPlatform.instance
-                                            .isLocationServiceEnabled()) {
-                                          setState(() {
-                                            _locationDenied = true;
-                                          });
-                                        }
-                                      }
-                                    }
-                                  },
-                                  child: Container(
-                                    height: media.width * 0.1,
-                                    width: media.width * 0.1,
-                                    decoration: BoxDecoration(
-                                        boxShadow: [
-                                          BoxShadow(
-                                              blurRadius: 2,
-                                              color: Colors.black
-                                                  .withOpacity(0.2),
-                                              spreadRadius: 2)
-                                        ],
-                                        color: page,
-                                        borderRadius:
-                                        BorderRadius.circular(
-                                            media.width * 0.02)),
-                                    child: Icon(Icons.my_location_sharp,
-                                        color: textColor),
-                                  ),
-                                ),
-                              ),
-                              SizedBox(
-                                height: media.width * 0.1,
-                              ),
                               Container(
                                 color: page,
                                 width: media.width * 1,
                                 padding:
                                 EdgeInsets.all(media.width * 0.05),
                                 child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
+                                    MyText(text: 'SAVE AS', size: font13Size,
+                                      fontweight: FontWeight.w500,color: Color(0xff4F4F4f),),
+
+                                    SizedBox(height: 12.0),
+                                    Row(
+
+                                      children: [
+                                        GestureDetector(
+                                          onTap:(){
+                                            setState(() {
+                                              selectedAddressType = "Home";
+                                              widget.favName="Home";
+                                              favName = 'Home';
+                                              widget.from="favourite";
+                                            });
+                                          },
+                                          child: AddressTypeButton(
+                                            label: 'Home',
+                                            icon: Icons.home,
+                                            isSelected: selectedAddressType == "Home",
+                                          ),
+                                        ),
+                                        SizedBox(width: 15,),
+                                        GestureDetector(
+                                          onTap: (){
+                                            setState(() {
+                                              widget.favName="Work";
+                                              selectedAddressType = "Work";
+                                              favName = 'Work';
+                                              widget.from="favourite";
+                                            });
+                                          },
+                                          child: AddressTypeButton(
+                                            label: 'Work',
+                                            icon: Icons.work,
+                                            isSelected: selectedAddressType == "Work",
+                                          ),
+                                        ),
+                                        SizedBox(width: 15,),
+                                        GestureDetector(
+                                          onTap: (){
+                                            setState(() {
+                                              // widget.favName="abc";
+                                              favName = 'Others';
+                                              selectedAddressType = "Other";
+                                            });
+                                            showDialog(
+                                              context: context,
+                                              builder: (context) {
+                                                return addDialoge(context);
+                                              },
+                                            );
+                                            print("widget.favName ${widget.favName}");
+                                          },
+                                          child: AddressTypeButton(
+                                            label: 'Other',
+                                            icon: Icons.question_mark,
+                                            isSelected: selectedAddressType == "Other",
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+
+                                    const SizedBox(height: 24.0),
                                     Container(
                                         padding: EdgeInsets.fromLTRB(
-                                            media.width * 0.03,
+                                            media.width * 0.05,
                                             media.width * 0.01,
                                             media.width * 0.03,
                                             media.width * 0.01),
-                                        height: media.width * 0.1,
+                                        // height: media.width * 0.1,
                                         width: media.width * 0.9,
                                         decoration: BoxDecoration(
                                             border: Border.all(
-                                              color: Colors.grey,
+                                              color: borderColors,
                                               width: 1.5,
                                             ),
                                             borderRadius:
@@ -536,141 +661,320 @@ class _DropLocationState extends State<DropLocation>
                                                 media.width * 0.02),
                                             color: page),
                                         alignment: Alignment.centerLeft,
-                                        child: Row(
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
-                                            Container(
-                                              height: media.width * 0.04,
-                                              width: media.width * 0.04,
-                                              alignment: Alignment.center,
-                                              decoration: BoxDecoration(
-                                                  shape: BoxShape.circle,
-                                                  color: const Color(
-                                                      0xffFF0000)
-                                                      .withOpacity(0.3)),
-                                              child: Container(
-                                                height:
-                                                media.width * 0.02,
-                                                width: media.width * 0.02,
-                                                decoration:
-                                                const BoxDecoration(
-                                                    shape: BoxShape
-                                                        .circle,
-                                                    color: Color(
-                                                        0xffFF0000)),
-                                              ),
-                                            ),
+                                            MyText(text: "Address line 1",
+                                              fontweight: FontWeight.w500,
+                                              size: font13Size,color: Color(0xff5C6266),),
                                             SizedBox(
                                                 width:
                                                 media.width * 0.02),
-                                            Expanded(
-                                              child:
-                                              (dropAddressConfirmation ==
-                                                  '')
-                                                  ? Text(
-                                                languages[
-                                                choosenLanguage]
-                                                [
-                                                'text_pickdroplocation'],
-                                                style: GoogleFonts.notoSans(
-                                                    fontSize: media
-                                                        .width *
-                                                        twelve,
-                                                    color:
-                                                    hintColor),
-                                              )
-                                                  : Row(
-                                                mainAxisAlignment:
-                                                MainAxisAlignment
-                                                    .spaceBetween,
-                                                children: [
-                                                  SizedBox(
-                                                    width: media
-                                                        .width *
-                                                        0.7,
-                                                    child: Text(
-                                                      dropAddressConfirmation,
-                                                      style: GoogleFonts
-                                                          .notoSans(
-                                                        fontSize:
-                                                        media.width *
-                                                            twelve,
-                                                        color:
-                                                        textColor,
-                                                      ),
-                                                      maxLines:
-                                                      1,
-                                                      overflow:
-                                                      TextOverflow
-                                                          .ellipsis,
-                                                    ),
+                                            (dropAddressConfirmation ==
+                                                '')
+                                                ? Text(
+                                              languages[
+                                              choosenLanguage]
+                                              [
+                                              'text_pickdroplocation'],
+                                              style: GoogleFonts.notoSans(
+                                                  fontSize: media
+                                                      .width *
+                                                      twelve,
+                                                  color:
+                                                  hintColor),
+                                            )
+                                                : Row(
+                                              mainAxisAlignment:
+                                              MainAxisAlignment
+                                                  .spaceBetween,
+                                              children: [
+                                                SizedBox(
+                                                  width: media
+                                                      .width *
+                                                      0.7,
+                                                  child:
+                                                  MyText(text: dropAddressConfirmation,
+                                                    fontweight: FontWeight.w500,
+                                                    size: font16Size,color: Color(0xff303030),
+                                                    maxLines:
+                                                    1,
+                                                    overflow:
+                                                    TextOverflow
+                                                        .ellipsis,
                                                   ),
-                                                  (favAddress.length <
-                                                      4 &&
-                                                      (widget.from !=
-                                                          'favourite'))
-                                                      ? InkWell(
-                                                    onTap:
-                                                        () async {
-                                                      if (favAddress.where((element) => element['pick_address'] == dropAddressConfirmation).isEmpty) {
-                                                        setState(() {
-                                                          favSelectedAddress = dropAddressConfirmation;
-                                                          favLat = _center.latitude;
-                                                          favLng = _center.longitude;
-                                                          favAddressAdd = true;
-                                                        });
-                                                      }
-                                                    },
-                                                    child:
-                                                    Icon(
-                                                      Icons.favorite_outline,
-                                                      size:
-                                                      media.width * 0.05,
-                                                      color: favAddress.where((element) => element['pick_address'] == dropAddressConfirmation).isEmpty
-                                                          ? (isDarkTheme == true)
-                                                          ? Colors.white
-                                                          : textColor
-                                                          : buttonColor,
-                                                    ),
-                                                  )
-                                                      : Container()
-                                                ],
-                                              ),
+                                                ),
+                                                // (favAddress.length <
+                                                //             4 &&
+                                                //         (widget.from !=
+                                                //             'favourite'))
+                                                //     ?
+                                                // InkWell(
+                                                //         onTap:
+                                                //             () async {
+                                                //           if (favAddress.where((element) => element['pick_address'] == dropAddressConfirmation).isEmpty) {
+                                                //             setState(() {
+                                                //               favSelectedAddress = dropAddressConfirmation;
+                                                //               favLat = _center.latitude;
+                                                //               favLng = _center.longitude;
+                                                //               favAddressAdd = true;
+                                                //             });
+                                                //           }
+                                                //         },
+                                                //         child:
+                                                //             Icon(
+                                                //           Icons.favorite_outline,
+                                                //           size:
+                                                //               media.width * 0.05,
+                                                //           color: favAddress.where((element) => element['pick_address'] == dropAddressConfirmation).isEmpty
+                                                //               ? (isDarkTheme == true)
+                                                //                   ? Colors.white
+                                                //                   : textColor
+                                                //               : buttonColor,
+                                                //         ),
+                                                //       )
+                                                //     : Container()
+                                              ],
                                             ),
                                           ],
                                         )),
                                     SizedBox(
-                                      height: media.width * 0.03,
+                                      height: media.height * 0.02,
+                                    ),
+                                    Container(
+                                        padding: EdgeInsets.fromLTRB(
+                                            media.width * 0.05,
+                                            media.width * 0.01,
+                                            media.width * 0.03,
+                                            media.width * 0.01),
+                                        // height: media.width * 0.1,
+                                        width: media.width * 0.9,
+                                        decoration: BoxDecoration(
+                                            border: Border.all(
+                                              color: borderColors,
+                                              width: 1.5,
+                                            ),
+                                            borderRadius:
+                                            BorderRadius.circular(
+                                                media.width * 0.02),
+                                            color: page),
+                                        alignment: Alignment.centerLeft,
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            MyText(text: "Area",
+                                              fontweight: FontWeight.w500,
+                                              size: font13Size,color: Color(0xff5C6266),),
+                                            (area == '')
+                                                ? Text(
+                                              languages[
+                                              choosenLanguage]
+                                              [
+                                              'text_pickdroplocation'],
+                                              style: GoogleFonts.notoSans(
+                                                  fontSize: media
+                                                      .width *
+                                                      twelve,
+                                                  color:
+                                                  hintColor),
+                                            )
+                                                : Row(
+                                              mainAxisAlignment:
+                                              MainAxisAlignment
+                                                  .spaceBetween,
+                                              children: [
+                                                SizedBox(
+                                                  width: media
+                                                      .width *
+                                                      0.7,
+                                                  child: MyText(text: area,
+                                                    fontweight: FontWeight.w500,
+                                                    size: font16Size,color: Color(0xff303030),
+                                                    maxLines:
+                                                    1,
+                                                    overflow:
+                                                    TextOverflow
+                                                        .ellipsis,
+                                                  ),
+
+                                                ),
+
+                                              ],
+                                            ),
+                                          ],
+                                        )),
+                                    SizedBox(
+                                      height: media.height * 0.02,
+                                    ),
+                                    Container(
+                                        padding: EdgeInsets.fromLTRB(
+                                            media.width * 0.05,
+                                            media.width * 0.01,
+                                            media.width * 0.03,
+                                            media.width * 0.01),
+                                        // height: media.width * 0.1,
+                                        width: media.width * 0.9,
+                                        decoration: BoxDecoration(
+                                            border: Border.all(
+                                              color: borderColors,
+                                              width: 1.5,
+                                            ),
+                                            borderRadius:
+                                            BorderRadius.circular(
+                                                media.width * 0.02),
+                                            color: page),
+                                        alignment: Alignment.centerLeft,
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            MyText(text: "City",
+                                              fontweight: FontWeight.w500,
+                                              size: font13Size,color: Color(0xff5C6266),),
+                                            SizedBox(
+                                                width:
+                                                media.width * 0.02),
+                                            (city ==
+                                                '')
+                                                ? Text(
+                                              languages[
+                                              choosenLanguage]
+                                              [
+                                              'text_pickdroplocation'],
+                                              style: GoogleFonts.notoSans(
+                                                  fontSize: media
+                                                      .width *
+                                                      twelve,
+                                                  color:
+                                                  hintColor),
+                                            )
+                                                : Row(
+                                              mainAxisAlignment:
+                                              MainAxisAlignment
+                                                  .spaceBetween,
+                                              children: [
+                                                SizedBox(
+                                                  width: media
+                                                      .width *
+                                                      0.7,
+                                                  child: ValueListenableBuilder<String>(
+                                                    valueListenable: cityNotifier,
+                                                    builder: (context, city, child) {
+                                                      return MyText(text: city,
+                                                        fontweight: FontWeight.w500,
+                                                        size: font16Size,color: Color(0xff303030),
+                                                        maxLines:
+                                                        1,
+                                                        overflow:
+                                                        TextOverflow
+                                                            .ellipsis,
+                                                      );
+
+                                                    },
+                                                  ),
+                                                  // Text(
+                                                  //   city,
+                                                  //   style: GoogleFonts
+                                                  //       .notoSans(
+                                                  //     fontSize:
+                                                  //     media.width *
+                                                  //         twelve,
+                                                  //     color:
+                                                  //     textColor,
+                                                  //   ),
+                                                  //   maxLines:
+                                                  //   1,
+                                                  //   overflow:
+                                                  //   TextOverflow
+                                                  //       .ellipsis,
+                                                  // ),
+                                                ),
+                                                (favAddress.length <
+                                                    4 &&
+                                                    (widget.from !=
+                                                        'favourite'))
+                                                    ? InkWell(
+                                                  onTap:
+                                                      () async {
+                                                    if (favAddress.where((element) => element['pick_address'] == dropAddressConfirmation).isEmpty) {
+                                                      setState(() {
+                                                        favSelectedAddress = dropAddressConfirmation;
+                                                        favLat = _center.latitude;
+                                                        favLng = _center.longitude;
+                                                        favAddressAdd = true;
+                                                      });
+                                                    }
+                                                  },
+                                                  child:
+                                                  Icon(
+                                                    Icons.favorite_outline,
+                                                    size:
+                                                    media.width * 0.05,
+                                                    color: favAddress.where((element) => element['pick_address'] == dropAddressConfirmation).isEmpty
+                                                        ? (isDarkTheme == true)
+                                                        ? Colors.white
+                                                        : textColor
+                                                        : buttonColor,
+                                                  ),
+                                                )
+                                                    : Container()
+                                              ],
+                                            ),
+                                          ],
+                                        )),
+                                    SizedBox(
+                                      height: media.height * 0.04,
                                     ),
                                     Button(
+                                        color: buttonColors,
+                                        textcolor: Color(0xff030303),
+                                        borcolor: buttonColors,
                                         onTap: () async {
-                                          print("dropAddressConfirmation ${dropAddressConfirmation}");
                                           if (dropAddressConfirmation !=
                                               '') {
                                             //remove in envato
-                                            print("choosenTransportType::- ${choosenTransportType} widget.from::-${widget.from}");
-                                            if (choosenTransportType == 0 &&
+                                            if (choosenTransportType ==
+                                                0 &&
                                                 widget.from == null) {
-                                              if (addressList.where((element) => element.type == 'drop').isEmpty) {
+                                              if (addressList
+                                                  .where((element) =>
+                                              element.type ==
+                                                  'drop')
+                                                  .isEmpty) {
                                                 addressList.add(AddressList(
-                                                    id: (addressList.length + 1)
+                                                    id: (addressList
+                                                        .length +
+                                                        1)
                                                         .toString(),
                                                     type: 'drop',
-                                                    address: dropAddressConfirmation,
+                                                    address:
+                                                    dropAddressConfirmation,
                                                     latlng: _center,
                                                     pickup: false));
                                               } else {
-                                                addressList.firstWhere((element) => element.type == 'drop').address = dropAddressConfirmation;
-                                                addressList.firstWhere((element) => element.type ==
-                                                    'drop')
+                                                addressList
+                                                    .firstWhere(
+                                                        (element) =>
+                                                    element
+                                                        .type ==
+                                                        'drop')
+                                                    .address =
+                                                    dropAddressConfirmation;
+                                                addressList
+                                                    .firstWhere(
+                                                        (element) =>
+                                                    element
+                                                        .type ==
+                                                        'drop')
                                                     .latlng = _center;
                                               }
                                             } else if (choosenTransportType ==
                                                 0 &&
                                                 widget.from != null) {
-                                              print("widget.from::- ${widget.from}");
                                               if (widget.from != null &&
-                                                  widget.from != 'add stop' && widget.from !=
-                                                  'favourite') {
+                                                  widget.from !=
+                                                      'add stop' &&
+                                                  widget.from !=
+                                                      'favourite') {
                                                 addressList[widget.from]
                                                     .name = '';
                                                 addressList[widget.from]
@@ -773,8 +1077,7 @@ class _DropLocationState extends State<DropLocation>
                                                         instructions:
                                                         instruction,
                                                         pickup: pickup));
-                                              }
-                                              else if (widget.from ==
+                                              } else if (widget.from ==
                                                   'favourite') {
                                                 setState(() {
                                                   _isLoading = true;
@@ -797,8 +1100,8 @@ class _DropLocationState extends State<DropLocation>
                                                 // ignore: use_build_context_synchronously
                                                   context,
                                                   true);
-                                            }
-                                            else if (choosenTransportType == 1) {
+                                            } else if (choosenTransportType ==
+                                                1) {
                                               if (widget.from == null) {
                                                 if ((addressList
                                                     .where((element) =>
@@ -1072,7 +1375,10 @@ class _DropLocationState extends State<DropLocation>
                                           }
                                         },
                                         text: languages[choosenLanguage]
-                                        ['text_confirm'])
+                                        ['text_confirm']),
+                                    SizedBox(
+                                      height: media.height * 0.06,
+                                    ),
                                   ],
                                 ),
                               ),
@@ -1577,633 +1883,396 @@ class _DropLocationState extends State<DropLocation>
                             color: (addAutoFill.isEmpty)
                                 ? Colors.transparent
                                 : page,
-                            child: Column(
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment:
+                              MainAxisAlignment.spaceBetween,
                               children: [
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment:
-                                  MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    InkWell(
-                                      onTap: () {
-                                        if (_getDropDetails == false ||
-                                            choosenTransportType == 0) {
-                                          Navigator.pop(context);
-                                        } else {
-                                          setState(() {
-                                            _getDropDetails = false;
-                                          });
-                                        }
-                                      },
-                                      child: Container(
-                                        height: media.width * 0.1,
-                                        width: media.width * 0.1,
-                                        decoration: BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            boxShadow: [
-                                              BoxShadow(
-                                                  color: Colors.black
-                                                      .withOpacity(0.2),
-                                                  spreadRadius: 2,
-                                                  blurRadius: 2)
-                                            ],
-                                            color: page),
-                                        alignment: Alignment.center,
-                                        child: Icon(Icons.arrow_back,
-                                            color: textColor),
+
+                                InkWell(
+                                  onTap: () {
+                                    if (_getDropDetails == false ||
+                                        choosenTransportType == 0) {
+                                      Navigator.pop(context);
+                                    } else {
+                                      setState(() {
+                                        _getDropDetails = false;
+                                      });
+                                    }
+                                  },
+                                  child: CircleAvatar(
+                                    backgroundColor: Color(0xffECECEC),
+                                    radius: 18,
+                                    child: Padding(
+                                      padding:  EdgeInsets.only(left: 09),
+                                      child: Icon(
+                                        Icons.arrow_back_ios,
+                                        color: iconGrayColors,
+                                        size: 20,
                                       ),
                                     ),
-                                    Container(
-                                      height: media.width * 0.1,
-                                      width: media.width * 0.75,
-                                      padding: EdgeInsets.fromLTRB(
-                                          media.width * 0.05,
-                                          0,
-                                          media.width * 0.05,
-                                          0),
-                                      decoration: BoxDecoration(
-                                          boxShadow: [
-                                            BoxShadow(
-                                                color: Colors.black
-                                                    .withOpacity(0.2),
-                                                spreadRadius: 2,
-                                                blurRadius: 2)
-                                          ],
-                                          color: page,
-                                          borderRadius: BorderRadius.circular(
-                                              media.width * 0.05)),
-                                      child: TextField(
-                                          controller: search,
-                                          autofocus: (widget.from == 'add stop')
-                                              ? true
-                                              : false,
-                                          decoration: InputDecoration(
-                                              contentPadding:
-                                              (languageDirection == 'rtl')
-                                                  ? EdgeInsets.only(
-                                                  bottom: media.width *
-                                                      0.03)
-                                                  : EdgeInsets.only(
-                                                  bottom: media.width *
-                                                      0.042),
-                                              border: InputBorder.none,
-                                              hintText: languages[choosenLanguage]
-                                              ['text_4lettersforautofill'],
-                                              hintStyle: GoogleFonts.notoSans(
-                                                  fontSize:
-                                                  media.width * twelve,
-                                                  color: textColor
-                                                      .withOpacity(0.4))),
-                                          style: GoogleFonts.notoSans(
-                                              color: textColor),
-                                          maxLines: 1,
-                                          onChanged: (val) {
-                                            if (val.isEmpty) {
-                                              _sessionToken = null;
-                                            }
-                                            _debouncer.run(() {
-                                              if (val.length >= 4) {
-                                                if (storedAutoAddress
-                                                    .where((element) =>
-                                                    element['description']
-                                                        .toString()
-                                                        .toLowerCase()
-                                                        .contains(val
-                                                        .toLowerCase()))
-                                                    .isNotEmpty) {
-                                                  addAutoFill.removeWhere(
-                                                          (element) =>
-                                                      element['description']
-                                                          .toString()
-                                                          .toLowerCase()
-                                                          .contains(val
-                                                          .toLowerCase()) ==
-                                                          false);
-                                                  storedAutoAddress
-                                                      .where((element) =>
-                                                      element['description']
-                                                          .toString()
-                                                          .toLowerCase()
-                                                          .contains(val
-                                                          .toLowerCase()))
-                                                      .forEach((element) {
-                                                    addAutoFill.add(element);
-                                                  });
-                                                  valueNotifierHome
-                                                      .incrementNotifier();
-                                                } else {
-                                                  _sessionToken ??=
-                                                      const Uuid().v4();
-                                                  getAutocomplete(
-                                                      val,
-                                                      _sessionToken,
-                                                      _center.latitude,
-                                                      _center.longitude);
-                                                }
-                                              } else if (val.isEmpty) {
-                                                setState(() {
-                                                  addAutoFill.clear();
-                                                });
-                                              }
-                                            });
-                                          }),
-                                    )
-                                  ],
-                                ),
-                                SizedBox(
-                                  height: media.width * 0.05,
-                                ),
-                                (addAutoFill.isNotEmpty)
-                                    ? Container(
-                                  height: media.height * 0.45,
-                                  padding:
-                                  EdgeInsets.all(media.width * 0.02),
-                                  width: media.width * 0.9,
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(
-                                          media.width * 0.05),
-                                      color: page),
-                                  child: SingleChildScrollView(
-                                    child: Column(
-                                      children: addAutoFill
-                                          .asMap()
-                                          .map((i, value) {
-                                        return MapEntry(
-                                            i,
-                                            (i < 7)
-                                                ? Material(
-                                              color: Colors
-                                                  .transparent,
-                                              child: InkWell(
-                                                onTap:
-                                                    () async {
-                                                  // ignore: prefer_typing_uninitialized_variables
-                                                  var val;
-                                                  if (addAutoFill[
-                                                  i]
-                                                  [
-                                                  'lat'] ==
-                                                      '') {
-                                                    val = await geoCodingForLatLng(
-                                                        addAutoFill[i]
-                                                        [
-                                                        'place'],
-                                                        _sessionToken);
-                                                    _sessionToken =
-                                                    null;
-                                                  }
-
-                                                  setState(() {
-                                                    useMyAddress =
-                                                    true;
-                                                    _center = (addAutoFill[i]['lat'] ==
-                                                        '')
-                                                        ? LatLng(
-                                                        double.parse(val['lat']
-                                                            .toString()),
-                                                        double.parse(val['lng']
-                                                            .toString()))
-                                                        : LatLng(
-                                                        double.parse(addAutoFill[i]['lat'].toString()),
-                                                        double.parse(addAutoFill[i]['lon'].toString()));
-                                                    dropAddressConfirmation =
-                                                    addAutoFill[i]
-                                                    [
-                                                    'description'];
-                                                    if (mapType ==
-                                                        'google') {
-                                                      _controller?.moveCamera(CameraUpdate.newLatLngZoom(
-                                                          _center,
-                                                          14.0));
-                                                    } else {
-                                                      _fmController.move(
-                                                          fmlt.LatLng(
-                                                              _center.latitude,
-                                                              _center.longitude),
-                                                          14);
-                                                    }
-                                                  });
-                                                  FocusManager
-                                                      .instance
-                                                      .primaryFocus
-                                                      ?.unfocus();
-                                                  addAutoFill
-                                                      .clear();
-                                                  search.text =
-                                                  '';
-                                                },
-                                                child:
-                                                Container(
-                                                  padding: EdgeInsets.fromLTRB(
-                                                      0,
-                                                      media.width *
-                                                          0.04,
-                                                      0,
-                                                      media.width *
-                                                          0.04),
-                                                  child: Row(
-                                                    mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                    children: [
-                                                      Container(
-                                                        height: media.width *
-                                                            0.1,
-                                                        width: media.width *
-                                                            0.1,
-                                                        decoration:
-                                                        BoxDecoration(
-                                                          shape:
-                                                          BoxShape.circle,
-                                                          color:
-                                                          Colors.grey[200],
-                                                        ),
-                                                        child: const Icon(
-                                                            Icons.access_time),
-                                                      ),
-                                                      Container(
-                                                        alignment:
-                                                        Alignment.centerLeft,
-                                                        width: media.width *
-                                                            0.7,
-                                                        child: Text(
-                                                            (addAutoFill[i]['description'] != null)
-                                                                ? addAutoFill[i]['description']
-                                                                : addAutoFill[i]['display_name'],
-                                                            style: GoogleFonts.notoSans(
-                                                              fontSize: media.width * twelve,
-                                                              color: textColor,
-                                                            ),
-                                                            maxLines: 2),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ),
-                                            )
-                                                : Container());
-                                      })
-                                          .values
-                                          .toList(),
-                                    ),
                                   ),
-                                )
-                                    : Container()
+                                ),
+                                MyText(text: "Add Address",size: font18Size,
+                                  fontweight: FontWeight.w600,
+                                  color: headingColors,
+                                ),
+                                SizedBox(width: media.width*0.05,)
                               ],
                             ),
                           )),
 
-                      //fav address
-                      (favAddressAdd == true)
-                          ? Positioned(
-                          top: 0,
-                          child: Container(
-                            height: media.height * 1,
-                            width: media.width * 1,
-                            color: Colors.transparent.withOpacity(0.6),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                SizedBox(
-                                  width: media.width * 0.9,
-                                  child: Row(
-                                    mainAxisAlignment:
-                                    MainAxisAlignment.end,
-                                    children: [
-                                      Container(
-                                        height: media.width * 0.1,
-                                        width: media.width * 0.1,
-                                        decoration: BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            color: page),
-                                        child: InkWell(
-                                          onTap: () {
-                                            setState(() {
-                                              favName = '';
-                                              favAddressAdd = false;
-                                            });
-                                          },
-                                          child: const Icon(
-                                              Icons.cancel_outlined),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                SizedBox(
-                                  height: media.width * 0.05,
-                                ),
-                                Container(
-                                  padding:
-                                  EdgeInsets.all(media.width * 0.05),
-                                  width: media.width * 0.9,
-                                  decoration: BoxDecoration(
-                                      borderRadius:
-                                      BorderRadius.circular(12),
-                                      color: page),
-                                  child: Column(
-                                    children: [
-                                      Text(
-                                        languages[choosenLanguage]
-                                        ['text_saveaddressas'],
-                                        style: GoogleFonts.notoSans(
-                                            fontSize: media.width * sixteen,
-                                            color: textColor,
-                                            fontWeight: FontWeight.w600),
-                                      ),
-                                      SizedBox(
-                                        height: media.width * 0.025,
-                                      ),
-                                      Text(
-                                        favSelectedAddress,
-                                        style: GoogleFonts.notoSans(
-                                            fontSize: media.width * twelve,
-                                            color: textColor),
-                                      ),
-                                      SizedBox(
-                                        height: media.width * 0.025,
-                                      ),
-                                      Row(
-                                        mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          InkWell(
-                                            onTap: () {
-                                              FocusManager
-                                                  .instance.primaryFocus
-                                                  ?.unfocus();
-                                              setState(() {
-                                                favName = 'Home';
-                                              });
-                                            },
-                                            child: Container(
-                                              padding: EdgeInsets.all(
-                                                  media.width * 0.01),
-                                              child: Row(
-                                                children: [
-                                                  Container(
-                                                    height:
-                                                    media.height * 0.05,
-                                                    width:
-                                                    media.width * 0.05,
-                                                    decoration: BoxDecoration(
-                                                        shape:
-                                                        BoxShape.circle,
-                                                        border: Border.all(
-                                                            color: Colors
-                                                                .black,
-                                                            width: 1.2)),
-                                                    alignment:
-                                                    Alignment.center,
-                                                    child:
-                                                    (favName == 'Home')
-                                                        ? Container(
-                                                      height: media
-                                                          .width *
-                                                          0.03,
-                                                      width: media
-                                                          .width *
-                                                          0.03,
-                                                      decoration:
-                                                      const BoxDecoration(
-                                                        shape: BoxShape
-                                                            .circle,
-                                                        color: Colors
-                                                            .black,
-                                                      ),
-                                                    )
-                                                        : Container(),
-                                                  ),
-                                                  SizedBox(
-                                                    width:
-                                                    media.width * 0.01,
-                                                  ),
-                                                  Text(languages[
-                                                  choosenLanguage]
-                                                  ['text_home'])
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                          InkWell(
-                                            onTap: () {
-                                              FocusManager
-                                                  .instance.primaryFocus
-                                                  ?.unfocus();
-                                              setState(() {
-                                                favName = 'Work';
-                                              });
-                                            },
-                                            child: Container(
-                                              padding: EdgeInsets.all(
-                                                  media.width * 0.01),
-                                              child: Row(
-                                                children: [
-                                                  Container(
-                                                    height:
-                                                    media.height * 0.05,
-                                                    width:
-                                                    media.width * 0.05,
-                                                    decoration: BoxDecoration(
-                                                        shape:
-                                                        BoxShape.circle,
-                                                        border: Border.all(
-                                                            color: Colors
-                                                                .black,
-                                                            width: 1.2)),
-                                                    alignment:
-                                                    Alignment.center,
-                                                    child:
-                                                    (favName == 'Work')
-                                                        ? Container(
-                                                      height: media
-                                                          .width *
-                                                          0.03,
-                                                      width: media
-                                                          .width *
-                                                          0.03,
-                                                      decoration:
-                                                      const BoxDecoration(
-                                                        shape: BoxShape
-                                                            .circle,
-                                                        color: Colors
-                                                            .black,
-                                                      ),
-                                                    )
-                                                        : Container(),
-                                                  ),
-                                                  SizedBox(
-                                                    width:
-                                                    media.width * 0.01,
-                                                  ),
-                                                  Text(languages[
-                                                  choosenLanguage]
-                                                  ['text_work'])
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                          InkWell(
-                                            onTap: () {
-                                              FocusManager
-                                                  .instance.primaryFocus
-                                                  ?.unfocus();
-                                              setState(() {
-                                                favName = 'Others';
-                                              });
-                                            },
-                                            child: Container(
-                                              padding: EdgeInsets.all(
-                                                  media.width * 0.01),
-                                              child: Row(
-                                                children: [
-                                                  Container(
-                                                    height:
-                                                    media.height * 0.05,
-                                                    width:
-                                                    media.width * 0.05,
-                                                    decoration: BoxDecoration(
-                                                        shape:
-                                                        BoxShape.circle,
-                                                        border: Border.all(
-                                                            color: Colors
-                                                                .black,
-                                                            width: 1.2)),
-                                                    alignment:
-                                                    Alignment.center,
-                                                    child: (favName ==
-                                                        'Others')
-                                                        ? Container(
-                                                      height: media
-                                                          .width *
-                                                          0.03,
-                                                      width: media
-                                                          .width *
-                                                          0.03,
-                                                      decoration:
-                                                      const BoxDecoration(
-                                                        shape: BoxShape
-                                                            .circle,
-                                                        color: Colors
-                                                            .black,
-                                                      ),
-                                                    )
-                                                        : Container(),
-                                                  ),
-                                                  SizedBox(
-                                                    width:
-                                                    media.width * 0.01,
-                                                  ),
-                                                  Text(languages[
-                                                  choosenLanguage]
-                                                  ['text_others'])
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      (favName == 'Others')
-                                          ? Container(
-                                        padding: EdgeInsets.all(
-                                            media.width * 0.025),
-                                        decoration: BoxDecoration(
-                                            borderRadius:
-                                            BorderRadius.circular(
-                                                12),
-                                            border: Border.all(
-                                                color: borderLines,
-                                                width: 1.2)),
-                                        child: TextField(
-                                          decoration: InputDecoration(
-                                              border:
-                                              InputBorder.none,
-                                              hintText: languages[
-                                              choosenLanguage]
-                                              [
-                                              'text_enterfavname'],
-                                              hintStyle: GoogleFonts
-                                                  .notoSans(
-                                                  fontSize: media
-                                                      .width *
-                                                      twelve,
-                                                  color:
-                                                  hintColor)),
-                                          maxLines: 1,
-                                          onChanged: (val) {
-                                            setState(() {
-                                              favNameText = val;
-                                            });
-                                          },
-                                        ),
-                                      )
-                                          : Container(),
-                                      SizedBox(
-                                        height: media.width * 0.05,
-                                      ),
-                                      Button(
-                                          onTap: () async {
-                                            if (favName == 'Others' &&
-                                                favNameText != '') {
-                                              setState(() {
-                                                _isLoading = true;
-                                              });
-                                              var val =
-                                              await addFavLocation(
-                                                  favLat,
-                                                  favLng,
-                                                  favSelectedAddress,
-                                                  favNameText);
-                                              setState(() {
-                                                _isLoading = false;
-                                                if (val == true) {
-                                                  favLat = '';
-                                                  favLng = '';
-                                                  favSelectedAddress = '';
-                                                  favNameText = '';
-                                                  favName = 'Home';
-                                                  favAddressAdd = false;
-                                                } else if (val ==
-                                                    'logout') {
-                                                  navigateLogout();
-                                                }
-                                              });
-                                            } else if (favName == 'Home' ||
-                                                favName == 'Work') {
-                                              setState(() {
-                                                _isLoading = true;
-                                              });
-                                              var val =
-                                              await addFavLocation(
-                                                  favLat,
-                                                  favLng,
-                                                  favSelectedAddress,
-                                                  favName);
-                                              setState(() {
-                                                _isLoading = false;
-                                                if (val == true) {
-                                                  favLat = '';
-                                                  favLng = '';
-                                                  favSelectedAddress = '';
-                                                  favNameText = '';
-                                                  favName = 'Home';
-                                                  favAddressAdd = false;
-                                                } else if (val ==
-                                                    'logout') {
-                                                  navigateLogout();
-                                                }
-                                              });
-                                            }
-                                          },
-                                          text: languages[choosenLanguage]
-                                          ['text_confirm'])
-                                    ],
-                                  ),
-                                )
-                              ],
-                            ),
-                          ))
-                          : Container(),
+                      // //fav address
+                      // (favAddressAdd == true)
+                      //     ? Positioned(
+                      //         top: 0,
+                      //         child: Container(
+                      //           height: media.height * 1,
+                      //           width: media.width * 1,
+                      //           color: Colors.transparent.withOpacity(0.6),
+                      //           child: Column(
+                      //             mainAxisAlignment: MainAxisAlignment.center,
+                      //             children: [
+                      //               SizedBox(
+                      //                 width: media.width * 0.9,
+                      //                 child: Row(
+                      //                   mainAxisAlignment:
+                      //                       MainAxisAlignment.end,
+                      //                   children: [
+                      //                     Container(
+                      //                       height: media.width * 0.1,
+                      //                       width: media.width * 0.1,
+                      //                       decoration: BoxDecoration(
+                      //                           shape: BoxShape.circle,
+                      //                           color: page),
+                      //                       child: InkWell(
+                      //                         onTap: () {
+                      //                           setState(() {
+                      //                             favName = '';
+                      //                             favAddressAdd = false;
+                      //                           });
+                      //                         },
+                      //                         child: const Icon(
+                      //                             Icons.cancel_outlined),
+                      //                       ),
+                      //                     ),
+                      //                   ],
+                      //                 ),
+                      //               ),
+                      //               SizedBox(
+                      //                 height: media.width * 0.05,
+                      //               ),
+                      //               Container(
+                      //                 padding:
+                      //                     EdgeInsets.all(media.width * 0.05),
+                      //                 width: media.width * 0.9,
+                      //                 decoration: BoxDecoration(
+                      //                     borderRadius:
+                      //                         BorderRadius.circular(12),
+                      //                     color: page),
+                      //                 child: Column(
+                      //                   children: [
+                      //                     Text(
+                      //                       languages[choosenLanguage]
+                      //                           ['text_saveaddressas'],
+                      //                       style: GoogleFonts.notoSans(
+                      //                           fontSize: media.width * sixteen,
+                      //                           color: textColor,
+                      //                           fontWeight: FontWeight.w600),
+                      //                     ),
+                      //                     SizedBox(
+                      //                       height: media.width * 0.025,
+                      //                     ),
+                      //                     Text(
+                      //                       favSelectedAddress,
+                      //                       style: GoogleFonts.notoSans(
+                      //                           fontSize: media.width * twelve,
+                      //                           color: textColor),
+                      //                     ),
+                      //                     SizedBox(
+                      //                       height: media.width * 0.025,
+                      //                     ),
+                      //                     Row(
+                      //                       mainAxisAlignment:
+                      //                           MainAxisAlignment.spaceBetween,
+                      //                       children: [
+                      //                         InkWell(
+                      //                           onTap: () {
+                      //                             FocusManager
+                      //                                 .instance.primaryFocus
+                      //                                 ?.unfocus();
+                      //                             setState(() {
+                      //                               favName = 'Home';
+                      //                             });
+                      //                           },
+                      //                           child: Container(
+                      //                             padding: EdgeInsets.all(
+                      //                                 media.width * 0.01),
+                      //                             child: Row(
+                      //                               children: [
+                      //                                 Container(
+                      //                                   height:
+                      //                                       media.height * 0.05,
+                      //                                   width:
+                      //                                       media.width * 0.05,
+                      //                                   decoration: BoxDecoration(
+                      //                                       shape:
+                      //                                           BoxShape.circle,
+                      //                                       border: Border.all(
+                      //                                           color: Colors
+                      //                                               .black,
+                      //                                           width: 1.2)),
+                      //                                   alignment:
+                      //                                       Alignment.center,
+                      //                                   child:
+                      //                                       (favName == 'Home')
+                      //                                           ? Container(
+                      //                                               height: media
+                      //                                                       .width *
+                      //                                                   0.03,
+                      //                                               width: media
+                      //                                                       .width *
+                      //                                                   0.03,
+                      //                                               decoration:
+                      //                                                   const BoxDecoration(
+                      //                                                 shape: BoxShape
+                      //                                                     .circle,
+                      //                                                 color: Colors
+                      //                                                     .black,
+                      //                                               ),
+                      //                                             )
+                      //                                           : Container(),
+                      //                                 ),
+                      //                                 SizedBox(
+                      //                                   width:
+                      //                                       media.width * 0.01,
+                      //                                 ),
+                      //                                 Text(languages[
+                      //                                         choosenLanguage]
+                      //                                     ['text_home'])
+                      //                               ],
+                      //                             ),
+                      //                           ),
+                      //                         ),
+                      //                         InkWell(
+                      //                           onTap: () {
+                      //                             FocusManager
+                      //                                 .instance.primaryFocus
+                      //                                 ?.unfocus();
+                      //                             setState(() {
+                      //                               favName = 'Work';
+                      //                             });
+                      //                           },
+                      //                           child: Container(
+                      //                             padding: EdgeInsets.all(
+                      //                                 media.width * 0.01),
+                      //                             child: Row(
+                      //                               children: [
+                      //                                 Container(
+                      //                                   height:
+                      //                                       media.height * 0.05,
+                      //                                   width:
+                      //                                       media.width * 0.05,
+                      //                                   decoration: BoxDecoration(
+                      //                                       shape:
+                      //                                           BoxShape.circle,
+                      //                                       border: Border.all(
+                      //                                           color: Colors
+                      //                                               .black,
+                      //                                           width: 1.2)),
+                      //                                   alignment:
+                      //                                       Alignment.center,
+                      //                                   child:
+                      //                                       (favName == 'Work')
+                      //                                           ? Container(
+                      //                                               height: media
+                      //                                                       .width *
+                      //                                                   0.03,
+                      //                                               width: media
+                      //                                                       .width *
+                      //                                                   0.03,
+                      //                                               decoration:
+                      //                                                   const BoxDecoration(
+                      //                                                 shape: BoxShape
+                      //                                                     .circle,
+                      //                                                 color: Colors
+                      //                                                     .black,
+                      //                                               ),
+                      //                                             )
+                      //                                           : Container(),
+                      //                                 ),
+                      //                                 SizedBox(
+                      //                                   width:
+                      //                                       media.width * 0.01,
+                      //                                 ),
+                      //                                 Text(languages[
+                      //                                         choosenLanguage]
+                      //                                     ['text_work'])
+                      //                               ],
+                      //                             ),
+                      //                           ),
+                      //                         ),
+                      //                         InkWell(
+                      //                           onTap: () {
+                      //                             FocusManager
+                      //                                 .instance.primaryFocus
+                      //                                 ?.unfocus();
+                      //                             setState(() {
+                      //                               favName = 'Others';
+                      //                             });
+                      //                           },
+                      //                           child: Container(
+                      //                             padding: EdgeInsets.all(
+                      //                                 media.width * 0.01),
+                      //                             child: Row(
+                      //                               children: [
+                      //                                 Container(
+                      //                                   height:
+                      //                                       media.height * 0.05,
+                      //                                   width:
+                      //                                       media.width * 0.05,
+                      //                                   decoration: BoxDecoration(
+                      //                                       shape:
+                      //                                           BoxShape.circle,
+                      //                                       border: Border.all(
+                      //                                           color: Colors
+                      //                                               .black,
+                      //                                           width: 1.2)),
+                      //                                   alignment:
+                      //                                       Alignment.center,
+                      //                                   child: (favName ==
+                      //                                           'Others')
+                      //                                       ? Container(
+                      //                                           height: media
+                      //                                                   .width *
+                      //                                               0.03,
+                      //                                           width: media
+                      //                                                   .width *
+                      //                                               0.03,
+                      //                                           decoration:
+                      //                                               const BoxDecoration(
+                      //                                             shape: BoxShape
+                      //                                                 .circle,
+                      //                                             color: Colors
+                      //                                                 .black,
+                      //                                           ),
+                      //                                         )
+                      //                                       : Container(),
+                      //                                 ),
+                      //                                 SizedBox(
+                      //                                   width:
+                      //                                       media.width * 0.01,
+                      //                                 ),
+                      //                                 Text(languages[
+                      //                                         choosenLanguage]
+                      //                                     ['text_others'])
+                      //                               ],
+                      //                             ),
+                      //                           ),
+                      //                         ),
+                      //                       ],
+                      //                     ),
+                      //                     (favName == 'Others')
+                      //                         ? Container(
+                      //                             padding: EdgeInsets.all(
+                      //                                 media.width * 0.025),
+                      //                             decoration: BoxDecoration(
+                      //                                 borderRadius:
+                      //                                     BorderRadius.circular(
+                      //                                         12),
+                      //                                 border: Border.all(
+                      //                                     color: borderLines,
+                      //                                     width: 1.2)),
+                      //                             child: TextField(
+                      //                               decoration: InputDecoration(
+                      //                                   border:
+                      //                                       InputBorder.none,
+                      //                                   hintText: languages[
+                      //                                           choosenLanguage]
+                      //                                       [
+                      //                                       'text_enterfavname'],
+                      //                                   hintStyle: GoogleFonts
+                      //                                       .notoSans(
+                      //                                           fontSize: media
+                      //                                                   .width *
+                      //                                               twelve,
+                      //                                           color:
+                      //                                               hintColor)),
+                      //                               maxLines: 1,
+                      //                               onChanged: (val) {
+                      //                                 setState(() {
+                      //                                   favNameText = val;
+                      //                                 });
+                      //                               },
+                      //                             ),
+                      //                           )
+                      //                         : Container(),
+                      //                     SizedBox(
+                      //                       height: media.width * 0.05,
+                      //                     ),
+                      //                     Button(
+                      //                         onTap: () async {
+                      //                           if (favName == 'Others' &&
+                      //                               favNameText != '') {
+                      //                             setState(() {
+                      //                               _isLoading = true;
+                      //                             });
+                      //                             var val =
+                      //                                 await addFavLocation(
+                      //                                     favLat,
+                      //                                     favLng,
+                      //                                     favSelectedAddress,
+                      //                                     favNameText);
+                      //                             setState(() {
+                      //                               _isLoading = false;
+                      //                               if (val == true) {
+                      //                                 favLat = '';
+                      //                                 favLng = '';
+                      //                                 favSelectedAddress = '';
+                      //                                 favNameText = '';
+                      //                                 favName = 'Home';
+                      //                                 favAddressAdd = false;
+                      //                               } else if (val ==
+                      //                                   'logout') {
+                      //                                 navigateLogout();
+                      //                               }
+                      //                             });
+                      //                           } else if (favName == 'Home' ||
+                      //                               favName == 'Work') {
+                      //                             setState(() {
+                      //                               _isLoading = true;
+                      //                             });
+                      //                             var val =
+                      //                                 await addFavLocation(
+                      //                                     favLat,
+                      //                                     favLng,
+                      //                                     favSelectedAddress,
+                      //                                     favName);
+                      //                             setState(() {
+                      //                               _isLoading = false;
+                      //                               if (val == true) {
+                      //                                 favLat = '';
+                      //                                 favLng = '';
+                      //                                 favSelectedAddress = '';
+                      //                                 favNameText = '';
+                      //                                 favName = 'Home';
+                      //                                 favAddressAdd = false;
+                      //                               } else if (val ==
+                      //                                   'logout') {
+                      //                                 navigateLogout();
+                      //                               }
+                      //                             });
+                      //                           }
+                      //                         },
+                      //                         text: languages[choosenLanguage]
+                      //                             ['text_confirm'])
+                      //                   ],
+                      //                 ),
+                      //               )
+                      //             ],
+                      //           ),
+                      //         ))
+                      //     : Container(),
 
                       (_locationDenied == true)
                           ? Positioned(
@@ -2336,6 +2405,151 @@ class _DropLocationState extends State<DropLocation>
               );
             }),
       ),
+    );
+  }
+  AlertDialog addDialoge(BuildContext context) {
+    final media = MediaQuery.of(context).size;
+    return AlertDialog(
+      titlePadding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+      contentPadding: const EdgeInsets.all(20),
+      backgroundColor:
+      (isDarkTheme == true) ? borderLines.withOpacity(0.5) : page,
+      title: Center(
+        child: Text(
+          languages[choosenLanguage]['text_add_new'],
+          style: GoogleFonts.notoSans(
+              fontSize: media.width * twenty,
+              color: textColor,
+              fontWeight: FontWeight.bold),
+        ),
+      ),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TextField(
+            controller: newAddressController,
+            autofocus: false,
+            maxLines: 1,
+            textAlignVertical: TextAlignVertical.center,
+            decoration: InputDecoration(
+              isDense: true,
+              isCollapsed: true,
+              contentPadding: const EdgeInsets.all(10),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(5),
+                borderSide: BorderSide(color: textColor.withOpacity(0.3)),
+              ),
+              hintText: languages[choosenLanguage]['text_new_type_address'],
+              hintStyle: GoogleFonts.notoSans(
+                fontSize: media.width * twelve,
+                color: textColor.withOpacity(0.4),
+              ),
+            ),
+            style: GoogleFonts.notoSans(
+                fontSize: media.width * fourteen,
+                color: (isDarkTheme == true) ? Colors.white : textColor),
+            onTap: () {
+
+            },
+          ),
+        ],
+      ),
+      actions: [
+        Button(
+          color: buttonColors,
+          borcolor: buttonColors,
+          textcolor: headingColors,
+          onTap: () async {
+            Navigator.pop(context);
+            setState(() {
+              widget.favName = newAddressController.text; // Update directly
+            });
+          },
+          text: 'Add',
+          width: media.width * 0.25,
+          height: media.width * 0.1,
+        ),
+      ],
+    );
+  }
+}
+
+
+class AddressTypeButton extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final bool isSelected;
+
+  const AddressTypeButton({
+    Key? key,
+    required this.label,
+    required this.icon,
+    required this.isSelected,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20.0),
+        border: Border.all(color: isSelected ? Color(0xffECECEC):whiteColors),
+        color: isSelected ?whiteColors:Color(0xffECECEC),
+      ),
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 10,vertical: 07),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+
+            Icon(icon, color:  headingColors),
+            const SizedBox(width: 8.0),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 14.0,
+                color:  headingColors,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class AddressInputField extends StatelessWidget {
+  final String label;
+  final String hint;
+
+  const AddressInputField({
+    Key? key,
+    required this.label,
+    required this.hint,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+        ),
+        const SizedBox(height: 8.0),
+        TextFormField(
+          decoration: InputDecoration(
+            hintText: hint,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8.0),
+            ),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16.0,
+              vertical: 12.0,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

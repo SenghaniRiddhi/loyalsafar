@@ -8,6 +8,7 @@ import 'package:flutter_user/pages/profile/profile_screen.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:uuid/uuid.dart';
 import '../login/login.dart';
+import '../profile/HomeScreen.dart';
 import 'drop_loc_select.dart';
 import '../../styles/styles.dart';
 import 'booking_confirmation.dart';
@@ -1573,6 +1574,47 @@ class _MapsState extends State<Maps>
                                                                                 textColor),
                                                                           ),
                                                                         ),
+                                                                        SizedBox(height: 12,),
+                                                                        InkWell(
+                                                                          onTap:
+                                                                              () {
+
+                                                                            Navigator.push(context, MaterialPageRoute(builder: (context)=>CustomBottomNavExample()));
+
+                                                                          },
+                                                                          child:
+                                                                          Container(
+                                                                            height: media.width *
+                                                                                0.1,
+                                                                            width: media.width *
+                                                                                0.1,
+                                                                            decoration:
+                                                                            BoxDecoration(
+                                                                              boxShadow: [
+                                                                                (_bottom == 0)
+                                                                                    ? BoxShadow(
+                                                                                  blurRadius: (_bottom == 0) ? 2 : 0,
+                                                                                  color: (_bottom == 0) ? Colors.black.withOpacity(0.2) : Colors.transparent,
+                                                                                  spreadRadius: (_bottom == 0) ? 2 : 0,
+                                                                                )
+                                                                                    : const BoxShadow(),
+                                                                              ],
+                                                                              color:
+                                                                              page,
+                                                                              borderRadius:
+                                                                              BorderRadius.circular(4),
+                                                                            ),
+                                                                            alignment:
+                                                                            Alignment.center,
+                                                                            child: Icon(
+                                                                                Icons
+                                                                                    .home,
+                                                                                size: media.width *
+                                                                                    0.05,
+                                                                                color:
+                                                                                textColor),
+                                                                          ),
+                                                                        ),
                                                                       ],
                                                                     );
                                                                   },
@@ -1841,6 +1883,7 @@ class _MapsState extends State<Maps>
                                                                                               InkWell(
                                                                                                 onTap: () {
                                                                                                   isRentalRide = false;
+                                                                                                  print("choosenTransportType ${choosenTransportType}");
                                                                                                   if (choosenTransportType != 0) {
                                                                                                     setState(() {
                                                                                                       choosenTransportType = 0;
@@ -1915,9 +1958,11 @@ class _MapsState extends State<Maps>
                                                                                               InkWell(
                                                                                                 onTap: () {
                                                                                                   isRentalRide = false;
+                                                                                                  print("choosenTransportType ${choosenTransportType}");
                                                                                                   if (choosenTransportType != 1) {
                                                                                                     setState(() {
                                                                                                       choosenTransportType = 1;
+                                                                                                      print("choosenTransportType::- ${choosenTransportType}");
                                                                                                       // isRentalRide = false;
                                                                                                       myMarkers.clear();
                                                                                                       // print('object ' + transportType.toString());
@@ -4496,6 +4541,7 @@ class _MapsState extends State<Maps>
   }
 
   animateCar(
+
       double fromLat, //Starting latitude
 
       double fromLong, //Starting longitude

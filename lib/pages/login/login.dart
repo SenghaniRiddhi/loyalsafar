@@ -22,6 +22,7 @@ import '../../widgets/success_dialog_content.dart';
 import '../../widgets/widgets.dart';
 import 'dart:math' as math;
 import '../loadingPage/loading.dart';
+import '../profile/HomeScreen.dart';
 import 'agreement.dart';
 
 class Login extends StatefulWidget {
@@ -229,10 +230,15 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
             MaterialPageRoute(builder: (context) => const Invoice()),
             (route) => false);
       } else {
+
         Navigator.pushAndRemoveUntil(
             context,
-            MaterialPageRoute(builder: (context) => const Maps()),
-            (route) => false);
+            MaterialPageRoute(builder: (context) =>  CustomBottomNavExample()),
+                (route) => false);
+        // Navigator.pushAndRemoveUntil(
+        //     context,
+        //     MaterialPageRoute(builder: (context) => const Maps()),
+        //     (route) => false);
       }
     } else if (verify == false) {
       setState(() {

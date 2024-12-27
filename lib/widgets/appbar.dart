@@ -3,6 +3,7 @@ import 'package:flutter_user/widgets/widgets.dart';
 
 import '../pages/NavigatorPages/editprofile.dart';
 import '../pages/profile/edit_profile_screen.dart';
+import '../pages/profile/profile_screen.dart';
 import '../styles/styles.dart';
 
 appBarWidget(
@@ -129,4 +130,12 @@ appBarProfileWidget(
       ),
 
     ],);
+}
+
+userProfile({required BuildContext context}){
+  return GestureDetector(
+    onTap: (){
+      Navigator.push(context, MaterialPageRoute(builder: (context)=>ProfileScreen()));
+    },
+      child: Icon(Icons.account_circle, color: Colors.black,size: 45,));
 }

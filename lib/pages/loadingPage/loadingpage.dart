@@ -15,6 +15,7 @@ import '../noInternet/noInternet.dart';
 import '../onTripPage/booking_confirmation.dart';
 import '../onTripPage/invoice.dart';
 import '../onTripPage/map_page.dart';
+import '../profile/HomeScreen.dart';
 import '../profile/profile_screen.dart';
 import 'loading.dart';
 
@@ -43,6 +44,7 @@ class _LoadingPageState extends State<LoadingPage> {
     print("heelo");
     getemailmodule();
     getLandingImages();
+
     super.initState();
   }
 
@@ -138,10 +140,17 @@ class _LoadingPageState extends State<LoadingPage> {
       }
     } else {
       //home page
+      // Navigator.pushAndRemoveUntil(
+      //     context,
+      //     MaterialPageRoute(builder: (context) => const Maps()),
+      //     (route) => false);
+
       Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => const Maps()),
-          (route) => false);
+          MaterialPageRoute(builder: (context) =>  CustomBottomNavExample()),
+              (route) => false);
+
+
     }
   }
 
