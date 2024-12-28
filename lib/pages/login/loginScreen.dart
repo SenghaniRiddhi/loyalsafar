@@ -9,12 +9,25 @@ import 'OTPVerificationPage.dart';
 import 'login.dart';
 
 
-class Loginscreen extends StatelessWidget {
+class Loginscreen extends StatefulWidget {
   const Loginscreen({super.key});
+
+  @override
+  State<Loginscreen> createState() => _LoginscreenState();
+}
+
+class _LoginscreenState extends State<Loginscreen> {
+  bool isChecked = false;
+
+
+
+
+
 
   @override
   Widget build(BuildContext context) {
     var media = MediaQuery.of(context).size;
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: Column(
@@ -142,7 +155,24 @@ class Loginscreen extends StatelessWidget {
                             // enabled: false,
                             // controller: _email,
                             onTap: (){
-                              Navigator.push(context, MaterialPageRoute(builder: (context)=>Login()));
+                              if(isChecked== true){
+                                Navigator.push(context, MaterialPageRoute(builder: (context)=>Login()));
+                              }else{
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text('Please select Terms & Conditions'),
+                                    // action: SnackBarAction(
+                                    //   label: 'Undo',
+                                    //   onPressed: () {
+                                    //     // Code to execute when "Undo" is pressed
+                                    //     print("Undo action clicked");
+                                    //   },
+                                    // ),
+                                    duration: Duration(seconds: 3), // Optional: controls visibility duration
+                                  ),
+                                );
+                              }
+
                             },
                             onChanged: (v) {
                               Navigator.push(context, MaterialPageRoute(builder: (context)=>Login()));
@@ -196,64 +226,87 @@ class Loginscreen extends StatelessWidget {
                     ],
                   ),
                 ),
-                const SizedBox(height: 15),
-                MyText(
-                  text: "OR",
-                  size: font16Size,
-                  color: Color(0xffC5C5C5),
-                  fontweight: FontWeight.w400,
-                ),
-
-                const SizedBox(height: 15),
-               Container(
-                 decoration: BoxDecoration(
-                   color: Color(0xffF0F0F0),
-                   // border: Border.all(color: Colors.grey),
-                   borderRadius: BorderRadius.circular(8),
-                 ),
-                 padding: EdgeInsets.symmetric(horizontal: 12,vertical: 15),
-                 child: Row(
-                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                   children: [
-                     MyText(
-                       text: "Connect via Social",
-                       size: font14Size,
-                       color: headingColors,
-                       fontweight: FontWeight.w500,
-                     ),
-                     Row(
-                       children: [
-                         Container(
-                           child: Image.asset('assets/icons/google.png'),
-                           height: 22,
-                           width: 22,
-                         ),
-                         SizedBox(width: 18,),
-                         Container(child: Image.asset('assets/icons/apple.png'),
-                           height: 24,
-                           width: 24,
-                         ),
-                       ],
-                     ),
-                   ],
-
-                 )
-               ),
+                // const SizedBox(height: 15),
+               //  MyText(
+               //    text: "OR",
+               //    size: font16Size,
+               //    color: Color(0xffC5C5C5),
+               //    fontweight: FontWeight.w400,
+               //  ),
+               //
+               //  const SizedBox(height: 15),
+               // Container(
+               //   decoration: BoxDecoration(
+               //     color: Color(0xffF0F0F0),
+               //     // border: Border.all(color: Colors.grey),
+               //     borderRadius: BorderRadius.circular(8),
+               //   ),
+               //   padding: EdgeInsets.symmetric(horizontal: 12,vertical: 15),
+               //   child: Row(
+               //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+               //     children: [
+               //       MyText(
+               //         text: "Connect via Social",
+               //         size: font14Size,
+               //         color: headingColors,
+               //         fontweight: FontWeight.w500,
+               //       ),
+               //       Row(
+               //         children: [
+               //           Container(
+               //             child: Image.asset('assets/icons/google.png'),
+               //             height: 22,
+               //             width: 22,
+               //           ),
+               //           SizedBox(width: 18,),
+               //           Container(child: Image.asset('assets/icons/apple.png'),
+               //             height: 24,
+               //             width: 24,
+               //           ),
+               //         ],
+               //       ),
+               //     ],
+               //
+               //   )
+               // ),
 
               ],
             ),
           ),
-          const SizedBox(height: 20),
+           SizedBox(height: media.height*0.03),
           // Footer
-          MyText(
-            text: "By signing in to continue Loyal Safar,\nTerms & Conditions and Privacy Policy.",
-            size: font14Size,
-            textAlign: TextAlign.center,
-            color: Color(0xff697176),
-            fontweight: FontWeight.w400,
+
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 14.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Checkbox(
+                  value: isChecked,
+                 checkColor: Colors.black,
+                  onChanged: (bool? value) {
+                    setState(() {
+                      isChecked = value!;
+                    });
+                  },
+                  activeColor: buttonColors, // Matches the text color
+                ),
+                Expanded(
+                  child: MyText(
+                    text: "By signing in to continue Loyal Safar,\nTerms & Conditions and Privacy Policy.",
+                    size: font14Size,
+                    textAlign: TextAlign.start,
+                    color: Color(0xff697176),
+                    fontweight: FontWeight.w400,
+                  ),
+                ),
+              ],
+            ),
           ),
 
-          const SizedBox(height: 40),
+
+          const SizedBox(height: 20),
         ],
       ),
     );

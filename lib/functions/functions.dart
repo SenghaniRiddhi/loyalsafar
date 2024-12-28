@@ -7,6 +7,7 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_user/functions/notifications.dart';
+import 'package:flutter_user/pages/login/registerScreen.dart';
 import 'package:flutter_user/translations/translation.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:http/http.dart' as http;
@@ -510,6 +511,81 @@ registerUser() async {
   return result;
 }
 
+registerData({required String name ,required String lastName ,
+  required String email ,required String mobile ,required String country}) async {
+  bearerToken.clear();
+  dynamic result;
+  try {
+    var token = await FirebaseMessaging.instance.getToken();
+    var fcm = token.toString();
+    final response =
+    http.MultipartRequest('POST', Uri.parse('${url}api/v1/user/register'));
+
+    response.headers.addAll({'Content-Type': 'application/json'});
+    // if (proImageFile1 != null) {
+    //   response.files.add(
+    //       await http.MultipartFile.fromPath('profile_picture', proImageFile1));
+    // }
+    response.fields.addAll({
+      "name": name,
+      "last_name":lastName,
+      "mobile": mobile,
+      "email": email,
+      // "password": password,
+      "device_token": fcm,
+      "country": countries[phcode]['dial_code'],
+      "login_by": (platform == TargetPlatform.android) ? 'android' : 'ios',
+      'lang': choosenLanguage,
+      // 'gender': (gender == 'male')
+      //     ? 'male'
+      //     : (gender == 'female')
+      //     ? 'female'
+      //     : 'others',
+    });
+    var request = await response.send();
+    var respon = await http.Response.fromStream(request);
+    // print(choosenLanguage.toString());
+    print("countries-new::- ${Uri.parse('${url}api/v1/user/register')}  statusCode:- ${request.statusCode}");
+    if (request.statusCode == 200) {
+      var jsonVal = jsonDecode(respon.body);
+      // if (ischeckownerordriver == 'driver') {
+      //   platforms.invokeMethod('login');
+      // }
+      bearerToken.add(BearerClass(
+          type: jsonVal['token_type'].toString(),
+          token: jsonVal['access_token'].toString()));
+      pref.setString('Bearer', bearerToken[0].token);
+      await getUserDetails();
+      if (platform == TargetPlatform.android && package != null) {
+        await FirebaseDatabase.instance
+            .ref()
+            .update({'user_package_name': package.packageName.toString()});
+      } else if (package != null) {
+        await FirebaseDatabase.instance
+            .ref()
+            .update({'user_bundle_id': package.packageName.toString()});
+      }
+      result = 'true';
+    } else if (respon.statusCode == 422) {
+      debugPrint(respon.body);
+      var error = jsonDecode(respon.body)['errors'];
+      result = error[error.keys.toList()[0]]
+          .toString()
+          .replaceAll('[', '')
+          .replaceAll(']', '')
+          .toString();
+    } else {
+      debugPrint(respon.body);
+      result = jsonDecode(respon.body)['message'];
+    }
+  } catch (e) {
+    if (e is SocketException) {
+      internet = false;
+      result = 'no internet';
+    }
+  }
+  return result;
+}
 //update referral code
 
 updateReferral() async {
@@ -565,7 +641,7 @@ otpCall() async {
 // verify user already exist
 
 verifyUser(String number, int login, String password, String email, isOtp,
-    forgot) async {
+    forgot,BuildContext context) async {
   dynamic val;
   try {
     var response = await http.post(
@@ -584,6 +660,7 @@ verifyUser(String number, int login, String password, String email, isOtp,
         " statusCode:- ${response.statusCode}");
     if (response.statusCode == 200) {
       val = jsonDecode(response.body)['success'];
+      print("val::- ${val} ");
       if (val == true) {
         if ((number != '' && email != '') || forgot == true) {
           if (forgot == true) {
@@ -606,6 +683,9 @@ verifyUser(String number, int login, String password, String email, isOtp,
         }
       } else {
         val = false;
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context)=>Registerscreen(countryCode: "",numbers: number,)));
+        print("hello");
       }
     } else if (response.statusCode == 422) {
       debugPrint(response.body);
