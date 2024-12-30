@@ -45,24 +45,20 @@ appBarWithoutHeightWidget(
       required Function() onTaps,
     }){
   var media = MediaQuery.of(context).size;
-  return Column(
-    children: [
-      GestureDetector(
-        onTap: onTaps,
-        child: CircleAvatar(
-          backgroundColor: backgroundIcon,
-          radius: 18,
-          child: Padding(
-            padding:  EdgeInsets.only(left: 09),
-            child: Icon(
-              Icons.arrow_back_ios,
-              color: iconColors,
-              size: 20,
-            ),
-          ),
+  return GestureDetector(
+    onTap: onTaps,
+    child: CircleAvatar(
+      backgroundColor: backgroundIcon,
+      radius: 18,
+      child: Padding(
+        padding:  EdgeInsets.only(left: 09),
+        child: Icon(
+          Icons.arrow_back_ios,
+          color: iconColors,
+          size: 20,
         ),
       ),
-    ],
+    ),
   );
 }
 
@@ -140,5 +136,5 @@ userProfile({required BuildContext context}){
       // Navigator.push(context, MaterialPageRoute(builder: (context)=>Registerscreen()));
       Navigator.push(context, MaterialPageRoute(builder: (context)=>ProfileScreen()));
     },
-      child: Icon(Icons.account_circle, color: Colors.black,size: 45,));
+      child: Icon(Icons.account_circle, color: Colors.black,size: 40,));
 }

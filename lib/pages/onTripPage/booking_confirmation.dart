@@ -24,6 +24,7 @@ import '../../functions/functions.dart';
 import '../../functions/geohash.dart';
 import '../../styles/styles.dart';
 import '../../translations/translation.dart';
+import '../../widgets/appbar.dart';
 import '../../widgets/widgets.dart';
 import '../NavigatorPages/pickcontacts.dart';
 import '../chatPage/chat_page.dart';
@@ -1709,31 +1710,56 @@ class _BookingConfirmationState extends State<BookingConfirmation>
                                           ? StreamBuilder<List<Marker>>(
                                               stream: mapMarkerStream,
                                               builder: (context, snapshot) {
-                                                return GoogleMap(
-                                                  padding: EdgeInsets.only(
-                                                      bottom: mapPadding,
-                                                      top: media.height * 0.1 +
-                                                          MediaQuery.of(context)
-                                                              .padding
-                                                              .top),
-                                                  onMapCreated: _onMapCreated,
-                                                  compassEnabled: false,
-                                                  initialCameraPosition:
-                                                      CameraPosition(
-                                                    target: _center,
-                                                    zoom: 11.0,
-                                                  ),
-                                                  markers: Set<Marker>.from(
-                                                      myMarker),
-                                                  polylines: polyline,
-                                                  minMaxZoomPreference:
-                                                      const MinMaxZoomPreference(
-                                                          0.0, 20.0),
-                                                  myLocationButtonEnabled:
-                                                      false,
-                                                  buildingsEnabled: false,
-                                                  zoomControlsEnabled: false,
-                                                  myLocationEnabled: true,
+                                                return Stack(
+                                                  children: [
+                                                    GoogleMap(
+                                                      padding: EdgeInsets.only(
+                                                          bottom: mapPadding,
+                                                          top: media.height * 0.1 +
+                                                              MediaQuery.of(context)
+                                                                  .padding
+                                                                  .top),
+                                                      onMapCreated: _onMapCreated,
+                                                      compassEnabled: false,
+                                                      initialCameraPosition:
+                                                          CameraPosition(
+                                                        target: _center,
+                                                        zoom: 11.0,
+                                                      ),
+                                                      markers: Set<Marker>.from(
+                                                          myMarker),
+                                                      polylines: polyline,
+                                                      minMaxZoomPreference:
+                                                          const MinMaxZoomPreference(
+                                                              0.0, 20.0),
+                                                      myLocationButtonEnabled:
+                                                          false,
+                                                      buildingsEnabled: false,
+                                                      zoomControlsEnabled: false,
+                                                      myLocationEnabled: true,
+                                                    ),
+                                                    Positioned.fill(
+                                                      // top: 0,
+                                                      //   bottom: 0,
+                                                        child: Center(
+                                                          child: Column(
+                                                            mainAxisAlignment: MainAxisAlignment.center,
+                                                            children: [
+                                                              // SizedBox(
+                                                              //   height: (media.height / 2) - media.width * 0.08,
+                                                              // ),
+                                                              Container(
+                                                                child: Image.asset(
+                                                                  'assets/images/dropmarker.png',
+                                                                  // width: media.width * 0.1,
+                                                                  // height: media.width * 0.08,
+                                                                  fit: BoxFit.cover,
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        )),
+                                                  ],
                                                 );
                                               })
                                           : StreamBuilder<List<Marker>>(
@@ -1907,13 +1933,79 @@ class _BookingConfirmationState extends State<BookingConfirmation>
                                                 );
                                               })),
                                   Positioned(
+                                    bottom: media.height * 0.28,
+                                    child: SizedBox(
+                                      width: media.width * 0.9,
+                                      child: Row(
+                                        mainAxisAlignment:
+                                        MainAxisAlignment.end,
+                                        children: [
+                                          InkWell(
+                                            onTap: () async {
+                                              if (locationAllowed == true) {
+                                                if (currentLocation != null) {
+                                                  _controller?.animateCamera(
+                                                      CameraUpdate.newLatLngZoom(
+                                                          currentLocation, 18.0));
+                                                  center = currentLocation;
+                                                } else {
+                                                  _controller?.animateCamera(
+                                                      CameraUpdate.newLatLngZoom(
+                                                          center, 18.0));
+                                                }
+                                              } else {
+                                                if (serviceEnabled == true) {
+                                                  setState(() {
+                                                    _locationDenied = true;
+                                                  });
+                                                } else {
+                                                  // await location.requestService();
+                                                  await geolocs.Geolocator
+                                                      .getCurrentPosition(
+                                                      desiredAccuracy: geolocs
+                                                          .LocationAccuracy
+                                                          .low);
+                                                  if (await geolocs
+                                                      .GeolocatorPlatform.instance
+                                                      .isLocationServiceEnabled()) {
+                                                    setState(() {
+                                                      _locationDenied = true;
+                                                    });
+                                                  }
+                                                }
+                                              }
+                                            },
+                                            child: Container(
+                                              height: media.width * 0.1,
+                                              width: media.width * 0.1,
+                                              decoration: BoxDecoration(
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                        blurRadius: 2,
+                                                        color: Colors.black
+                                                            .withOpacity(0.2),
+                                                        spreadRadius: 2)
+                                                  ],
+                                                  color: page,
+                                                  borderRadius:
+                                                  BorderRadius.circular(
+                                                      media.width * 0.06)),
+                                              child: Icon(Icons.my_location_sharp,
+                                                  color: textColor),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  Positioned(
                                     top: MediaQuery.of(context).padding.top +
                                         12.5,
                                     child: SizedBox(
                                       width: media.width * 0.9,
                                       child: Row(
                                         mainAxisAlignment:
-                                            MainAxisAlignment.start,
+                                            MainAxisAlignment.spaceBetween,
                                         children: [
                                           Container(
                                             decoration: BoxDecoration(
@@ -1932,30 +2024,15 @@ class _BookingConfirmationState extends State<BookingConfirmation>
                                                     blurRadius: 2)
                                               ],
                                             ),
-                                            child: Material(
-                                              color: (userRequestData
-                                                          .isNotEmpty &&
-                                                      userRequestData[
-                                                              'accepted_at'] ==
-                                                          null)
-                                                  ? Colors.transparent
-                                                  : page,
-                                              borderRadius:
-                                                  BorderRadius.circular(
-                                                      media.width * 0.05),
-                                              // color: page,
-                                              child: InkWell(
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                        media.width * 0.05),
-                                                onTap: () {
+                                            child: appBarWithoutHeightWidget(context: context,
+                                                onTaps: () {
                                                   noDriverFound = false;
                                                   tripReqError = false;
                                                   serviceNotAvailable = false;
                                                   if (userRequestData
-                                                          .isNotEmpty &&
+                                                      .isNotEmpty &&
                                                       userRequestData[
-                                                              'accepted_at'] ==
+                                                      'accepted_at'] ==
                                                           null) {
                                                   } else {
                                                     if (widget.type == null) {
@@ -1972,8 +2049,8 @@ class _BookingConfirmationState extends State<BookingConfirmation>
                                                             MaterialPageRoute(
                                                                 builder:
                                                                     (context) =>
-                                                                        const Maps()),
-                                                            (route) => false);
+                                                                const Maps()),
+                                                                (route) => false);
                                                         ismulitipleride = false;
                                                         isOutStation = false;
                                                         etaDetails.clear();
@@ -1986,8 +2063,8 @@ class _BookingConfirmationState extends State<BookingConfirmation>
                                                         myMarker.clear();
                                                         dropStopList.clear();
                                                         addressList.removeWhere(
-                                                            (element) =>
-                                                                element.id ==
+                                                                (element) =>
+                                                            element.id ==
                                                                 'drop');
                                                       }
                                                     } else {
@@ -1995,8 +2072,8 @@ class _BookingConfirmationState extends State<BookingConfirmation>
                                                           context,
                                                           MaterialPageRoute(
                                                               builder: (context) =>
-                                                                  const Maps()),
-                                                          (route) => false);
+                                                              const Maps()),
+                                                              (route) => false);
                                                       isRentalRide = false;
                                                       ismulitipleride = false;
                                                       isOutStation = false;
@@ -2009,33 +2086,20 @@ class _BookingConfirmationState extends State<BookingConfirmation>
                                                       myMarker.clear();
                                                       dropStopList.clear();
                                                       addressList.removeWhere(
-                                                          (element) =>
-                                                              element.id ==
+                                                              (element) =>
+                                                          element.id ==
                                                               'drop');
                                                     }
                                                   }
                                                 },
-                                                child: SizedBox(
-                                                  height: media.width * 0.1,
-                                                  width: media.width * 0.1,
-                                                  child: Icon(
-                                                    Icons.arrow_back,
-                                                    color: (userRequestData
-                                                                .isNotEmpty &&
-                                                            userRequestData[
-                                                                    'accepted_at'] ==
-                                                                null)
-                                                        ? Colors.transparent
-                                                        : textColor,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
+                                                backgroundIcon: whiteColors, title: "",iconColors: iconGrayColors),
                                           ),
+                                          userProfile(context:context),
                                         ],
                                       ),
                                     ),
                                   ),
+
                                   Positioned(
                                     bottom: media.width * 1.25,
                                     // top: media.width*0.2 + MediaQuery.of(context).padding.top,
@@ -8579,11 +8643,36 @@ class _BookingConfirmationState extends State<BookingConfirmation>
                                           bottom: 0,
                                           child: Container(
                                               width: media.width * 1,
-                                              color: page,
-                                              padding: EdgeInsets.all(
-                                                  media.width * 0.05),
+                                              
+                                              decoration: BoxDecoration(
+                                                color: page,
+                                                borderRadius: BorderRadius.only(
+                                                  topLeft: Radius.circular(25),
+                                                  topRight: Radius.circular(25),
+                                                )
+                                              ),
+                                              padding: EdgeInsets.symmetric(horizontal: media.width * 0.05),
                                               child: Column(
                                                 children: [
+                                                  SizedBox(
+                                                      height:
+                                                      media.width * 0.02),
+                                                  Container(
+                                                    height:
+                                                    media.width * 0.01,
+                                                    width:
+                                                    media.width * 0.13,
+                                                    decoration:
+                                                    BoxDecoration(
+                                                      borderRadius:
+                                                      BorderRadius.circular(5),
+                                                      color:
+                                                      backgroundColor,
+                                                    ),
+                                                  ),
+                                                  SizedBox(
+                                                      height:
+                                                      media.width * 0.05),
                                                   SizedBox(
                                                     width: media.width * 0.9,
                                                     child: Row(
@@ -8591,60 +8680,51 @@ class _BookingConfirmationState extends State<BookingConfirmation>
                                                           MainAxisAlignment
                                                               .spaceBetween,
                                                       children: [
-                                                        Text(
-                                                            languages[choosenLanguage]
-                                                                [
-                                                                'text_confirm_details'],
-                                                            style: GoogleFonts.notoSans(
-                                                                fontSize: media
-                                                                        .width *
-                                                                    sixteen,
-                                                                color:
-                                                                    textColor,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w600)),
-                                                        (addressList.length <
-                                                                    5 &&
-                                                                widget.type !=
-                                                                    1)
-                                                            ? InkWell(
-                                                                onTap:
-                                                                    () async {
-                                                                  var nav = await Navigator.push(
-                                                                      context,
-                                                                      MaterialPageRoute(
-                                                                          builder: (context) => DropLocation(
-                                                                                from: 'add stop',
-                                                                              )));
-                                                                  if (nav) {
-                                                                    setState(
-                                                                        () {});
-                                                                    Future.delayed(
-                                                                        const Duration(
-                                                                            milliseconds:
-                                                                                500),
-                                                                        () {
-                                                                      addPickDropMarker();
-                                                                    });
-                                                                  }
-                                                                },
-                                                                child: Text(
-                                                                    languages[choosenLanguage]
-                                                                            [
-                                                                            'text_add_stop'] +
-                                                                        ' +',
-                                                                    style: GoogleFonts.notoSans(
-                                                                        fontSize:
-                                                                            media.width *
-                                                                                sixteen,
-                                                                        fontWeight:
-                                                                            FontWeight
-                                                                                .w600,
-                                                                        color:
-                                                                            buttonColor)),
-                                                              )
-                                                            : Container(),
+                                                        MyText(text: 'Your Pickup', size: font20Size,
+                                                          color: headingColors,
+                                                          fontweight: FontWeight.w700,),
+
+                                                        // (addressList.length <
+                                                        //             5 &&
+                                                        //         widget.type !=
+                                                        //             1)
+                                                        //     ? InkWell(
+                                                        //         onTap:
+                                                        //             () async {
+                                                        //           var nav = await Navigator.push(
+                                                        //               context,
+                                                        //               MaterialPageRoute(
+                                                        //                   builder: (context) => DropLocation(
+                                                        //                         from: 'add stop',
+                                                        //                       )));
+                                                        //           if (nav) {
+                                                        //             setState(
+                                                        //                 () {});
+                                                        //             Future.delayed(
+                                                        //                 const Duration(
+                                                        //                     milliseconds:
+                                                        //                         500),
+                                                        //                 () {
+                                                        //               addPickDropMarker();
+                                                        //             });
+                                                        //           }
+                                                        //         },
+                                                        //         child: Text(
+                                                        //             languages[choosenLanguage]
+                                                        //                     [
+                                                        //                     'text_add_stop'] +
+                                                        //                 ' +',
+                                                        //             style: GoogleFonts.notoSans(
+                                                        //                 fontSize:
+                                                        //                     media.width *
+                                                        //                         sixteen,
+                                                        //                 fontWeight:
+                                                        //                     FontWeight
+                                                        //                         .w600,
+                                                        //                 color:
+                                                        //                     buttonColor)),
+                                                        //       )
+                                                        //     : Container(),
                                                       ],
                                                     ),
                                                   ),
@@ -8689,87 +8769,59 @@ class _BookingConfirmationState extends State<BookingConfirmation>
                                                                   0.02),
                                                       decoration: BoxDecoration(
                                                           border: Border.all(
-                                                            color: Colors.grey,
+                                                            color: Color(0xffEFEFEF),
                                                             width: 1.5,
                                                           ),
                                                           borderRadius:
                                                               BorderRadius
                                                                   .circular(
                                                                       media.width *
-                                                                          0.02),
+                                                                          0.03),
                                                           color: page),
                                                       alignment:
                                                           Alignment.center,
-                                                      height: media.width * 0.1,
+
                                                       width: media.width * 0.9,
                                                       child: Row(
                                                         children: [
-                                                          Container(
-                                                            height:
-                                                                media.width *
-                                                                    0.025,
-                                                            width: media.width *
-                                                                0.025,
-                                                            alignment: Alignment
-                                                                .center,
-                                                            decoration: BoxDecoration(
-                                                                shape: BoxShape
-                                                                    .circle,
-                                                                color: const Color(
-                                                                        0xff319900)
-                                                                    .withOpacity(
-                                                                        0.3)),
-                                                            child: Container(
-                                                              height:
-                                                                  media.width *
-                                                                      0.01,
-                                                              width:
-                                                                  media.width *
-                                                                      0.01,
-                                                              decoration: const BoxDecoration(
-                                                                  shape: BoxShape
-                                                                      .circle,
-                                                                  color: Color(
-                                                                      0xff319900)),
-                                                            ),
-                                                          ),
+                                                          Icon(Icons.location_on),
                                                           SizedBox(
                                                             width: media.width *
-                                                                0.05,
+                                                                0.02,
                                                           ),
                                                           Expanded(
                                                             child: Text(
                                                               addressList[0]
                                                                   .address
                                                                   .toString(),
-                                                              style: GoogleFonts.notoSans(
+                                                              style: GoogleFonts.inter(
                                                                   color:
                                                                       textColor,
                                                                   fontSize: media
                                                                           .width *
                                                                       twelve),
-                                                              maxLines: 1,
+                                                              maxLines: 2,
                                                               overflow:
                                                                   TextOverflow
                                                                       .ellipsis,
                                                             ),
                                                           ),
-                                                          SizedBox(
-                                                            width: media.width *
-                                                                0.02,
-                                                          ),
-                                                          SizedBox(
-                                                              height:
-                                                                  media.width *
-                                                                      0.07,
-                                                              child: Icon(
-                                                                Icons.edit,
-                                                                color:
-                                                                    textColor,
-                                                                size: media
-                                                                        .width *
-                                                                    0.05,
-                                                              ))
+                                                          // SizedBox(
+                                                          //   width: media.width *
+                                                          //       0.02,
+                                                          // ),
+                                                          // SizedBox(
+                                                          //     height:
+                                                          //         media.width *
+                                                          //             0.07,
+                                                          //     child: Icon(
+                                                          //       Icons.edit,
+                                                          //       color:
+                                                          //           textColor,
+                                                          //       size: media
+                                                          //               .width *
+                                                          //           0.05,
+                                                          //     ))
                                                         ],
                                                       ),
                                                     ),
@@ -8997,6 +9049,8 @@ class _BookingConfirmationState extends State<BookingConfirmation>
                                                             .values
                                                             .toList()),
                                                   ),
+                                                  SizedBox(height:
+                                                media.height *0.02,),
                                                   Button(
                                                       onTap: () async {
                                                         choosePets = false;
@@ -9080,9 +9134,10 @@ class _BookingConfirmationState extends State<BookingConfirmation>
                                                           });
                                                         }
                                                       },
-                                                      text: languages[
-                                                              choosenLanguage]
-                                                          ['text_confirm'])
+                                                      borcolor: buttonColors,
+                                                      color: buttonColors,
+                                                      textcolor: buttonTextColors,
+                                                      text: "Confirm Pickup")
                                                 ],
                                               )),
                                         )

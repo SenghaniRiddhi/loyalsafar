@@ -4,6 +4,10 @@ import 'dart:math';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:ui' as ui;
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/painting.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_user/pages/profile/profile_screen.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:uuid/uuid.dart';
@@ -61,6 +65,8 @@ bool requestCancelledByDriver = false;
 bool cancelRequestByUser = false;
 bool logout = false;
 bool deleteAccount = false;
+FocusNode focusSearchNode = FocusNode();
+
 int choosenTransportType =
 (userDetails['enable_modules_for_applications'] == 'both' ||
     userDetails['enable_modules_for_applications'] == 'taxi')
@@ -857,88 +863,113 @@ class _whereScreenState extends State<whereScreen>
                                             carMarkerStream,
                                             builder: (context,
                                                 snapshot) {
-                                              return GoogleMap(
-                                                onMapCreated:
-                                                _onMapCreated,
-                                                compassEnabled:
-                                                false,
-                                                initialCameraPosition:
-                                                CameraPosition(
-                                                  target:
-                                                  center,
-                                                  zoom: 15.0,
-                                                ),
-                                                onCameraMove:
-                                                    (CameraPosition
-                                                position) async {
-                                                  if (addressList
-                                                      .isEmpty) {
-                                                  } else {
-                                                    _centerLocation =
-                                                        position
-                                                            .target;
-                                                  }
-                                                },
-                                                onCameraIdle:
-                                                    () async {
-                                                  var val = await geoCoding(
-                                                      _centerLocation
-                                                          .latitude,
-                                                      _centerLocation
-                                                          .longitude);
-                                                  setState(
-                                                          () {
-                                                        if (addressList
-                                                            .where((element) =>
-                                                        element.type ==
-                                                            'pickup')
-                                                            .isNotEmpty) {
-                                                          var add = addressList.firstWhere((element) =>
-                                                          element.type ==
-                                                              'pickup');
-                                                          add.address =
-                                                              val;
-                                                          add.latlng = LatLng(
-                                                              _centerLocation.latitude,
-                                                              _centerLocation.longitude);
-                                                        } else {
-                                                          addressList.add(AddressList(
-                                                              id:
-                                                              '1',
-                                                              type:
-                                                              'pickup',
-                                                              address:
-                                                              val,
-                                                              pickup:
-                                                              true,
-                                                              latlng:
-                                                              LatLng(_centerLocation.latitude, _centerLocation.longitude),
-                                                              name: userDetails['name'],
-                                                              number: userDetails['mobile']));
-                                                        }
-                                                      });
-                                                  _lastCenter =
-                                                      _centerLocation;
-                                                  ischanged =
-                                                  false;
-                                                  setState(
-                                                          () {});
-                                                },
-                                                minMaxZoomPreference:
-                                                const MinMaxZoomPreference(
-                                                    8.0,
-                                                    20.0),
-                                                myLocationButtonEnabled:
-                                                false,
-                                                markers: Set<
-                                                    Marker>.from(
-                                                    myMarkers),
-                                                buildingsEnabled:
-                                                false,
-                                                zoomControlsEnabled:
-                                                false,
-                                                myLocationEnabled:
-                                                true,
+                                              return Stack(
+                                                children: [
+                                                  GoogleMap(
+                                                    onMapCreated:
+                                                    _onMapCreated,
+                                                    compassEnabled:
+                                                    false,
+                                                    initialCameraPosition:
+                                                    CameraPosition(
+                                                      target:
+                                                      center,
+                                                      zoom: 15.0,
+                                                    ),
+                                                    onCameraMove:
+                                                        (CameraPosition
+                                                    position) async {
+                                                      if (addressList
+                                                          .isEmpty) {
+                                                      } else {
+                                                        _centerLocation =
+                                                            position
+                                                                .target;
+                                                      }
+                                                    },
+                                                    onCameraIdle:
+                                                        () async {
+                                                      var val = await geoCoding(
+                                                          _centerLocation
+                                                              .latitude,
+                                                          _centerLocation
+                                                              .longitude);
+                                                      setState(
+                                                              () {
+                                                            if (addressList
+                                                                .where((element) =>
+                                                            element.type ==
+                                                                'pickup')
+                                                                .isNotEmpty) {
+                                                              var add = addressList.firstWhere((element) =>
+                                                              element.type ==
+                                                                  'pickup');
+                                                              add.address =
+                                                                  val;
+                                                              add.latlng = LatLng(
+                                                                  _centerLocation.latitude,
+                                                                  _centerLocation.longitude);
+                                                            } else {
+                                                              addressList.add(AddressList(
+                                                                  id:
+                                                                  '1',
+                                                                  type:
+                                                                  'pickup',
+                                                                  address:
+                                                                  val,
+                                                                  pickup:
+                                                                  true,
+                                                                  latlng:
+                                                                  LatLng(_centerLocation.latitude, _centerLocation.longitude),
+                                                                  name: userDetails['name'],
+                                                                  number: userDetails['mobile']));
+                                                            }
+                                                          });
+                                                      _lastCenter =
+                                                          _centerLocation;
+                                                      ischanged =
+                                                      false;
+                                                      setState(
+                                                              () {});
+                                                    },
+                                                    minMaxZoomPreference:
+                                                    const MinMaxZoomPreference(
+                                                        8.0,
+                                                        20.0),
+                                                    myLocationButtonEnabled:
+                                                    false,
+                                                    markers: Set<
+                                                        Marker>.from(
+                                                        myMarkers),
+                                                    buildingsEnabled:
+                                                    false,
+                                                    zoomControlsEnabled:
+                                                    false,
+                                                    myLocationEnabled:
+                                                    true,
+                                                  ),
+                                                  Positioned.fill(
+                                                    // top: 0,
+                                                    //   bottom: 0,
+                                                      child: Center(
+                                                        child: Column(
+                                                          mainAxisAlignment: MainAxisAlignment.center,
+                                                          children: [
+                                                            // SizedBox(
+                                                            //   height: (media.height / 2) - media.width * 0.08,
+                                                            // ),
+                                                            Container(
+                                                              child: Image.asset(
+                                                                'assets/images/dropmarker.png',
+                                                                // width: media.width * 0.1,
+                                                                // height: media.width * 0.08,
+                                                                fit: BoxFit.cover,
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      )),
+                                                ],
                                               );
                                             });
                                       }
@@ -1273,109 +1304,97 @@ class _whereScreenState extends State<whereScreen>
                                 )
                                     : const SizedBox(),
                                 Positioned(
-                                  right: 10,
-                                  top: 155 +
-                                      media.width * 0.35,
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                        boxShadow: [
-                                          BoxShadow(
-                                              blurRadius: 2,
-                                              color: Colors
-                                                  .black
-                                                  .withOpacity(
-                                                  0.2),
-                                              spreadRadius: 2)
-                                        ],
-                                        color: page,
-                                        borderRadius:
-                                        BorderRadius
-                                            .circular(media
-                                            .width *
-                                            0.02)),
-                                    child: Material(
-                                      color:
-                                      Colors.transparent,
-                                      child: InkWell(
-                                        onTap: () async {
-                                          if (locationAllowed ==
-                                              true) {
-                                            if (currentLocation !=
-                                                null) {
-                                              if (mapType ==
-                                                  'google') {
-                                                _controller?.animateCamera(
-                                                    CameraUpdate.newLatLngZoom(
-                                                        currentLocation,
-                                                        16.0));
-                                              } else {
-                                                _fmController.move(
-                                                    fmlt.LatLng(
-                                                        currentLocation
-                                                            .latitude,
-                                                        currentLocation
-                                                            .longitude),
-                                                    12);
-                                              }
-                                              center =
-                                                  currentLocation;
-                                            } else {
-                                              if (mapType ==
-                                                  'google') {
-                                                _controller?.animateCamera(
-                                                    CameraUpdate.newLatLngZoom(
-                                                        center,
-                                                        16.0));
-                                              } else {
-                                                _fmController.move(
-                                                    fmlt.LatLng(
-                                                        center
-                                                            .latitude,
-                                                        center
-                                                            .longitude),
-                                                    12);
-                                              }
-                                            }
+                                  right: 15,
+                                  // top: 155 +
+                                  //     media.width * 0.35,
+                                  bottom: media.width * 0.45,
+                                  child: InkWell(
+                                    onTap: () async {
+                                      if (locationAllowed ==
+                                          true) {
+                                        if (currentLocation !=
+                                            null) {
+                                          if (mapType ==
+                                              'google') {
+                                            _controller?.animateCamera(
+                                                CameraUpdate.newLatLngZoom(
+                                                    currentLocation,
+                                                    16.0));
                                           } else {
-                                            if (serviceEnabled ==
-                                                true) {
-                                              setState(() {
-                                                _locationDenied =
-                                                true;
-                                              });
-                                            } else {
-                                              await geolocs
-                                                  .Geolocator
-                                                  .getCurrentPosition(
-                                                  desiredAccuracy: geolocs
-                                                      .LocationAccuracy
-                                                      .low);
-                                              if (await geolocs
-                                                  .GeolocatorPlatform
-                                                  .instance
-                                                  .isLocationServiceEnabled()) {
-                                                setState(() {
-                                                  _locationDenied =
-                                                  true;
-                                                });
-                                              }
-                                            }
+                                            _fmController.move(
+                                                fmlt.LatLng(
+                                                    currentLocation
+                                                        .latitude,
+                                                    currentLocation
+                                                        .longitude),
+                                                12);
                                           }
-                                        },
-                                        child: SizedBox(
-                                          height:
-                                          media.width *
-                                              0.1,
-                                          width: media.width *
-                                              0.1,
-                                          child: Icon(
-                                              Icons
-                                                  .my_location_sharp,
-                                              size: 20,
-                                              color:
-                                              textColor),
-                                        ),
-                                      ),
+                                          center =
+                                              currentLocation;
+                                        } else {
+                                          if (mapType ==
+                                              'google') {
+                                            _controller?.animateCamera(
+                                                CameraUpdate.newLatLngZoom(
+                                                    center,
+                                                    16.0));
+                                          } else {
+                                            _fmController.move(
+                                                fmlt.LatLng(
+                                                    center
+                                                        .latitude,
+                                                    center
+                                                        .longitude),
+                                                12);
+                                          }
+                                        }
+                                      } else {
+                                        if (serviceEnabled ==
+                                            true) {
+                                          setState(() {
+                                            _locationDenied =
+                                            true;
+                                          });
+                                        } else {
+                                          await geolocs
+                                              .Geolocator
+                                              .getCurrentPosition(
+                                              desiredAccuracy: geolocs
+                                                  .LocationAccuracy
+                                                  .low);
+                                          if (await geolocs
+                                              .GeolocatorPlatform
+                                              .instance
+                                              .isLocationServiceEnabled()) {
+                                            setState(() {
+                                              _locationDenied =
+                                              true;
+                                            });
+                                          }
+                                        }
+                                      }
+                                    },
+                                    child: Container(
+                                      height: media.width * 0.1,
+                                      width: media.width * 0.1,
+                                      decoration: BoxDecoration(
+                                          boxShadow: [
+                                            BoxShadow(
+                                                blurRadius: 2,
+                                                color: Colors.black
+                                                    .withOpacity(0.2),
+                                                spreadRadius: 2)
+                                          ],
+                                          color: page,
+                                          borderRadius:
+                                          BorderRadius.circular(
+                                              media.width * 0.06)),
+                                      child: Icon(
+                                          Icons
+                                              .my_location_sharp,
+                                          size: 20,
+                                          color:
+                                          textColor),
                                     ),
                                   ),
                                 ),
@@ -1482,58 +1501,69 @@ class _whereScreenState extends State<whereScreen>
                                         .padding
                                         .top +
                                         20,
-                                    child: SizedBox(
-                                      width: media.width *
-                                          0.9,
-                                      child: Row(
-                                        mainAxisAlignment:
-                                        MainAxisAlignment
-                                            .start,
-                                        children: [
-                                          StatefulBuilder(
-                                            builder: (context,
-                                                setState) {
-                                              return Row(
+                                    child: Row(
+                                      mainAxisAlignment:
+                                      MainAxisAlignment
+                                          .start,
+                                      children: [
+                                        StatefulBuilder(
+                                          builder: (context,
+                                              setState) {
+                                            return SizedBox(
+                                              width: media.width*0.94,
+                                              child: Row(
                                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                 // crossAxisAlignment: CrossAxisAlignment.start,
                                                 children: [
-                                                  Container(
-                                                    child: appBarWidget(context: context,
-                                                        onTaps: (){
-                                                          Navigator.pop(context);
-                                                        },
-                                                        backgroundIcon: whiteColors, title: "",iconColors: iconGrayColors),
+                                                  GestureDetector(
+                                                    onTap: (){
+                                                      Navigator.pop(context);
+                                                    },
+                                                    child: CircleAvatar(
+                                                      backgroundColor: whiteColors,
+                                                      radius: 18,
+                                                      child: Padding(
+                                                        padding:  EdgeInsets.only(left: 09),
+                                                        child: Icon(
+                                                          Icons.arrow_back_ios,
+                                                          color: iconGrayColors,
+                                                          size: 20,
+                                                        ),
+                                                      ),
+                                                    ),
                                                   ),
-                                                 // Icon(Icons.account_circle, color: Colors.black,size: 40,),
+
+                                                  userProfile(context:context)
+
 
                                                 ],
-                                              );
-                                            },
-                                          ),
-                                          SizedBox(
-                                            width: media
-                                                .width *
-                                                0.02,
-                                          ),
-                                          (banners
-                                              .isNotEmpty)
-                                              ? SizedBox(
-                                              width: media.width *
-                                                  0.77,
-                                              height: media.width *
-                                                  0.15,
-                                              child: (banners.length ==
-                                                  1)
-                                                  ? ClipRRect(
-                                                  borderRadius: BorderRadius.circular(20),
-                                                  child: Image.network(
-                                                    banners[0]['image'],
-                                                    fit: BoxFit.fitWidth,
-                                                  ))
-                                                  : const BannerImage())
-                                              : const SizedBox(),
-                                        ],
-                                      ),
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                        SizedBox(
+                                          width: media
+                                              .width *
+                                              0.02,
+                                        ),
+                                        (banners
+                                            .isNotEmpty)
+                                            ? SizedBox(
+                                            width: media.width *
+                                                0.77,
+                                            height: media.width *
+                                                0.15,
+                                            child: (banners.length ==
+                                                1)
+                                                ? ClipRRect(
+                                                borderRadius: BorderRadius.circular(20),
+                                                child: Image.network(
+                                                  banners[0]['image'],
+                                                  fit: BoxFit.fitWidth,
+                                                ))
+                                                : const BannerImage())
+                                            : const SizedBox(),
+                                      ],
                                     ))
                                     : const SizedBox(),
                                 Positioned(
@@ -2157,946 +2187,1025 @@ class _whereScreenState extends State<whereScreen>
                                                 color:
                                                 page,
                                                 child:
-                                                SingleChildScrollView(
-                                                  child:
-                                                  Column(
-                                                    children: [
-                                                      (_bottom == 1)
-                                                          ? Material(
-                                                          elevation: 5,
-                                                          color: page,
-                                                          child: Container(
-                                                              width: media.width * 1,
-                                                              padding: EdgeInsets.all(media.width * 0.04),
-                                                              decoration: BoxDecoration(
-                                                                borderRadius: BorderRadius.circular(media.width * 0.02),
-                                                                color: page,
-                                                                boxShadow: [
-                                                                  BoxShadow(color: Colors.black.withOpacity(0.0), spreadRadius: 1, blurRadius: 1)
-                                                                ],
+                                                Stack(
+                                                  children: [
+                                                    SingleChildScrollView(
+                                                      child:
+                                                      Column(
+                                                        children: [
+                                                          (_bottom == 1)
+                                                              ? Material(
+                                                              // elevation: 5,
+                                                              color: page,
+                                                              child: Container(
+                                                                  width: media.width * 1,
+                                                                  padding: EdgeInsets.all(media.width * 0.04),
+                                                                  decoration: BoxDecoration(
+                                                                    // borderRadius: BorderRadius.circular(media.width * 0.02),
+                                                                    color: page,
+                                                                    // boxShadow: [
+                                                                    //   BoxShadow(color: Colors.black.withOpacity(0.0), spreadRadius: 1, blurRadius: 1)
+                                                                    // ],
+                                                                  ),
+                                                                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                                                                    SizedBox(height: MediaQuery.of(context).padding.top),
+                                                                    Row(
+                                                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                      children: [
+
+                                                                        GestureDetector(
+                                                                          onTap: (){
+                                                                            setState(() {
+                                                                              // _height = media.width * 0.4;
+                                                                              _height = media.width * 0.4;
+                                                                              _bottom = 0;
+                                                                              isOutStation = false;
+                                                                              choosenTransportType = 0;
+
+                                                                              addAutoFill.clear();
+                                                                              _pickaddress = false;
+                                                                              _dropaddress = false;
+                                                                            });
+                                                                          },
+                                                                          child: CircleAvatar(
+                                                                            backgroundColor: Color(0xffECECEC),
+                                                                            radius: 18,
+
+                                                                            child: Padding(
+                                                                              padding: const EdgeInsets.only(top: 03),
+                                                                              child: Icon(
+                                                                                Icons.keyboard_arrow_down,
+                                                                                color: iconGrayColors,
+                                                                                size: 35,
+                                                                              ),
+                                                                            ),
+                                                                          ),
+                                                                        ),
+
+
+                                                                        userProfile(context:context),
+                                                                      ],
+                                                                    ),
+                                                                    SizedBox(
+                                                                      height: media.width * 0.02,
+                                                                    ),
+                                                                    Column(
+                                                                      children: [
+                                                                        // Container(
+                                                                        //   // height: media.width * 0.1,
+                                                                        //   height: media.width * 0.12,
+                                                                        //   width: media.width * 0.9,
+                                                                        //   alignment: Alignment.center,
+                                                                        //   padding: EdgeInsets.all(media.width * 0.01),
+                                                                        //   decoration: BoxDecoration(
+                                                                        //     color: hintColor.withOpacity(0.1),
+                                                                        //     borderRadius: BorderRadius.circular(media.width * 0.02),
+                                                                        //     border: Border.all(color: textColor.withOpacity(0.3)),
+                                                                        //   ),
+                                                                        //   child: Row(
+                                                                        //     children: [
+                                                                        //       Expanded(
+                                                                        //         child: Row(
+                                                                        //           children: [
+                                                                        //             (_pickaddress == true && !_dropaddress)
+                                                                        //                 ? Expanded(
+                                                                        //               child: Column(
+                                                                        //                 crossAxisAlignment: CrossAxisAlignment.start,
+                                                                        //                 children: [
+                                                                        //                   // if (pickOnchange)
+                                                                        //                   Text(
+                                                                        //                     languages[choosenLanguage]['text_pickup_loc'],
+                                                                        //                     style: GoogleFonts.notoSans(
+                                                                        //                       fontSize: media.width * ten,
+                                                                        //                       textBaseline: TextBaseline.alphabetic,
+                                                                        //                       color: online,
+                                                                        //                     ),
+                                                                        //                   ),
+                                                                        //                   Expanded(
+                                                                        //                     child: SizedBox(
+                                                                        //                       height: media.width * 0.1,
+                                                                        //                       child: TextField(
+                                                                        //                           controller: pickupAddressController,
+                                                                        //                           autofocus: (_pickaddress) ? true : false,
+                                                                        //                           // minLines: 1,
+                                                                        //                           maxLines: 1,
+                                                                        //                           textAlignVertical: TextAlignVertical.center,
+                                                                        //                           decoration: InputDecoration(
+                                                                        //                             // contentPadding: (languageDirection == 'rtl') ? EdgeInsets.only(bottom: media.width * 0.035) : EdgeInsets.only(bottom: media.width * 0.03),
+                                                                        //                             isDense: true,
+                                                                        //                             isCollapsed: true,
+                                                                        //                             border: InputBorder.none,
+                                                                        //                             hintText: languages[choosenLanguage]['text_4letterpickup'],
+                                                                        //                             hintStyle: GoogleFonts.notoSans(
+                                                                        //                               fontSize: media.width * twelve,
+                                                                        //                               color: textColor.withOpacity(0.4),
+                                                                        //                             ),
+                                                                        //                             // labelText: const Text(''),
+                                                                        //                             label: const Text(''),
+                                                                        //                             labelStyle: GoogleFonts.notoSans(
+                                                                        //                               fontSize: media.width * fourteen,
+                                                                        //                               color: dropColor,
+                                                                        //                             ),
+                                                                        //                           ),
+                                                                        //                           style: GoogleFonts.notoSans(fontSize: media.width * fourteen, color: (isDarkTheme == true) ? Colors.white : textColor),
+                                                                        //                           onSubmitted: (value) {
+                                                                        //                             setState(() {
+                                                                        //                               _pickaddress = false;
+                                                                        //                             });
+                                                                        //                           },
+                                                                        //                           onChanged: (val) {
+                                                                        //                             if (val.isEmpty) {
+                                                                        //                               _sessionToken = null;
+                                                                        //                             }
+                                                                        //                             _debouncer.run(() {
+                                                                        //                               if (val.length >= 4) {
+                                                                        //                                 setState(() {
+                                                                        //                                   infoMessage = languages[choosenLanguage]["text_searching"].toString();
+                                                                        //                                 });
+                                                                        //                                 if (storedAutoAddress.where((element) => element['description'].toString().toLowerCase().contains(val.toLowerCase()) || element['display_name'].toString().toLowerCase().contains(val.toLowerCase())).isNotEmpty) {
+                                                                        //                                   addAutoFill.removeWhere((element) => element['description'].toString().toLowerCase().contains(val.toLowerCase()) == false || element['display_name'].toString().toLowerCase().contains(val.toLowerCase()) == false);
+                                                                        //                                   storedAutoAddress.where((element) => element['description'].toString().toLowerCase().contains(val.toLowerCase()) || element['display_name'].toString().toLowerCase().contains(val.toLowerCase())).forEach((element) {
+                                                                        //                                     addAutoFill.add(element);
+                                                                        //                                   });
+                                                                        //                                   infoMessage = languages[choosenLanguage]["text_search_results"].toString();
+                                                                        //
+                                                                        //                                   valueNotifierHome.incrementNotifier();
+                                                                        //                                 } else {
+                                                                        //                                   // latlngbound(center.latitude, center.longitude, 'pick');
+                                                                        //                                   _sessionToken ??= const Uuid().v4();
+                                                                        //                                   getAutocomplete(val, _sessionToken, center.latitude, center.longitude).then((_) {
+                                                                        //                                     if (addAutoFill.isEmpty) {
+                                                                        //                                       setState(() {
+                                                                        //                                         infoMessage = languages[choosenLanguage]["text_search_no_results"].toString();
+                                                                        //                                       });
+                                                                        //                                     } else {
+                                                                        //                                       setState(() {
+                                                                        //                                         infoMessage = languages[choosenLanguage]["text_search_results"].toString();
+                                                                        //                                       });
+                                                                        //                                     }
+                                                                        //                                   });
+                                                                        //                                 }
+                                                                        //                               } else if (val.isNotEmpty && val.length < 4) {
+                                                                        //                                 setState(() {
+                                                                        //                                   infoMessage = languages[choosenLanguage]["text_min4_letters"].toString();
+                                                                        //                                   addAutoFill.clear();
+                                                                        //                                 });
+                                                                        //                               } else if (val.isEmpty) {
+                                                                        //                                 setState(() {
+                                                                        //                                   infoMessage = '';
+                                                                        //                                 });
+                                                                        //                               } else {
+                                                                        //                                 setState(() {
+                                                                        //                                   addAutoFill.clear();
+                                                                        //                                 });
+                                                                        //                               }
+                                                                        //                             });
+                                                                        //                           }),
+                                                                        //                     ),
+                                                                        //                   ),
+                                                                        //                 ],
+                                                                        //               ),
+                                                                        //             )
+                                                                        //                 : Expanded(
+                                                                        //               child: InkWell(
+                                                                        //                 onTap: () {
+                                                                        //                   setState(() {
+                                                                        //                     _dropaddress = false;
+                                                                        //                     _pickaddress = true;
+                                                                        //                     pickupAddressController.text = addressList.firstWhere((element) => element.type == 'pickup', orElse: () => AddressList(id: '', address: '', pickup: true, latlng: const LatLng(0.0, 0.0))).address;
+                                                                        //                   });
+                                                                        //                 },
+                                                                        //                 child: Row(
+                                                                        //                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                        //                   children: [
+                                                                        //                     SizedBox(
+                                                                        //                       width: media.width * 0.8,
+                                                                        //                       child: Column(
+                                                                        //                         crossAxisAlignment: CrossAxisAlignment.start,
+                                                                        //                         children: [
+                                                                        //                           MyText(
+                                                                        //                             text: languages[choosenLanguage]['text_pickup_loc'],
+                                                                        //                             size: media.width * ten,
+                                                                        //                             color: online,
+                                                                        //                             maxLines: 1,
+                                                                        //                             overflow: TextOverflow.ellipsis,
+                                                                        //                           ),
+                                                                        //                           Expanded(
+                                                                        //                             child: MyText(
+                                                                        //                               text: (addressList.where((element) => element.type == 'pickup').isNotEmpty) ? addressList.firstWhere((element) => element.type == 'pickup', orElse: () => AddressList(id: '', address: '', pickup: true, latlng: const LatLng(0.0, 0.0))).address : languages[choosenLanguage]['text_4letterpickup'],
+                                                                        //                               size: media.width * twelve,
+                                                                        //                               color: textColor,
+                                                                        //                               maxLines: 1,
+                                                                        //                               overflow: TextOverflow.ellipsis,
+                                                                        //                             ),
+                                                                        //                           ),
+                                                                        //                         ],
+                                                                        //                       ),
+                                                                        //                     ),
+                                                                        //                   ],
+                                                                        //                 ),
+                                                                        //               ),
+                                                                        //             ),
+                                                                        //           ],
+                                                                        //         ),
+                                                                        //       ),
+                                                                        //       if (_pickaddress) ...[
+                                                                        //         if (pickupAddressController.text.isNotEmpty)
+                                                                        //           InkWell(
+                                                                        //             onTap: () {
+                                                                        //               setState(() {
+                                                                        //                 pickupAddressController.text = '';
+                                                                        //                 infoMessage = '';
+                                                                        //                 _pickaddress = true;
+                                                                        //               });
+                                                                        //             },
+                                                                        //             child: Icon(
+                                                                        //               Icons.cancel_outlined,
+                                                                        //               size: 20,
+                                                                        //               color: textColor,
+                                                                        //             ),
+                                                                        //           ),
+                                                                        //         Container(
+                                                                        //           height: media.width * 0.1,
+                                                                        //           margin: EdgeInsets.only(left: media.width * 0.02, right: media.width * 0.02),
+                                                                        //           width: 2,
+                                                                        //           color: hintColor.withOpacity(0.2),
+                                                                        //         ),
+                                                                        //         InkWell(
+                                                                        //           onTap: () async {
+                                                                        //             setState(() {
+                                                                        //               _height = media.width * 0.8;
+                                                                        //               _bottom = 0;
+                                                                        //               isOutStation = false;
+                                                                        //               choosenTransportType = 0;
+                                                                        //
+                                                                        //               addAutoFill.clear();
+                                                                        //               _pickaddress = false;
+                                                                        //               _dropaddress = false;
+                                                                        //             });
+                                                                        //           },
+                                                                        //           child: Row(
+                                                                        //             children: [
+                                                                        //               SizedBox(
+                                                                        //                 width: media.width * 0.03,
+                                                                        //                 height: media.width * 0.08,
+                                                                        //                 child: Image.asset(
+                                                                        //                   'assets/images/pickupmarker.png',
+                                                                        //                 ),
+                                                                        //               ),
+                                                                        //               SizedBox(
+                                                                        //                 width: media.width * 0.01,
+                                                                        //               ),
+                                                                        //               MyText(
+                                                                        //                 text: languages[choosenLanguage]['text_map'],
+                                                                        //                 size: media.width * twelve,
+                                                                        //                 maxLines: 1,
+                                                                        //                 overflow: TextOverflow.ellipsis,
+                                                                        //               ),
+                                                                        //             ],
+                                                                        //           ),
+                                                                        //         ),
+                                                                        //       ],
+                                                                        //       if (!_pickaddress)
+                                                                        //         InkWell(
+                                                                        //           onTap: () async {
+                                                                        //             setState(() {
+                                                                        //               _dropaddress = false;
+                                                                        //               _pickaddress = true;
+                                                                        //               pickupAddressController.text = '';
+                                                                        //             });
+                                                                        //           },
+                                                                        //           child: Row(
+                                                                        //             children: [
+                                                                        //               SizedBox(
+                                                                        //                 width: media.width * 0.03,
+                                                                        //                 height: media.width * 0.08,
+                                                                        //                 child: Icon(
+                                                                        //                   Icons.cancel_outlined,
+                                                                        //                   size: 20,
+                                                                        //                   color: textColor,
+                                                                        //                 ),
+                                                                        //               ),
+                                                                        //               SizedBox(
+                                                                        //                 width: media.width * 0.03,
+                                                                        //               ),
+                                                                        //             ],
+                                                                        //           ),
+                                                                        //         ),
+                                                                        //     ],
+                                                                        //   ),
+                                                                        // ),
+
+                                                                        SizedBox(
+                                                                          height: media.width * 0.01,
+                                                                        ),
+                                                                        Container(
+                                                                          // margin: EdgeInsets.symmetric(horizontal: 15),
+                                                                          alignment:Alignment.topLeft,
+                                                                          child: MyText(text: "Where to?", size: font18Size,
+                                                                            fontweight: FontWeight.w700,color: headingColors,),
+                                                                        ),
+                                                                        SizedBox(
+                                                                          height: media.width * 0.025,
+                                                                        ),
+                                                                        Container(
+                                                                          // height: media.width * 0.1,
+                                                                          height: media.width * 0.12,
+                                                                          width: media.width * 0.9,
+                                                                          alignment: Alignment.center,
+                                                                          padding: EdgeInsets.only(right: media.width * 0.02),
+
+                                                                          decoration: BoxDecoration(
+                                                                            color: Color(0xffF7F7F7),
+                                                                            borderRadius: BorderRadius.circular(media.width * 0.02),
+                                                                            // border: Border.all(color: textColor.withOpacity(0.3)),
+                                                                          ),
+                                                                          child: Row(
+                                                                            children: [
+                                                                              Expanded(
+                                                                                child: Row(
+                                                                                  children: [
+                                                                                    (_dropaddress)
+                                                                                        ? Expanded(
+                                                                                      child: Column(
+                                                                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                                                                        children: [
+                                                                                          // if (dropOnchange)
+
+
+                                                                                          // Text(
+                                                                                          //   languages[choosenLanguage]['text_drop_loc'],
+                                                                                          //   style: GoogleFonts.notoSans(
+                                                                                          //     fontSize: media.width * ten,
+                                                                                          //     textBaseline: TextBaseline.alphabetic,
+                                                                                          //     color: dropColor,
+                                                                                          //   ),
+                                                                                          // ),
+
+                                                                                          Expanded(
+                                                                                            child: SizedBox(
+                                                                                              // height: media.width * 0.1,
+                                                                                              child: TextField(
+                                                                                                  controller: dropAddressController,
+                                                                                                  autofocus: (_dropaddress) ? true : false,
+                                                                                                  focusNode: focusSearchNode,
+                                                                                                  minLines: 1,
+                                                                                                  // textAlign: TextAlign.start,
+                                                                                                  textAlignVertical: TextAlignVertical.center,
+
+                                                                                                  decoration: InputDecoration(
+
+                                                                                                    prefixIcon: Icon(Icons.search,size: 22,),
+                                                                                                    floatingLabelBehavior: FloatingLabelBehavior.always,
+                                                                                                    border: InputBorder.none,
+                                                                                                    isDense: true,
+                                                                                                    isCollapsed: true,
+                                                                                                    hintText: "Enter your destination",
+                                                                                                    hintStyle: GoogleFonts.inter(
+                                                                                                      fontSize: font14Size,
+                                                                                                      fontWeight: FontWeight.w400,
+                                                                                                      // textBaseline: TextBaseline.alphabetic,
+                                                                                                      color: Color(0xff494949),
+                                                                                                    ),
+                                                                                                    alignLabelWithHint: true,
+                                                                                                    label: const Text(''),
+                                                                                                    // labelText: languages[choosenLanguage]['text_drop_loc'],
+                                                                                                    labelStyle: GoogleFonts.inter(
+                                                                                                      fontSize: media.width * fourteen,
+                                                                                                      textBaseline: TextBaseline.alphabetic,
+                                                                                                      color: dropColor,
+                                                                                                    ),
+                                                                                                  ),
+                                                                                                  style: GoogleFonts.inter(fontSize: font14Size,
+                                                                                                    fontWeight: FontWeight.w400,color: Color(0xff494949),),
+                                                                                                  maxLines: 1,
+                                                                                                  onChanged: (val) {
+                                                                                                    if (val.isEmpty) {
+                                                                                                      _sessionToken = null;
+                                                                                                    }
+                                                                                                    _debouncer.run(() {
+                                                                                                      if (val.length >= 4) {
+                                                                                                        if (storedAutoAddress.where((element) => element['description'].toString().toLowerCase().contains(val.toLowerCase()) || element['display_name'].toString().toLowerCase().contains(val.toLowerCase())).isNotEmpty) {
+                                                                                                          addAutoFill.removeWhere((element) => element['description'].toString().toLowerCase().contains(val.toLowerCase()) == false || element['display_name'].toString().toLowerCase().contains(val.toLowerCase()) == false);
+                                                                                                          storedAutoAddress.where((element) => element['description'].toString().toLowerCase().contains(val.toLowerCase()) || element['display_name'].toString().toLowerCase().contains(val.toLowerCase())).forEach((element) {
+                                                                                                            addAutoFill.add(element);
+                                                                                                          });
+                                                                                                          infoMessage = languages[choosenLanguage]["text_search_results"].toString();
+
+                                                                                                          valueNotifierHome.incrementNotifier();
+                                                                                                        } else {
+                                                                                                          // latlngbound(addressList[0].latlng.latitude, addressList[0].latlng.longitude, 'drop');
+                                                                                                          setState(() {
+                                                                                                            infoMessage = languages[choosenLanguage]["text_searching"].toString();
+                                                                                                          });
+                                                                                                          _sessionToken ??= const Uuid().v4();
+                                                                                                          getAutocomplete(val, _sessionToken, center.latitude, center.longitude).then((_) {
+                                                                                                            if (addAutoFill.isEmpty) {
+                                                                                                              setState(() {
+                                                                                                                infoMessage = languages[choosenLanguage]["text_search_no_results"].toString();
+                                                                                                              });
+                                                                                                            } else {
+                                                                                                              setState(() {
+                                                                                                                infoMessage = languages[choosenLanguage]["text_search_results"].toString();
+                                                                                                              });
+                                                                                                            }
+                                                                                                          });
+                                                                                                        }
+                                                                                                      } else if (val.isNotEmpty && val.length < 4) {
+                                                                                                        setState(() {
+                                                                                                          infoMessage = languages[choosenLanguage]["text_min4_letters"].toString();
+                                                                                                          addAutoFill.clear();
+                                                                                                        });
+                                                                                                      } else if (val.isEmpty) {
+                                                                                                        setState(() {
+                                                                                                          infoMessage = '';
+                                                                                                        });
+                                                                                                      } else {
+                                                                                                        setState(() {
+                                                                                                          addAutoFill.clear();
+                                                                                                        });
+                                                                                                      }
+                                                                                                    });
+                                                                                                  }),
+                                                                                            ),
+                                                                                          ),
+                                                                                        ],
+                                                                                      ),
+                                                                                    )
+                                                                                        : Expanded(
+                                                                                      child: InkWell(
+                                                                                        onTap: () {
+                                                                                          setState(() {
+                                                                                            _dropaddress = true;
+                                                                                            _pickaddress = false;
+                                                                                          });
+                                                                                        },
+                                                                                        child: Row(
+                                                                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                                          children: [
+                                                                                            Expanded(
+                                                                                              child: MyText(
+                                                                                                text: languages[choosenLanguage]['text_4lettersforautofill'],
+                                                                                                size: media.width * fourteen,
+                                                                                                color: textColor,
+                                                                                                maxLines: 1,
+                                                                                                overflow: TextOverflow.ellipsis,
+                                                                                              ),
+                                                                                            ),
+                                                                                          ],
+                                                                                        ),
+                                                                                      ),
+                                                                                    ),
+                                                                                  ],
+                                                                                ),
+                                                                              ),
+                                                                              if (_dropaddress) ...[
+                                                                                // if (dropAddressController.text.isNotEmpty)
+                                                                                //   InkWell(
+                                                                                //     onTap: () {
+                                                                                //       setState(() {
+                                                                                //         dropAddressController.text = '';
+                                                                                //         infoMessage = '';
+                                                                                //       });
+                                                                                //     },
+                                                                                //     child: const Icon(Icons.cancel_outlined, size: 20),
+                                                                                //   ),
+                                                                                Container(
+                                                                                  height: media.width * 0.1,
+                                                                                  margin: EdgeInsets.only(left: media.width * 0.02, right: media.width * 0.02),
+                                                                                  width: 2,
+                                                                                  color: hintColor.withOpacity(0.2),
+                                                                                ),
+                                                                                InkWell(
+                                                                                  onTap: () async {
+                                                                                    addAutoFill.clear();
+                                                                                    if (_dropaddress == true && addressList.where((element) => element.type == 'pickup').isNotEmpty) {
+                                                                                      var navigate = await Navigator.push(context, MaterialPageRoute(builder: (context) => DropLocation()));
+                                                                                      if (navigate != null) {
+                                                                                        if (navigate) {
+                                                                                          setState(() {
+                                                                                            addressList.removeWhere((element) => element.type == 'drop');
+                                                                                          });
+                                                                                        }
+                                                                                      }
+                                                                                    }
+                                                                                  },
+                                                                                  child: Row(
+                                                                                    mainAxisAlignment: MainAxisAlignment.center,
+                                                                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                                                                    children: [
+                                                                                      SizedBox(
+                                                                                        width: media.width * 0.03,
+                                                                                        // height: media.width * 0.05,
+                                                                                        child: Image.asset(
+                                                                                          'assets/images/dropmarker.png',fit: BoxFit.fitHeight,
+                                                                                        ),
+                                                                                      ),
+                                                                                      SizedBox(
+                                                                                        width: media.width * 0.01,
+                                                                                      ),
+                                                                                      MyText(
+                                                                                        text: languages[choosenLanguage]['text_map'],
+                                                                                        fontweight: FontWeight.w400,
+                                                                                        size: font14Size,
+                                                                                        color: Color(0xff494949),
+                                                                                        maxLines: 1,
+                                                                                        overflow: TextOverflow.ellipsis,
+                                                                                      ),
+                                                                                    ],
+                                                                                  ),
+                                                                                ),
+                                                                              ],
+                                                                            ],
+                                                                          ),
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                  ])))
+                                                              : const SizedBox(),
+
+                                                          // (_bottom == 1 && userDetails['show_ride_without_destination'].toString() == '1' && choosenTransportType == 0 && !isOutStation)
+                                                          //     ? Column(
+                                                          //   children: [
+                                                          //     SizedBox(
+                                                          //       height: media.width * 0.025,
+                                                          //     ),
+                                                          //     SizedBox(
+                                                          //       width: media.width * 1,
+                                                          //       // color: topBar,
+                                                          //       child: Row(
+                                                          //         mainAxisAlignment: MainAxisAlignment.center,
+                                                          //         children: [
+                                                          //           InkWell(
+                                                          //             onTap: () {
+                                                          //               ismulitipleride = false;
+                                                          //               // if (_dropaddress == true) {
+                                                          //               setState(() {
+                                                          //                 Navigator.pushAndRemoveUntil(
+                                                          //                     context,
+                                                          //                     MaterialPageRoute(
+                                                          //                         builder: (context) => BookingConfirmation(
+                                                          //                           type: 2,
+                                                          //                         )),
+                                                          //                         (route) => false);
+                                                          //               });
+                                                          //               // }
+                                                          //             },
+                                                          //             child: Row(
+                                                          //               children: [
+                                                          //                 Container(
+                                                          //                   padding: EdgeInsets.all(media.width * 0.01),
+                                                          //                   // decoration: BoxDecoration(color: Colors.grey.withOpacity(0.1)),
+                                                          //                   child: RotatedBox(
+                                                          //                     quarterTurns: 3,
+                                                          //                     child: Icon(
+                                                          //                       Icons.route_sharp,
+                                                          //                       color: (isDarkTheme == true) ? Colors.white : textColor,
+                                                          //                       size: media.width * sixteen,
+                                                          //                     ),
+                                                          //                   ),
+                                                          //                 ),
+                                                          //                 SizedBox(
+                                                          //                   width: media.width * 0.02,
+                                                          //                 ),
+                                                          //                 MyText(
+                                                          //                     text: languages[choosenLanguage]['text_ridewithout_destination'],
+                                                          //                     size: media.width * sixteen,
+                                                          //                     fontweight: FontWeight.w600,
+                                                          //                     color: (isDarkTheme == true)
+                                                          //                         ? Colors.white
+                                                          //                         :
+                                                          //                     // buttonColor
+                                                          //                     theme),
+                                                          //               ],
+                                                          //             ),
+                                                          //           )
+                                                          //         ],
+                                                          //       ),
+                                                          //     ),
+                                                          //   ],
+                                                          // )
+                                                          //     : const SizedBox(),
+
+                                                          if (infoMessage.isNotEmpty)
+                                                            Align(
+                                                              alignment: Alignment.centerLeft,
+                                                              child: Padding(
+                                                                padding: const EdgeInsets.fromLTRB(15, 10, 0, 0),
+                                                                child: Text(
+                                                                  infoMessage,
+                                                                  style: TextStyle(fontSize: media.width * fourteen,
+                                                                      fontWeight: FontWeight.bold, color: textColor),
+                                                                ),
                                                               ),
-                                                              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                                                                SizedBox(height: MediaQuery.of(context).padding.top),
-                                                                Row(
+                                                            ),
+                                                          SizedBox(
+                                                            child: SingleChildScrollView(
+                                                                child: Column(
+                                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                                  children: [
+                                                                    if (infoMessage.isNotEmpty)
+                                                                      Container(
+                                                                        padding: EdgeInsets.all(media.width * 0.03),
+                                                                        decoration: BoxDecoration(
+                                                                          borderRadius: BorderRadius.circular(media.width * 0.02),
+                                                                          color: page,
+                                                                        ),
+                                                                        child: Column(
+                                                                          children: [
+                                                                            (addAutoFill.isNotEmpty)
+                                                                                ? Column(
+                                                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                                                              children: addAutoFill
+                                                                                  .asMap()
+                                                                                  .map((i, value) {
+                                                                                return MapEntry(
+                                                                                    i,
+                                                                                    (i < 5)
+                                                                                        ? Material(
+                                                                                      color: Colors.transparent,
+                                                                                      child: InkWell(
+                                                                                        onTap: () async {
+                                                                                          var val;
+
+                                                                                          if (addAutoFill[i]['lat'] == '' || addAutoFill[i]['lat'] == null) {
+                                                                                            val = await geoCodingForLatLng(addAutoFill[i]['place'], _sessionToken);
+                                                                                            _sessionToken = null;
+                                                                                            lowerLat = _centerLocation.latitude - (lat * 1.24);
+                                                                                          }
+
+                                                                                          if (_pickaddress == true) {
+                                                                                            // setState(() {
+                                                                                            if (addressList.where((element) => element.type == 'pickup').isEmpty) {
+                                                                                              addressList.add(AddressList(id: '1', type: 'pickup', pickup: false, address: addAutoFill[i]['description'], latlng: (addAutoFill[i]['lat'] == '' || addAutoFill[i]['lat'] == null) ? LatLng(double.parse(val['lat'].toString()), double.parse(val['lng'].toString())) : LatLng(double.parse(addAutoFill[i]['lat'].toString()), double.parse(addAutoFill[i]['lon'].toString()))));
+                                                                                              // addressList.add(AddressList(id: '1', type: 'pickup', pickup: true, address: addAutoFill[i]['description'], latlng: (addAutoFill[i]['lat'] == '' || addAutoFill[i]['lat'] == null) ? val : LatLng(double.parse(addAutoFill[i]['lat'].toString()), double.parse(addAutoFill[i]['lon'].toString())), name: userDetails['name'], number: userDetails['mobile']));
+                                                                                            } else {
+
+                                                                                              addressList.firstWhere((element) => element.type == 'pickup').address = addAutoFill[i]['description'];
+                                                                                              addressList.firstWhere((element) => element.type == 'pickup').latlng = (addAutoFill[i]['lat'] == '' || addAutoFill[i]['lat'] == null) ? LatLng(double.parse(val['lat'].toString()), double.parse(val['lng'].toString())) : LatLng(double.parse(addAutoFill[i]['lat'].toString()), double.parse(addAutoFill[i]['lon'].toString()));
+                                                                                            }
+                                                                                            infoMessage = '';
+                                                                                            pickupAddressController.text = '';
+                                                                                            _dropaddress = true;
+                                                                                            _pickaddress = false;
+                                                                                            center = LatLng(double.parse(val['lat'].toString()), double.parse(val['lng'].toString()));
+                                                                                            // _controller?.moveCamera(CameraUpdate.newLatLngZoom(val, 14.0));
+                                                                                            // });
+                                                                                            setState(() {});
+                                                                                          } else {
+                                                                                            setState(() {
+                                                                                              if (addressList.where((element) => element.type == 'drop').isEmpty) {
+
+                                                                                                addressList.add(AddressList(id: '2', type: 'drop', pickup: false, address: addAutoFill[i]['description'], latlng: (addAutoFill[i]['lat'] == '' || addAutoFill[i]['lat'] == null) ? LatLng(double.parse(val['lat'].toString()), double.parse(val['lng'].toString())) : LatLng(double.parse(addAutoFill[i]['lat'].toString()), double.parse(addAutoFill[i]['lon'].toString()))));
+
+                                                                                              } else {
+                                                                                                addressList.firstWhere((element) => element.type == 'drop').address = addAutoFill[i]['description'];
+                                                                                                addressList.firstWhere((element) => element.type == 'drop').latlng = (addAutoFill[i]['lat'] == '' || addAutoFill[i]['lat'] == null) ? LatLng(double.parse(val['lat'].toString()), double.parse(val['lng'].toString())) : LatLng(double.parse(addAutoFill[i]['lat'].toString()), double.parse(addAutoFill[i]['lon'].toString()));
+
+                                                                                              }
+                                                                                              infoMessage = '';
+                                                                                              dropAddressController.text = '';
+                                                                                              _height = media.width * 0.8;
+                                                                                              _bottom = 0;
+                                                                                              _dropaddress = false;
+                                                                                            });
+
+                                                                                            // pref.setStringList('recentsearch', jsonEncode(recentSearchesList).toString());
+
+                                                                                            if (addressList.length == 2) {
+                                                                                              if (recentSearchesList.length > 3) {
+                                                                                                recentSearchesList.removeAt(0);
+                                                                                              }
+                                                                                              if (recentSearchesList.any((mapTested) => mapTested['address'] == addAutoFill[i]['description'].toString())) {
+                                                                                              } else {
+                                                                                                recentSearchesList.add({
+                                                                                                  'address': addAutoFill[i]['description'],
+                                                                                                  'id': addressList.firstWhere((element) => element.type == 'drop').id,
+                                                                                                  'type': addressList.firstWhere((element) => element.type == 'drop').type,
+                                                                                                  'pickup': addressList.firstWhere((element) => element.type == 'drop').pickup,
+                                                                                                  'latlng': [
+                                                                                                    addressList.firstWhere((element) => element.type == 'drop').latlng.latitude,
+                                                                                                    addressList.firstWhere((element) => element.type == 'drop').latlng.longitude,
+                                                                                                  ]
+                                                                                                });
+                                                                                                pref.setString('recentsearch', jsonEncode(recentSearchesList));
+                                                                                              }
+
+                                                                                              navigate();
+                                                                                            }
+                                                                                          }
+                                                                                          setState(() {
+                                                                                            addAutoFill.clear();
+                                                                                            _dropaddress = false;
+                                                                                          });
+                                                                                        },
+                                                                                        child: Container(
+                                                                                          padding: EdgeInsets.fromLTRB(0, media.width * 0.04, 0, media.width * 0.04),
+                                                                                          decoration: BoxDecoration(
+                                                                                            border: Border(bottom: BorderSide(width: 1.0, color: (isDarkTheme == true) ? textColor.withOpacity(0.2) : textColor.withOpacity(0.1))),
+                                                                                          ),
+                                                                                          child: Row(
+                                                                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                                            children: [
+                                                                                              Container(
+                                                                                                padding: EdgeInsets.all(media.width * 0.01),
+                                                                                                decoration: BoxDecoration(
+                                                                                                  shape: BoxShape.circle,
+                                                                                                  color: hintColor.withOpacity(0.7),
+                                                                                                ),
+                                                                                                alignment: Alignment.center,
+                                                                                                child: Icon(
+                                                                                                  Icons.access_time,
+                                                                                                  color: page,
+                                                                                                  size: media.width * 0.05,
+                                                                                                ),
+                                                                                              ),
+                                                                                              SizedBox(
+                                                                                                width: media.width * 0.65,
+                                                                                                child: MyText(text: (addAutoFill[i]['description'] != null) ? addAutoFill[i]['description'] : addAutoFill[i]['display_name'], size: media.width * twelve, maxLines: 2),
+                                                                                              ),
+                                                                                              (favAddress.length < 4)
+                                                                                                  ? Material(
+                                                                                                color: Colors.transparent,
+                                                                                                borderRadius: BorderRadius.circular(12),
+                                                                                                child: InkWell(
+                                                                                                  // splashColor: Colors.transparent,
+                                                                                                  borderRadius: BorderRadius.circular(12),
+                                                                                                  onTap: () async {
+                                                                                                    if (favAddress.where((e) => e['pick_address'] == addAutoFill[i]['description']).isEmpty) {
+                                                                                                      var val;
+                                                                                                      if (addAutoFill[i]['lat'] == '' || addAutoFill[i]['lat'] == null) {
+                                                                                                        val = await geoCodingForLatLng(addAutoFill[i]['place'], _sessionToken);
+                                                                                                        _sessionToken = null;
+                                                                                                      }
+                                                                                                      setState(() {
+                                                                                                        favSelectedAddress = addAutoFill[i]['description'];
+                                                                                                        favLat = (addAutoFill[i]['lat'] == '' || addAutoFill[i]['lat'] == null) ? val['lat'] : addAutoFill[i]['lat'];
+                                                                                                        favLng = (addAutoFill[i]['lat'] == '' || addAutoFill[i]['lat'] == null) ? val['lng'] : addAutoFill[i]['lon'];
+                                                                                                        favAddressAdd = true;
+                                                                                                      });
+                                                                                                    }
+                                                                                                  },
+                                                                                                  child: Icon(
+                                                                                                    Icons.bookmark,
+                                                                                                    size: media.width * 0.05,
+                                                                                                    color: favAddress.where((element) => element['pick_address'] == addAutoFill[i]['description'] || element['pick_address'] == addAutoFill[i]['display_name']).isNotEmpty ? buttonColor : textColor.withOpacity(0.3),
+                                                                                                  ),
+                                                                                                ),
+                                                                                              )
+                                                                                                  : const SizedBox()
+                                                                                            ],
+                                                                                          ),
+                                                                                        ),
+                                                                                      ),
+                                                                                    )
+                                                                                        : const SizedBox());
+                                                                              })
+                                                                                  .values
+                                                                                  .toList(),
+                                                                            )
+                                                                                : const SizedBox(),
+                                                                          ],
+                                                                        ),
+                                                                      ),
+                                                                  ],
+                                                                )),
+                                                          ),
+
+                                                          (recentSearchesList.isNotEmpty)
+                                                              ? Column(
+                                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                                            children: [
+                                                              Padding(
+                                                                padding: EdgeInsets.only(left: media.width * 0.03, right: media.width * 0.03, top: media.width * 0.01, bottom: media.width * 0.01),
+                                                                child: MyText(
+                                                                  text: languages[choosenLanguage]['text_recent_searches'],
+                                                                  size: font14Size,
+                                                                  fontweight: FontWeight.w600,
+                                                                    color: Color(0xff090A0A),
+                                                                ),
+                                                              ),
+                                                              for (var i = recentSearchesList.length - 1; i >= 0; i--)
+                                                                Column(
                                                                   children: [
                                                                     InkWell(
                                                                       onTap: () {
                                                                         setState(() {
-                                                                          // _height = media.width * 0.4;
-                                                                          _height = media.width * 0.4;
-                                                                          _bottom = 0;
-                                                                          isOutStation = false;
-                                                                          choosenTransportType = 0;
-
-                                                                          addAutoFill.clear();
-                                                                          _pickaddress = false;
-                                                                          _dropaddress = false;
+                                                                          if (addressList.where((element) => element.type == 'drop').isEmpty) {
+                                                                            addressList.add(AddressList(id: '2', type: 'drop', address: recentSearchesList[i]['address'], pickup: false, latlng: LatLng(recentSearchesList[i]['latlng'][0], recentSearchesList[i]['latlng'][1])));
+                                                                          } else {
+                                                                            addressList.firstWhere((element) => element.type == 'drop').address = recentSearchesList[i]['address'];
+                                                                            addressList.firstWhere((element) => element.type == 'drop').latlng = LatLng(recentSearchesList[i]['latlng'][0], recentSearchesList[i]['latlng'][1]);
+                                                                          }
                                                                         });
+                                                                        if (addressList.length == 2) {
+                                                                          navigate();
+                                                                        }
                                                                       },
-                                                                      child: Icon(Icons.arrow_back_ios, color: textColor),
+                                                                      child: Container(
+                                                                        padding: EdgeInsets.only(left: media.width * 0.03, right: media.width * 0.03, top: media.width * 0.01, bottom: media.width * 0.01),
+                                                                        color: page,
+                                                                        child: Row(
+                                                                          children: [
+                                                                            Icon(
+                                                                              Icons.location_on,
+                                                                              color: verifyDeclined,
+                                                                              size: media.width * 0.05,
+                                                                            ),
+                                                                            SizedBox(
+                                                                              width: media.width * 0.03,
+                                                                            ),
+                                                                            Expanded(
+                                                                                child: MyText(
+                                                                                  text: recentSearchesList[i]['address'].toString(),
+                                                                                  size: font14Size,
+                                                                                  fontweight: FontWeight.w400,
+                                                                                  color: Color(0xff697176),
+                                                                                  maxLines: 2,
+                                                                                )),
+                                                                          ],
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                    SizedBox(
+                                                                      height: media.width * 0.01,
+                                                                    ),
+                                                                    const MySeparator(),
+                                                                    SizedBox(
+                                                                      height: media.width * 0.01,
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                            ],
+                                                          )
+                                                              : const SizedBox(),
+
+                                                          (favAddress.isNotEmpty && addAutoFill.isEmpty)
+                                                              ? Container(
+                                                            width: media.width * 1,
+                                                            padding: EdgeInsets.only(left: media.width * 0.03, right: media.width * 0.03),
+                                                            color: page,
+                                                            child: Column(
+                                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                                              children: [
+                                                                SizedBox(
+                                                                  height: media.width * 0.01,
+                                                                ),
+                                                                Row(
+                                                                  children: [
+                                                                    MyText(
+                                                                      text: "Saved Places",
+                                                                      size: font14Size,
+                                                                      color: Color(0xff090A0A),
+                                                                      fontweight: FontWeight.w600,
                                                                     ),
                                                                   ],
                                                                 ),
                                                                 SizedBox(
                                                                   height: media.width * 0.02,
                                                                 ),
-                                                                Column(
-                                                                  children: [
-                                                                    Container(
-                                                                      // height: media.width * 0.1,
-                                                                      height: media.width * 0.12,
-                                                                      width: media.width * 0.9,
-                                                                      alignment: Alignment.center,
-                                                                      padding: EdgeInsets.all(media.width * 0.01),
-                                                                      decoration: BoxDecoration(
-                                                                        color: hintColor.withOpacity(0.1),
-                                                                        borderRadius: BorderRadius.circular(media.width * 0.02),
-                                                                        border: Border.all(color: textColor.withOpacity(0.3)),
-                                                                      ),
-                                                                      child: Row(
-                                                                        children: [
-                                                                          Expanded(
-                                                                            child: Row(
-                                                                              children: [
-                                                                                (_pickaddress == true && !_dropaddress)
-                                                                                    ? Expanded(
-                                                                                  child: Column(
-                                                                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                                                                    children: [
-                                                                                      // if (pickOnchange)
-                                                                                      Text(
-                                                                                        languages[choosenLanguage]['text_pickup_loc'],
-                                                                                        style: GoogleFonts.notoSans(
-                                                                                          fontSize: media.width * ten,
-                                                                                          textBaseline: TextBaseline.alphabetic,
-                                                                                          color: online,
-                                                                                        ),
-                                                                                      ),
-                                                                                      Expanded(
-                                                                                        child: SizedBox(
-                                                                                          height: media.width * 0.1,
-                                                                                          child: TextField(
-                                                                                              controller: pickupAddressController,
-                                                                                              autofocus: (_pickaddress) ? true : false,
-                                                                                              // minLines: 1,
-                                                                                              maxLines: 1,
-                                                                                              textAlignVertical: TextAlignVertical.center,
-                                                                                              decoration: InputDecoration(
-                                                                                                // contentPadding: (languageDirection == 'rtl') ? EdgeInsets.only(bottom: media.width * 0.035) : EdgeInsets.only(bottom: media.width * 0.03),
-                                                                                                isDense: true,
-                                                                                                isCollapsed: true,
-                                                                                                border: InputBorder.none,
-                                                                                                hintText: languages[choosenLanguage]['text_4letterpickup'],
-                                                                                                hintStyle: GoogleFonts.notoSans(
-                                                                                                  fontSize: media.width * twelve,
-                                                                                                  color: textColor.withOpacity(0.4),
-                                                                                                ),
-                                                                                                // labelText: const Text(''),
-                                                                                                label: const Text(''),
-                                                                                                labelStyle: GoogleFonts.notoSans(
-                                                                                                  fontSize: media.width * fourteen,
-                                                                                                  color: dropColor,
-                                                                                                ),
-                                                                                              ),
-                                                                                              style: GoogleFonts.notoSans(fontSize: media.width * fourteen, color: (isDarkTheme == true) ? Colors.white : textColor),
-                                                                                              onSubmitted: (value) {
-                                                                                                setState(() {
-                                                                                                  _pickaddress = false;
-                                                                                                });
-                                                                                              },
-                                                                                              onChanged: (val) {
-                                                                                                if (val.isEmpty) {
-                                                                                                  _sessionToken = null;
-                                                                                                }
-                                                                                                _debouncer.run(() {
-                                                                                                  if (val.length >= 4) {
-                                                                                                    setState(() {
-                                                                                                      infoMessage = languages[choosenLanguage]["text_searching"].toString();
-                                                                                                    });
-                                                                                                    if (storedAutoAddress.where((element) => element['description'].toString().toLowerCase().contains(val.toLowerCase()) || element['display_name'].toString().toLowerCase().contains(val.toLowerCase())).isNotEmpty) {
-                                                                                                      addAutoFill.removeWhere((element) => element['description'].toString().toLowerCase().contains(val.toLowerCase()) == false || element['display_name'].toString().toLowerCase().contains(val.toLowerCase()) == false);
-                                                                                                      storedAutoAddress.where((element) => element['description'].toString().toLowerCase().contains(val.toLowerCase()) || element['display_name'].toString().toLowerCase().contains(val.toLowerCase())).forEach((element) {
-                                                                                                        addAutoFill.add(element);
-                                                                                                      });
-                                                                                                      infoMessage = languages[choosenLanguage]["text_search_results"].toString();
+                                                                SizedBox(
+                                                                  width: media.width * 0.9,
+                                                                  child: Stack(
+                                                                    children: [
+                                                                      SingleChildScrollView(
+                                                                        child: Column(
+                                                                          children: [
+                                                                            (favAddress.isNotEmpty)
+                                                                                ? Column(
+                                                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                                                              children: favAddress
+                                                                                  .asMap()
+                                                                                  .map((i, value) {
+                                                                                return MapEntry(
+                                                                                    i,
+                                                                                    (i < 5)
+                                                                                        ? Material(
+                                                                                      color: const Color.fromRGBO(0, 0, 0, 0),
+                                                                                      child: InkWell(
+                                                                                        onTap: () async {
+                                                                                          if (_pickaddress == true) {
+                                                                                            setState(() {
+                                                                                              addAutoFill.clear();
+                                                                                              if (addressList.where((element) => element.type == 'pickup').isEmpty) {
+                                                                                                addressList.add(AddressList(id: '1', type: 'pickup', pickup: true, address: favAddress[i]['pick_address'], latlng: LatLng(favAddress[i]['pick_lat'], favAddress[i]['pick_lng'])));
+                                                                                              } else {
+                                                                                                addressList.firstWhere((element) => element.type == 'pickup').address = favAddress[i]['pick_address'];
+                                                                                                addressList.firstWhere((element) => element.type == 'pickup').latlng = LatLng(favAddress[i]['pick_lat'], favAddress[i]['pick_lng']);
+                                                                                              }
+                                                                                              _controller?.moveCamera(CameraUpdate.newLatLngZoom(LatLng(favAddress[i]['pick_lat'], favAddress[i]['pick_lng']), 14.0));
+                                                                                              // _height = media.width * 0.4;
+                                                                                              _height = media.width * 0.8;
+                                                                                              _bottom = 0;
+                                                                                            });
+                                                                                          } else {
+                                                                                            setState(() {
+                                                                                              if (addressList.where((element) => element.type == 'drop').isEmpty) {
+                                                                                                addressList.add(AddressList(id: '2', type: 'drop', address: favAddress[i]['pick_address'], pickup: false, latlng: LatLng(favAddress[i]['pick_lat'], favAddress[i]['pick_lng'])));
+                                                                                              } else {
+                                                                                                addressList.firstWhere((element) => element.type == 'drop').address = favAddress[i]['pick_address'];
+                                                                                                addressList.firstWhere((element) => element.type == 'drop').latlng = LatLng(favAddress[i]['pick_lat'], favAddress[i]['pick_lng']);
+                                                                                              }
+                                                                                              addAutoFill.clear();
+                                                                                              _height = media.width * 0.8;
+                                                                                              _bottom = 0;
+                                                                                            });
+                                                                                            if (addressList.length == 2) {
+                                                                                              if (choosenTransportType == 0) {
+                                                                                                ismulitipleride = false;
 
-                                                                                                      valueNotifierHome.incrementNotifier();
-                                                                                                    } else {
-                                                                                                      // latlngbound(center.latitude, center.longitude, 'pick');
-                                                                                                      _sessionToken ??= const Uuid().v4();
-                                                                                                      getAutocomplete(val, _sessionToken, center.latitude, center.longitude).then((_) {
-                                                                                                        if (addAutoFill.isEmpty) {
-                                                                                                          setState(() {
-                                                                                                            infoMessage = languages[choosenLanguage]["text_search_no_results"].toString();
-                                                                                                          });
-                                                                                                        } else {
-                                                                                                          setState(() {
-                                                                                                            infoMessage = languages[choosenLanguage]["text_search_results"].toString();
-                                                                                                          });
-                                                                                                        }
-                                                                                                      });
-                                                                                                    }
-                                                                                                  } else if (val.isNotEmpty && val.length < 4) {
-                                                                                                    setState(() {
-                                                                                                      infoMessage = languages[choosenLanguage]["text_min4_letters"].toString();
-                                                                                                      addAutoFill.clear();
-                                                                                                    });
-                                                                                                  } else if (val.isEmpty) {
-                                                                                                    setState(() {
-                                                                                                      infoMessage = '';
-                                                                                                    });
-                                                                                                  } else {
-                                                                                                    setState(() {
-                                                                                                      addAutoFill.clear();
-                                                                                                    });
-                                                                                                  }
-                                                                                                });
-                                                                                              }),
-                                                                                        ),
-                                                                                      ),
-                                                                                    ],
-                                                                                  ),
-                                                                                )
-                                                                                    : Expanded(
-                                                                                  child: InkWell(
-                                                                                    onTap: () {
-                                                                                      setState(() {
-                                                                                        _dropaddress = false;
-                                                                                        _pickaddress = true;
-                                                                                        pickupAddressController.text = addressList.firstWhere((element) => element.type == 'pickup', orElse: () => AddressList(id: '', address: '', pickup: true, latlng: const LatLng(0.0, 0.0))).address;
-                                                                                      });
-                                                                                    },
-                                                                                    child: Row(
-                                                                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                                                      children: [
-                                                                                        SizedBox(
-                                                                                          width: media.width * 0.8,
-                                                                                          child: Column(
-                                                                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                                                                                Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => BookingConfirmation()), (route) => false);
+                                                                                              } else {
+                                                                                                Navigator.push(context, MaterialPageRoute(builder: (context) => DropLocation()));
+                                                                                              }
+
+                                                                                              dropAddress = favAddress[i]['pick_address'];
+                                                                                            }
+                                                                                          }
+                                                                                        },
+                                                                                        child: Container(
+                                                                                          padding: EdgeInsets.all(media.width * 0.02),
+                                                                                          decoration: BoxDecoration(
+                                                                                            border: Border(bottom: BorderSide(width: 1.0, color: (isDarkTheme == true) ? textColor.withOpacity(0.2) : textColor.withOpacity(0.1))),
+                                                                                          ),
+                                                                                          child: Row(
+                                                                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                                                             children: [
-                                                                                              MyText(
-                                                                                                text: languages[choosenLanguage]['text_pickup_loc'],
-                                                                                                size: media.width * ten,
-                                                                                                color: online,
-                                                                                                maxLines: 1,
-                                                                                                overflow: TextOverflow.ellipsis,
+                                                                                              Container(
+                                                                                                padding: EdgeInsets.all(media.width * 0.01),
+                                                                                                // decoration: BoxDecoration(
+                                                                                                //   shape: BoxShape.circle,
+                                                                                                //   color: hintColor.withOpacity(0.7),
+                                                                                                // ),
+                                                                                                child: Icon(Icons.trending_up_outlined,color: buttonColors,size: 30,),
                                                                                               ),
-                                                                                              Expanded(
-                                                                                                child: MyText(
-                                                                                                  text: (addressList.where((element) => element.type == 'pickup').isNotEmpty) ? addressList.firstWhere((element) => element.type == 'pickup', orElse: () => AddressList(id: '', address: '', pickup: true, latlng: const LatLng(0.0, 0.0))).address : languages[choosenLanguage]['text_4letterpickup'],
-                                                                                                  size: media.width * twelve,
-                                                                                                  color: textColor,
-                                                                                                  maxLines: 1,
-                                                                                                  overflow: TextOverflow.ellipsis,
-                                                                                                ),
+                                                                                              SizedBox(
+                                                                                                width: media.width * 0.02,
                                                                                               ),
+                                                                                              Expanded(child: Column(
+                                                                                                // mainAxisAlignment: MainAxisAlignment.start,
+                                                                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                                                                children: [
+                                                                                                  MyText(text: (favAddress[i]['address_name'] == 'Home')
+                                                                                                      ?'Home':(favAddress[i]['address_name'] == 'Work')?'Work':"Other", size: font14Size,
+                                                                                                      color: headingColors,fontweight: FontWeight.w500, maxLines: 1),
+                                                                                                  MyText(text: favAddress[i]['pick_address'], size: font14Size,color: Color(0xff697176),fontweight: FontWeight.w400, maxLines: 2),
+                                                                                                ],
+                                                                                              )),
                                                                                             ],
                                                                                           ),
                                                                                         ),
-                                                                                      ],
-                                                                                    ),
-                                                                                  ),
-                                                                                ),
-                                                                              ],
-                                                                            ),
-                                                                          ),
-                                                                          if (_pickaddress) ...[
-                                                                            if (pickupAddressController.text.isNotEmpty)
-                                                                              InkWell(
-                                                                                onTap: () {
-                                                                                  setState(() {
-                                                                                    pickupAddressController.text = '';
-                                                                                    infoMessage = '';
-                                                                                    _pickaddress = true;
-                                                                                  });
-                                                                                },
-                                                                                child: Icon(
-                                                                                  Icons.cancel_outlined,
-                                                                                  size: 20,
-                                                                                  color: textColor,
-                                                                                ),
-                                                                              ),
-                                                                            Container(
-                                                                              height: media.width * 0.1,
-                                                                              margin: EdgeInsets.only(left: media.width * 0.02, right: media.width * 0.02),
-                                                                              width: 2,
-                                                                              color: hintColor.withOpacity(0.2),
-                                                                            ),
-                                                                            InkWell(
-                                                                              onTap: () async {
-                                                                                setState(() {
-                                                                                  _height = media.width * 0.8;
-                                                                                  _bottom = 0;
-                                                                                  isOutStation = false;
-                                                                                  choosenTransportType = 0;
-
-                                                                                  addAutoFill.clear();
-                                                                                  _pickaddress = false;
-                                                                                  _dropaddress = false;
-                                                                                });
-                                                                              },
-                                                                              child: Row(
-                                                                                children: [
-                                                                                  SizedBox(
-                                                                                    width: media.width * 0.03,
-                                                                                    height: media.width * 0.08,
-                                                                                    child: Image.asset(
-                                                                                      'assets/images/pickupmarker.png',
-                                                                                    ),
-                                                                                  ),
-                                                                                  SizedBox(
-                                                                                    width: media.width * 0.01,
-                                                                                  ),
-                                                                                  MyText(
-                                                                                    text: languages[choosenLanguage]['text_map'],
-                                                                                    size: media.width * twelve,
-                                                                                    maxLines: 1,
-                                                                                    overflow: TextOverflow.ellipsis,
-                                                                                  ),
-                                                                                ],
-                                                                              ),
-                                                                            ),
-                                                                          ],
-                                                                          if (!_pickaddress)
-                                                                            InkWell(
-                                                                              onTap: () async {
-                                                                                setState(() {
-                                                                                  _dropaddress = false;
-                                                                                  _pickaddress = true;
-                                                                                  pickupAddressController.text = '';
-                                                                                });
-                                                                              },
-                                                                              child: Row(
-                                                                                children: [
-                                                                                  SizedBox(
-                                                                                    width: media.width * 0.03,
-                                                                                    height: media.width * 0.08,
-                                                                                    child: Icon(
-                                                                                      Icons.cancel_outlined,
-                                                                                      size: 20,
-                                                                                      color: textColor,
-                                                                                    ),
-                                                                                  ),
-                                                                                  SizedBox(
-                                                                                    width: media.width * 0.03,
-                                                                                  ),
-                                                                                ],
-                                                                              ),
-                                                                            ),
-                                                                        ],
-                                                                      ),
-                                                                    ),
-                                                                    SizedBox(
-                                                                      height: media.width * 0.03,
-                                                                    ),
-                                                                    Container(
-                                                                      // height: media.width * 0.1,
-                                                                      height: media.width * 0.12,
-                                                                      width: media.width * 0.9,
-                                                                      alignment: Alignment.center,
-                                                                      padding: EdgeInsets.all(media.width * 0.01),
-                                                                      decoration: BoxDecoration(
-                                                                        color: hintColor.withOpacity(0.1),
-                                                                        borderRadius: BorderRadius.circular(media.width * 0.02),
-                                                                        border: Border.all(color: textColor.withOpacity(0.3)),
-                                                                      ),
-                                                                      child: Row(
-                                                                        children: [
-                                                                          Expanded(
-                                                                            child: Row(
-                                                                              children: [
-                                                                                (_dropaddress)
-                                                                                    ? Expanded(
-                                                                                  child: Column(
-                                                                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                                                                    children: [
-                                                                                      // if (dropOnchange)
-                                                                                      Text(
-                                                                                        languages[choosenLanguage]['text_drop_loc'],
-                                                                                        style: GoogleFonts.notoSans(
-                                                                                          fontSize: media.width * ten,
-                                                                                          textBaseline: TextBaseline.alphabetic,
-                                                                                          color: dropColor,
-                                                                                        ),
                                                                                       ),
-                                                                                      Expanded(
-                                                                                        child: SizedBox(
-                                                                                          height: media.width * 0.1,
-                                                                                          child: TextField(
-                                                                                              controller: dropAddressController,
-                                                                                              autofocus: (_dropaddress) ? true : false,
-                                                                                              minLines: 1,
-                                                                                              // textAlign: TextAlign.start,
-                                                                                              textAlignVertical: TextAlignVertical.center,
-                                                                                              decoration: InputDecoration(
-                                                                                                // contentPadding: EdgeInsets.only(top: media.width * 0.01, bottom: media.width * 0.025),
-                                                                                                floatingLabelBehavior: FloatingLabelBehavior.always,
-                                                                                                border: InputBorder.none,
-                                                                                                isDense: true,
-                                                                                                isCollapsed: true,
-                                                                                                hintText: languages[choosenLanguage]['text_4lettersforautofill'],
-                                                                                                hintStyle: GoogleFonts.notoSans(
-                                                                                                  fontSize: media.width * twelve,
-                                                                                                  textBaseline: TextBaseline.alphabetic,
-                                                                                                  color: textColor.withOpacity(0.4),
-                                                                                                ),
-                                                                                                alignLabelWithHint: true,
-                                                                                                label: const Text(''),
-                                                                                                // labelText: languages[choosenLanguage]['text_drop_loc'],
-                                                                                                labelStyle: GoogleFonts.notoSans(
-                                                                                                  fontSize: media.width * fourteen,
-                                                                                                  textBaseline: TextBaseline.alphabetic,
-                                                                                                  color: dropColor,
-                                                                                                ),
-                                                                                              ),
-                                                                                              style: GoogleFonts.notoSans(fontSize: media.width * fourteen, color: (isDarkTheme == true) ? Colors.white : textColor),
-                                                                                              maxLines: 1,
-                                                                                              onChanged: (val) {
-                                                                                                if (val.isEmpty) {
-                                                                                                  _sessionToken = null;
-                                                                                                }
-                                                                                                _debouncer.run(() {
-                                                                                                  if (val.length >= 4) {
-                                                                                                    if (storedAutoAddress.where((element) => element['description'].toString().toLowerCase().contains(val.toLowerCase()) || element['display_name'].toString().toLowerCase().contains(val.toLowerCase())).isNotEmpty) {
-                                                                                                      addAutoFill.removeWhere((element) => element['description'].toString().toLowerCase().contains(val.toLowerCase()) == false || element['display_name'].toString().toLowerCase().contains(val.toLowerCase()) == false);
-                                                                                                      storedAutoAddress.where((element) => element['description'].toString().toLowerCase().contains(val.toLowerCase()) || element['display_name'].toString().toLowerCase().contains(val.toLowerCase())).forEach((element) {
-                                                                                                        addAutoFill.add(element);
-                                                                                                      });
-                                                                                                      infoMessage = languages[choosenLanguage]["text_search_results"].toString();
-
-                                                                                                      valueNotifierHome.incrementNotifier();
-                                                                                                    } else {
-                                                                                                      // latlngbound(addressList[0].latlng.latitude, addressList[0].latlng.longitude, 'drop');
-                                                                                                      setState(() {
-                                                                                                        infoMessage = languages[choosenLanguage]["text_searching"].toString();
-                                                                                                      });
-                                                                                                      _sessionToken ??= const Uuid().v4();
-                                                                                                      getAutocomplete(val, _sessionToken, center.latitude, center.longitude).then((_) {
-                                                                                                        if (addAutoFill.isEmpty) {
-                                                                                                          setState(() {
-                                                                                                            infoMessage = languages[choosenLanguage]["text_search_no_results"].toString();
-                                                                                                          });
-                                                                                                        } else {
-                                                                                                          setState(() {
-                                                                                                            infoMessage = languages[choosenLanguage]["text_search_results"].toString();
-                                                                                                          });
-                                                                                                        }
-                                                                                                      });
-                                                                                                    }
-                                                                                                  } else if (val.isNotEmpty && val.length < 4) {
-                                                                                                    setState(() {
-                                                                                                      infoMessage = languages[choosenLanguage]["text_min4_letters"].toString();
-                                                                                                      addAutoFill.clear();
-                                                                                                    });
-                                                                                                  } else if (val.isEmpty) {
-                                                                                                    setState(() {
-                                                                                                      infoMessage = '';
-                                                                                                    });
-                                                                                                  } else {
-                                                                                                    setState(() {
-                                                                                                      addAutoFill.clear();
-                                                                                                    });
-                                                                                                  }
-                                                                                                });
-                                                                                              }),
-                                                                                        ),
-                                                                                      ),
-                                                                                    ],
-                                                                                  ),
-                                                                                )
-                                                                                    : Expanded(
-                                                                                  child: InkWell(
-                                                                                    onTap: () {
-                                                                                      setState(() {
-                                                                                        _dropaddress = true;
-                                                                                        _pickaddress = false;
-                                                                                      });
-                                                                                    },
-                                                                                    child: Row(
-                                                                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                                                      children: [
-                                                                                        Expanded(
-                                                                                          child: MyText(
-                                                                                            text: languages[choosenLanguage]['text_4lettersforautofill'],
-                                                                                            size: media.width * fourteen,
-                                                                                            color: textColor,
-                                                                                            maxLines: 1,
-                                                                                            overflow: TextOverflow.ellipsis,
-                                                                                          ),
-                                                                                        ),
-                                                                                      ],
-                                                                                    ),
-                                                                                  ),
-                                                                                ),
-                                                                              ],
-                                                                            ),
-                                                                          ),
-                                                                          if (_dropaddress) ...[
-                                                                            if (dropAddressController.text.isNotEmpty)
-                                                                              InkWell(
-                                                                                onTap: () {
-                                                                                  setState(() {
-                                                                                    dropAddressController.text = '';
-                                                                                    infoMessage = '';
-                                                                                  });
-                                                                                },
-                                                                                child: const Icon(Icons.cancel_outlined, size: 20),
-                                                                              ),
-                                                                            Container(
-                                                                              height: media.width * 0.1,
-                                                                              margin: EdgeInsets.only(left: media.width * 0.02, right: media.width * 0.02),
-                                                                              width: 2,
-                                                                              color: hintColor.withOpacity(0.2),
-                                                                            ),
-                                                                            InkWell(
-                                                                              onTap: () async {
-                                                                                addAutoFill.clear();
-                                                                                if (_dropaddress == true && addressList.where((element) => element.type == 'pickup').isNotEmpty) {
-                                                                                  var navigate = await Navigator.push(context, MaterialPageRoute(builder: (context) => DropLocation()));
-                                                                                  if (navigate != null) {
-                                                                                    if (navigate) {
-                                                                                      setState(() {
-                                                                                        addressList.removeWhere((element) => element.type == 'drop');
-                                                                                      });
-                                                                                    }
-                                                                                  }
-                                                                                }
-                                                                              },
-                                                                              child: Row(
-                                                                                children: [
-                                                                                  SizedBox(
-                                                                                    width: media.width * 0.03,
-                                                                                    height: media.width * 0.08,
-                                                                                    child: Image.asset(
-                                                                                      'assets/images/dropmarker.png',
-                                                                                    ),
-                                                                                  ),
-                                                                                  SizedBox(
-                                                                                    width: media.width * 0.01,
-                                                                                  ),
-                                                                                  MyText(
-                                                                                    text: languages[choosenLanguage]['text_map'],
-                                                                                    size: media.width * twelve,
-                                                                                    maxLines: 1,
-                                                                                    overflow: TextOverflow.ellipsis,
-                                                                                  ),
-                                                                                ],
-                                                                              ),
-                                                                            ),
+                                                                                    )
+                                                                                        : const SizedBox());
+                                                                              })
+                                                                                  .values
+                                                                                  .toList(),
+                                                                            )
+                                                                                : const SizedBox(),
                                                                           ],
-                                                                        ],
-                                                                      ),
-                                                                    ),
-                                                                  ],
-                                                                ),
-                                                              ])))
-                                                          : const SizedBox(),
-                                                      (_bottom == 1 && userDetails['show_ride_without_destination'].toString() == '1' && choosenTransportType == 0 && !isOutStation)
-                                                          ? Column(
-                                                        children: [
-                                                          SizedBox(
-                                                            height: media.width * 0.025,
-                                                          ),
-                                                          SizedBox(
-                                                            width: media.width * 1,
-                                                            // color: topBar,
-                                                            child: Row(
-                                                              mainAxisAlignment: MainAxisAlignment.center,
-                                                              children: [
-                                                                InkWell(
-                                                                  onTap: () {
-                                                                    ismulitipleride = false;
-                                                                    // if (_dropaddress == true) {
-                                                                    setState(() {
-                                                                      Navigator.pushAndRemoveUntil(
-                                                                          context,
-                                                                          MaterialPageRoute(
-                                                                              builder: (context) => BookingConfirmation(
-                                                                                type: 2,
-                                                                              )),
-                                                                              (route) => false);
-                                                                    });
-                                                                    // }
-                                                                  },
-                                                                  child: Row(
-                                                                    children: [
-                                                                      Container(
-                                                                        padding: EdgeInsets.all(media.width * 0.01),
-                                                                        // decoration: BoxDecoration(color: Colors.grey.withOpacity(0.1)),
-                                                                        child: RotatedBox(
-                                                                          quarterTurns: 3,
-                                                                          child: Icon(
-                                                                            Icons.route_sharp,
-                                                                            color: (isDarkTheme == true) ? Colors.white : textColor,
-                                                                            size: media.width * sixteen,
-                                                                          ),
                                                                         ),
                                                                       ),
-                                                                      SizedBox(
-                                                                        width: media.width * 0.02,
-                                                                      ),
-                                                                      MyText(
-                                                                          text: languages[choosenLanguage]['text_ridewithout_destination'],
-                                                                          size: media.width * sixteen,
-                                                                          fontweight: FontWeight.w600,
-                                                                          color: (isDarkTheme == true)
-                                                                              ? Colors.white
-                                                                              :
-                                                                          // buttonColor
-                                                                          theme),
+
                                                                     ],
                                                                   ),
-                                                                )
+                                                                ),
                                                               ],
                                                             ),
-                                                          ),
+                                                          )
+                                                              : const SizedBox(),
                                                         ],
-                                                      )
-                                                          : const SizedBox(),
-                                                      if (infoMessage.isNotEmpty)
-                                                        Align(
-                                                          alignment: Alignment.centerLeft,
-                                                          child: Padding(
-                                                            padding: const EdgeInsets.fromLTRB(15, 10, 0, 0),
-                                                            child: Text(
-                                                              infoMessage,
-                                                              style: TextStyle(fontSize: media.width * fourteen, fontWeight: FontWeight.bold, color: textColor),
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      SizedBox(
-                                                        child: SingleChildScrollView(
-                                                            child: Column(
-                                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                                              children: [
-                                                                if (infoMessage.isNotEmpty)
-                                                                  Container(
-                                                                    padding: EdgeInsets.all(media.width * 0.03),
-                                                                    decoration: BoxDecoration(
-                                                                      borderRadius: BorderRadius.circular(media.width * 0.02),
-                                                                      color: page,
-                                                                    ),
-                                                                    child: Column(
-                                                                      children: [
-                                                                        (addAutoFill.isNotEmpty)
-                                                                            ? Column(
-                                                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                                                          children: addAutoFill
-                                                                              .asMap()
-                                                                              .map((i, value) {
-                                                                            return MapEntry(
-                                                                                i,
-                                                                                (i < 5)
-                                                                                    ? Material(
-                                                                                  color: Colors.transparent,
-                                                                                  child: InkWell(
-                                                                                    onTap: () async {
-                                                                                      var val;
-
-                                                                                      if (addAutoFill[i]['lat'] == '' || addAutoFill[i]['lat'] == null) {
-                                                                                        val = await geoCodingForLatLng(addAutoFill[i]['place'], _sessionToken);
-                                                                                        _sessionToken = null;
-                                                                                        lowerLat = _centerLocation.latitude - (lat * 1.24);
-                                                                                      }
-
-                                                                                      if (_pickaddress == true) {
-                                                                                        // setState(() {
-                                                                                        if (addressList.where((element) => element.type == 'pickup').isEmpty) {
-                                                                                          addressList.add(AddressList(id: '1', type: 'pickup', pickup: false, address: addAutoFill[i]['description'], latlng: (addAutoFill[i]['lat'] == '' || addAutoFill[i]['lat'] == null) ? LatLng(double.parse(val['lat'].toString()), double.parse(val['lng'].toString())) : LatLng(double.parse(addAutoFill[i]['lat'].toString()), double.parse(addAutoFill[i]['lon'].toString()))));
-                                                                                          // addressList.add(AddressList(id: '1', type: 'pickup', pickup: true, address: addAutoFill[i]['description'], latlng: (addAutoFill[i]['lat'] == '' || addAutoFill[i]['lat'] == null) ? val : LatLng(double.parse(addAutoFill[i]['lat'].toString()), double.parse(addAutoFill[i]['lon'].toString())), name: userDetails['name'], number: userDetails['mobile']));
-                                                                                        } else {
-
-                                                                                          addressList.firstWhere((element) => element.type == 'pickup').address = addAutoFill[i]['description'];
-                                                                                          addressList.firstWhere((element) => element.type == 'pickup').latlng = (addAutoFill[i]['lat'] == '' || addAutoFill[i]['lat'] == null) ? LatLng(double.parse(val['lat'].toString()), double.parse(val['lng'].toString())) : LatLng(double.parse(addAutoFill[i]['lat'].toString()), double.parse(addAutoFill[i]['lon'].toString()));
-                                                                                        }
-                                                                                        infoMessage = '';
-                                                                                        pickupAddressController.text = '';
-                                                                                        _dropaddress = true;
-                                                                                        _pickaddress = false;
-                                                                                        center = LatLng(double.parse(val['lat'].toString()), double.parse(val['lng'].toString()));
-                                                                                        // _controller?.moveCamera(CameraUpdate.newLatLngZoom(val, 14.0));
-                                                                                        // });
-                                                                                        setState(() {});
-                                                                                      } else {
-                                                                                        setState(() {
-                                                                                          if (addressList.where((element) => element.type == 'drop').isEmpty) {
-
-                                                                                            addressList.add(AddressList(id: '2', type: 'drop', pickup: false, address: addAutoFill[i]['description'], latlng: (addAutoFill[i]['lat'] == '' || addAutoFill[i]['lat'] == null) ? LatLng(double.parse(val['lat'].toString()), double.parse(val['lng'].toString())) : LatLng(double.parse(addAutoFill[i]['lat'].toString()), double.parse(addAutoFill[i]['lon'].toString()))));
-
-                                                                                          } else {
-                                                                                            addressList.firstWhere((element) => element.type == 'drop').address = addAutoFill[i]['description'];
-                                                                                            addressList.firstWhere((element) => element.type == 'drop').latlng = (addAutoFill[i]['lat'] == '' || addAutoFill[i]['lat'] == null) ? LatLng(double.parse(val['lat'].toString()), double.parse(val['lng'].toString())) : LatLng(double.parse(addAutoFill[i]['lat'].toString()), double.parse(addAutoFill[i]['lon'].toString()));
-
-                                                                                          }
-                                                                                          infoMessage = '';
-                                                                                          dropAddressController.text = '';
-                                                                                          _height = media.width * 0.8;
-                                                                                          _bottom = 0;
-                                                                                          _dropaddress = false;
-                                                                                        });
-
-                                                                                        // pref.setStringList('recentsearch', jsonEncode(recentSearchesList).toString());
-
-                                                                                        if (addressList.length == 2) {
-                                                                                          if (recentSearchesList.length > 3) {
-                                                                                            recentSearchesList.removeAt(0);
-                                                                                          }
-                                                                                          if (recentSearchesList.any((mapTested) => mapTested['address'] == addAutoFill[i]['description'].toString())) {
-                                                                                          } else {
-                                                                                            recentSearchesList.add({
-                                                                                              'address': addAutoFill[i]['description'],
-                                                                                              'id': addressList.firstWhere((element) => element.type == 'drop').id,
-                                                                                              'type': addressList.firstWhere((element) => element.type == 'drop').type,
-                                                                                              'pickup': addressList.firstWhere((element) => element.type == 'drop').pickup,
-                                                                                              'latlng': [
-                                                                                                addressList.firstWhere((element) => element.type == 'drop').latlng.latitude,
-                                                                                                addressList.firstWhere((element) => element.type == 'drop').latlng.longitude,
-                                                                                              ]
-                                                                                            });
-                                                                                            pref.setString('recentsearch', jsonEncode(recentSearchesList));
-                                                                                          }
-
-                                                                                          navigate();
-                                                                                        }
-                                                                                      }
-                                                                                      setState(() {
-                                                                                        addAutoFill.clear();
-                                                                                        _dropaddress = false;
-                                                                                      });
-                                                                                    },
-                                                                                    child: Container(
-                                                                                      padding: EdgeInsets.fromLTRB(0, media.width * 0.04, 0, media.width * 0.04),
-                                                                                      decoration: BoxDecoration(
-                                                                                        border: Border(bottom: BorderSide(width: 1.0, color: (isDarkTheme == true) ? textColor.withOpacity(0.2) : textColor.withOpacity(0.1))),
-                                                                                      ),
-                                                                                      child: Row(
-                                                                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                                                        children: [
-                                                                                          Container(
-                                                                                            padding: EdgeInsets.all(media.width * 0.01),
-                                                                                            decoration: BoxDecoration(
-                                                                                              shape: BoxShape.circle,
-                                                                                              color: hintColor.withOpacity(0.7),
-                                                                                            ),
-                                                                                            alignment: Alignment.center,
-                                                                                            child: Icon(
-                                                                                              Icons.access_time,
-                                                                                              color: page,
-                                                                                              size: media.width * 0.05,
-                                                                                            ),
-                                                                                          ),
-                                                                                          SizedBox(
-                                                                                            width: media.width * 0.65,
-                                                                                            child: MyText(text: (addAutoFill[i]['description'] != null) ? addAutoFill[i]['description'] : addAutoFill[i]['display_name'], size: media.width * twelve, maxLines: 2),
-                                                                                          ),
-                                                                                          (favAddress.length < 4)
-                                                                                              ? Material(
-                                                                                            color: Colors.transparent,
-                                                                                            borderRadius: BorderRadius.circular(12),
-                                                                                            child: InkWell(
-                                                                                              // splashColor: Colors.transparent,
-                                                                                              borderRadius: BorderRadius.circular(12),
-                                                                                              onTap: () async {
-                                                                                                if (favAddress.where((e) => e['pick_address'] == addAutoFill[i]['description']).isEmpty) {
-                                                                                                  var val;
-                                                                                                  if (addAutoFill[i]['lat'] == '' || addAutoFill[i]['lat'] == null) {
-                                                                                                    val = await geoCodingForLatLng(addAutoFill[i]['place'], _sessionToken);
-                                                                                                    _sessionToken = null;
-                                                                                                  }
-                                                                                                  setState(() {
-                                                                                                    favSelectedAddress = addAutoFill[i]['description'];
-                                                                                                    favLat = (addAutoFill[i]['lat'] == '' || addAutoFill[i]['lat'] == null) ? val['lat'] : addAutoFill[i]['lat'];
-                                                                                                    favLng = (addAutoFill[i]['lat'] == '' || addAutoFill[i]['lat'] == null) ? val['lng'] : addAutoFill[i]['lon'];
-                                                                                                    favAddressAdd = true;
-                                                                                                  });
-                                                                                                }
-                                                                                              },
-                                                                                              child: Icon(
-                                                                                                Icons.bookmark,
-                                                                                                size: media.width * 0.05,
-                                                                                                color: favAddress.where((element) => element['pick_address'] == addAutoFill[i]['description'] || element['pick_address'] == addAutoFill[i]['display_name']).isNotEmpty ? buttonColor : textColor.withOpacity(0.3),
-                                                                                              ),
-                                                                                            ),
-                                                                                          )
-                                                                                              : const SizedBox()
-                                                                                        ],
-                                                                                      ),
-                                                                                    ),
-                                                                                  ),
-                                                                                )
-                                                                                    : const SizedBox());
-                                                                          })
-                                                                              .values
-                                                                              .toList(),
-                                                                        )
-                                                                            : const SizedBox(),
-                                                                      ],
-                                                                    ),
-                                                                  ),
-                                                              ],
-                                                            )),
                                                       ),
-                                                      (recentSearchesList.isNotEmpty)
-                                                          ? Column(
-                                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                                        children: [
-                                                          Padding(
-                                                            padding: EdgeInsets.only(left: media.width * 0.03, right: media.width * 0.03, top: media.width * 0.01, bottom: media.width * 0.01),
-                                                            child: MyText(
-                                                              text: languages[choosenLanguage]['text_recent_searches'],
-                                                              size: media.width * fourteen,
-                                                              fontweight: FontWeight.bold,
+                                                    ),
+                                                    Positioned(
+                                                      bottom: 
+                                                      // focusSearchNode.hasFocus ?
+                                                      // media.height * 0.35
+                                                          // :
+                                                      media.height * 0.05,
+                                                      left: 0, // Set left boundary to 0
+                                                      right: 0,// Adjust the position of the map icon
+                                                      child: Center(
+                                                        child: Card(
+                                                         color: page,
+                                                          child: Padding(
+                                                            padding: const EdgeInsets.symmetric(horizontal: 09,vertical: 05),
+                                                            child: Row(
+                                                              mainAxisSize: MainAxisSize.min,
+                                                              children: [
+                                                                Icon(Icons.my_location_outlined,size: 22,),
+                                                                SizedBox(width: 08,),
+                                                                MyText(size:font14Size ,
+                                                                fontweight: FontWeight.w400,
+                                                                  color: Color(0xff292D32),
+                                                                  text:'Current Location',),
+                                                              ],
                                                             ),
                                                           ),
-                                                          for (var i = recentSearchesList.length - 1; i >= 0; i--)
-                                                            Column(
-                                                              children: [
-                                                                InkWell(
-                                                                  onTap: () {
-                                                                    setState(() {
-                                                                      if (addressList.where((element) => element.type == 'drop').isEmpty) {
-                                                                        addressList.add(AddressList(id: '2', type: 'drop', address: recentSearchesList[i]['address'], pickup: false, latlng: LatLng(recentSearchesList[i]['latlng'][0], recentSearchesList[i]['latlng'][1])));
-                                                                      } else {
-                                                                        addressList.firstWhere((element) => element.type == 'drop').address = recentSearchesList[i]['address'];
-                                                                        addressList.firstWhere((element) => element.type == 'drop').latlng = LatLng(recentSearchesList[i]['latlng'][0], recentSearchesList[i]['latlng'][1]);
-                                                                      }
-                                                                    });
-                                                                    if (addressList.length == 2) {
-                                                                      navigate();
-                                                                    }
-                                                                  },
-                                                                  child: Container(
-                                                                    padding: EdgeInsets.only(left: media.width * 0.03, right: media.width * 0.03, top: media.width * 0.01, bottom: media.width * 0.01),
-                                                                    color: page,
-                                                                    child: Row(
-                                                                      children: [
-                                                                        Icon(
-                                                                          Icons.location_on,
-                                                                          color: verifyDeclined,
-                                                                          size: media.width * 0.05,
-                                                                        ),
-                                                                        SizedBox(
-                                                                          width: media.width * 0.03,
-                                                                        ),
-                                                                        Expanded(
-                                                                            child: MyText(
-                                                                              text: recentSearchesList[i]['address'].toString(),
-                                                                              size: media.width * twelve,
-                                                                              maxLines: 2,
-                                                                            )),
-                                                                      ],
-                                                                    ),
-                                                                  ),
-                                                                ),
-                                                                SizedBox(
-                                                                  height: media.width * 0.01,
-                                                                ),
-                                                                const MySeparator(),
-                                                                SizedBox(
-                                                                  height: media.width * 0.01,
-                                                                ),
-                                                              ],
-                                                            ),
-                                                        ],
-                                                      )
-                                                          : const SizedBox(),
-                                                      (favAddress.isNotEmpty && addAutoFill.isEmpty)
-                                                          ? Container(
-                                                        width: media.width * 1,
-                                                        padding: EdgeInsets.only(left: media.width * 0.03, right: media.width * 0.03),
-                                                        color: page,
-                                                        child: Column(
-                                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                                          children: [
-                                                            SizedBox(
-                                                              height: media.width * 0.03,
-                                                            ),
-                                                            Row(
-                                                              children: [
-                                                                MyText(
-                                                                  text: languages[choosenLanguage]['text_fav_address'],
-                                                                  size: media.width * fourteen,
-                                                                  fontweight: FontWeight.w700,
-                                                                ),
-                                                              ],
-                                                            ),
-                                                            SizedBox(
-                                                              height: media.width * 0.02,
-                                                            ),
-                                                            SizedBox(
-                                                              width: media.width * 0.9,
-                                                              child: SingleChildScrollView(
-                                                                child: Column(
-                                                                  children: [
-                                                                    (favAddress.isNotEmpty)
-                                                                        ? Column(
-                                                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                                                      children: favAddress
-                                                                          .asMap()
-                                                                          .map((i, value) {
-                                                                        return MapEntry(
-                                                                            i,
-                                                                            (i < 5)
-                                                                                ? Material(
-                                                                              color: const Color.fromRGBO(0, 0, 0, 0),
-                                                                              child: InkWell(
-                                                                                onTap: () async {
-                                                                                  if (_pickaddress == true) {
-                                                                                    setState(() {
-                                                                                      addAutoFill.clear();
-                                                                                      if (addressList.where((element) => element.type == 'pickup').isEmpty) {
-                                                                                        addressList.add(AddressList(id: '1', type: 'pickup', pickup: true, address: favAddress[i]['pick_address'], latlng: LatLng(favAddress[i]['pick_lat'], favAddress[i]['pick_lng'])));
-                                                                                      } else {
-                                                                                        addressList.firstWhere((element) => element.type == 'pickup').address = favAddress[i]['pick_address'];
-                                                                                        addressList.firstWhere((element) => element.type == 'pickup').latlng = LatLng(favAddress[i]['pick_lat'], favAddress[i]['pick_lng']);
-                                                                                      }
-                                                                                      _controller?.moveCamera(CameraUpdate.newLatLngZoom(LatLng(favAddress[i]['pick_lat'], favAddress[i]['pick_lng']), 14.0));
-                                                                                      // _height = media.width * 0.4;
-                                                                                      _height = media.width * 0.8;
-                                                                                      _bottom = 0;
-                                                                                    });
-                                                                                  } else {
-                                                                                    setState(() {
-                                                                                      if (addressList.where((element) => element.type == 'drop').isEmpty) {
-                                                                                        addressList.add(AddressList(id: '2', type: 'drop', address: favAddress[i]['pick_address'], pickup: false, latlng: LatLng(favAddress[i]['pick_lat'], favAddress[i]['pick_lng'])));
-                                                                                      } else {
-                                                                                        addressList.firstWhere((element) => element.type == 'drop').address = favAddress[i]['pick_address'];
-                                                                                        addressList.firstWhere((element) => element.type == 'drop').latlng = LatLng(favAddress[i]['pick_lat'], favAddress[i]['pick_lng']);
-                                                                                      }
-                                                                                      addAutoFill.clear();
-                                                                                      _height = media.width * 0.8;
-                                                                                      _bottom = 0;
-                                                                                    });
-                                                                                    if (addressList.length == 2) {
-                                                                                      if (choosenTransportType == 0) {
-                                                                                        ismulitipleride = false;
-
-                                                                                        Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => BookingConfirmation()), (route) => false);
-                                                                                      } else {
-                                                                                        Navigator.push(context, MaterialPageRoute(builder: (context) => DropLocation()));
-                                                                                      }
-
-                                                                                      dropAddress = favAddress[i]['pick_address'];
-                                                                                    }
-                                                                                  }
-                                                                                },
-                                                                                child: Container(
-                                                                                  padding: EdgeInsets.all(media.width * 0.02),
-                                                                                  decoration: BoxDecoration(
-                                                                                    border: Border(bottom: BorderSide(width: 1.0, color: (isDarkTheme == true) ? textColor.withOpacity(0.2) : textColor.withOpacity(0.1))),
-                                                                                  ),
-                                                                                  child: Row(
-                                                                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                                                    children: [
-                                                                                      Container(
-                                                                                        padding: EdgeInsets.all(media.width * 0.01),
-                                                                                        decoration: BoxDecoration(
-                                                                                          shape: BoxShape.circle,
-                                                                                          color: hintColor.withOpacity(0.7),
-                                                                                        ),
-                                                                                        child: (favAddress[i]['address_name'] == 'Home')
-                                                                                            ? Image.asset(
-                                                                                          'assets/images/home.png',
-                                                                                          color: page,
-                                                                                          width: media.width * 0.04,
-                                                                                        )
-                                                                                            : (favAddress[i]['address_name'] == 'Work')
-                                                                                            ? Image.asset(
-                                                                                          'assets/images/briefcase.png',
-                                                                                          color: page,
-                                                                                          width: media.width * 0.04,
-                                                                                        )
-                                                                                            : Image.asset(
-                                                                                          'assets/images/navigation.png',
-                                                                                          color: page,
-                                                                                          width: media.width * 0.04,
-                                                                                        ),
-                                                                                      ),
-                                                                                      SizedBox(
-                                                                                        width: media.width * 0.02,
-                                                                                      ),
-                                                                                      Expanded(child: MyText(text: favAddress[i]['pick_address'], size: media.width * twelve, maxLines: 2)),
-                                                                                    ],
-                                                                                  ),
-                                                                                ),
-                                                                              ),
-                                                                            )
-                                                                                : const SizedBox());
-                                                                      })
-                                                                          .values
-                                                                          .toList(),
-                                                                    )
-                                                                        : const SizedBox(),
-                                                                  ],
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ],
                                                         ),
-                                                      )
-                                                          : const SizedBox(),
-                                                    ],
-                                                  ),
+                                                      ),
+                                                    ),
+                                                  ],
                                                 ),
                                               ),
                                             ),
@@ -4557,6 +4666,7 @@ class _BannerImageState extends State<BannerImage> {
   @override
   void dispose() {
     timer!.cancel();
+    focusSearchNode.dispose();
     super.dispose();
   }
 
