@@ -1702,128 +1702,113 @@ etaRequest({transport, outstation}) async {
   etaDetails.clear();
   dynamic result;
   try {
+String bodyParameter = (addressList
+    .where((element) => element.type == 'drop')
+    .isNotEmpty &&
+    dropStopList.isEmpty)
+    ? jsonEncode({
+  'pick_lat': (userRequestData.isNotEmpty)
+      ? userRequestData['pick_lat']
+      : addressList
+      .firstWhere((e) => e.type == 'pickup')
+      .latlng
+      .latitude,
+  'pick_lng': (userRequestData.isNotEmpty)
+      ? userRequestData['pick_lng']
+      : addressList
+      .firstWhere((e) => e.type == 'pickup')
+      .latlng
+      .longitude,
+  'drop_lat': (userRequestData.isNotEmpty)
+      ? userRequestData['drop_lat']
+      : addressList
+      .lastWhere((e) => e.type == 'drop')
+      .latlng
+      .latitude,
+  'drop_lng': (userRequestData.isNotEmpty)
+      ? userRequestData['drop_lng']
+      : addressList
+      .lastWhere((e) => e.type == 'drop')
+      .latlng
+      .longitude,
+  'ride_type': 1,
+  'transport_type': (transport == null)
+      ? (choosenTransportType == 0)
+      ? 'taxi'
+      : 'delivery'
+      : transport,
+  'is_outstation': outstation
+})
+    : (dropStopList.isNotEmpty &&
+    addressList
+        .where((element) => element.type == 'drop')
+        .isNotEmpty)
+    ? jsonEncode({
+  'pick_lat': (userRequestData.isNotEmpty)
+      ? userRequestData['pick_lat']
+      : addressList
+      .firstWhere((e) => e.type == 'pickup')
+      .latlng
+      .latitude,
+  'pick_lng': (userRequestData.isNotEmpty)
+      ? userRequestData['pick_lng']
+      : addressList
+      .firstWhere((e) => e.type == 'pickup')
+      .latlng
+      .longitude,
+  'drop_lat': (userRequestData.isNotEmpty)
+      ? userRequestData['drop_lat']
+      : addressList
+      .lastWhere((e) => e.type == 'drop')
+      .latlng
+      .latitude,
+  'drop_lng': (userRequestData.isNotEmpty)
+      ? userRequestData['drop_lng']
+      : addressList
+      .lastWhere((e) => e.type == 'drop')
+      .latlng
+      .longitude,
+  'stops': jsonEncode(dropStopList),
+  'ride_type': 1,
+  'transport_type':
+  (choosenTransportType == 0) ? 'taxi' : 'delivery',
+  'is_outstation': outstation
+})
+    : jsonEncode({
+  'pick_lat': (userRequestData.isNotEmpty)
+      ? userRequestData['pick_lat']
+      : addressList
+      .firstWhere((e) => e.type == 'pickup')
+      .latlng
+      .latitude,
+  'pick_lng': (userRequestData.isNotEmpty)
+      ? userRequestData['pick_lng']
+      : addressList
+      .firstWhere((e) => e.type == 'pickup')
+      .latlng
+      .longitude,
+  'ride_type': 1,
+  'transport_type':
+  (choosenTransportType == 0) ? 'taxi' : 'delivery',
+  'is_outstation': outstation
+});
+
     var response = await http.post(Uri.parse('${url}api/v1/request/eta'),
         headers: {
           'Authorization': 'Bearer ${bearerToken[0].token}',
           'Content-Type': 'application/json',
         },
-        body: (addressList
-            .where((element) => element.type == 'drop')
-            .isNotEmpty &&
-            dropStopList.isEmpty)
-            ? jsonEncode({
-          'pick_lat': (userRequestData.isNotEmpty)
-              ? userRequestData['pick_lat']
-              : addressList
-              .firstWhere((e) => e.type == 'pickup')
-              .latlng
-              .latitude,
-          'pick_lng': (userRequestData.isNotEmpty)
-              ? userRequestData['pick_lng']
-              : addressList
-              .firstWhere((e) => e.type == 'pickup')
-              .latlng
-              .longitude,
-          'drop_lat': (userRequestData.isNotEmpty)
-              ? userRequestData['drop_lat']
-              : addressList
-              .lastWhere((e) => e.type == 'drop')
-              .latlng
-              .latitude,
-          'drop_lng': (userRequestData.isNotEmpty)
-              ? userRequestData['drop_lng']
-              : addressList
-              .lastWhere((e) => e.type == 'drop')
-              .latlng
-              .longitude,
-          'ride_type': 1,
-          'transport_type': (transport == null)
-              ? (choosenTransportType == 0)
-              ? 'taxi'
-              : 'delivery'
-              : transport,
-          'is_outstation': outstation
-        })
-            : (dropStopList.isNotEmpty &&
-            addressList
-                .where((element) => element.type == 'drop')
-                .isNotEmpty)
-            ? jsonEncode({
-          'pick_lat': (userRequestData.isNotEmpty)
-              ? userRequestData['pick_lat']
-              : addressList
-              .firstWhere((e) => e.type == 'pickup')
-              .latlng
-              .latitude,
-          'pick_lng': (userRequestData.isNotEmpty)
-              ? userRequestData['pick_lng']
-              : addressList
-              .firstWhere((e) => e.type == 'pickup')
-              .latlng
-              .longitude,
-          'drop_lat': (userRequestData.isNotEmpty)
-              ? userRequestData['drop_lat']
-              : addressList
-              .lastWhere((e) => e.type == 'drop')
-              .latlng
-              .latitude,
-          'drop_lng': (userRequestData.isNotEmpty)
-              ? userRequestData['drop_lng']
-              : addressList
-              .lastWhere((e) => e.type == 'drop')
-              .latlng
-              .longitude,
-          'stops': jsonEncode(dropStopList),
-          'ride_type': 1,
-          'transport_type':
-          (choosenTransportType == 0) ? 'taxi' : 'delivery',
-          'is_outstation': outstation
-        })
-            : jsonEncode({
-          'pick_lat': (userRequestData.isNotEmpty)
-              ? userRequestData['pick_lat']
-              : addressList
-              .firstWhere((e) => e.type == 'pickup')
-              .latlng
-              .latitude,
-          'pick_lng': (userRequestData.isNotEmpty)
-              ? userRequestData['pick_lng']
-              : addressList
-              .firstWhere((e) => e.type == 'pickup')
-              .latlng
-              .longitude,
-          'ride_type': 1,
-          'transport_type':
-          (choosenTransportType == 0) ? 'taxi' : 'delivery',
-          'is_outstation': outstation
-        }));
+        body:bodyParameter);
 
     print("token::- ${bearerToken[0].token}");
-    print("drop::- ${addressList
-        .where((element) => element.type == 'drop')
-        .isNotEmpty} dropStopList::- ${dropStopList.isEmpty}");
+    print("bodyParameter::- ${bodyParameter}");
 
-    print("is_outstation:${outstation}  ride_type:${1}  transport_type:${transport == null}  ${choosenTransportType == 0}");
 
-    print("userRequestData.isNotEmpty ${userRequestData.isNotEmpty}");
-    print("pick_lat:${addressList
-        .firstWhere((e) => e.type == 'pickup')
-        .latlng
-        .latitude}  pick_lng:${addressList
-        .firstWhere((e) => e.type == 'pickup')
-        .latlng
-        .longitude}");
-    print("drop_lat: ${addressList
-        .lastWhere((e) => e.type == 'drop')
-        .latlng
-        .latitude}  drop_lng: ${addressList
-        .lastWhere((e) => e.type == 'drop')
-        .latlng
-        .longitude}");
     print("eta::- ${Uri.parse('${url}api/v1/request/eta')}"
         " statusCode:- ${response.statusCode}");
     if (response.statusCode == 200) {
       etaDetails = jsonDecode(response.body)['data'];
+      print("etaDetails ${etaDetails}");
       choosenVehicle = (etaDetails
           .where((element) => element['is_default'] == true)
           .isNotEmpty)

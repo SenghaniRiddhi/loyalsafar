@@ -1770,12 +1770,6 @@ class _whereScreenState extends State<whereScreen>
                                                   ),
                                                 ),
 
-
-
-
-
-
-                                               
                                                 // SizedBox(
                                                 //   width:
                                                 //   media.width * 0.9,
@@ -2514,7 +2508,6 @@ class _whereScreenState extends State<whereScreen>
                                                                           width: media.width * 0.9,
                                                                           alignment: Alignment.center,
                                                                           padding: EdgeInsets.only(right: media.width * 0.02),
-
                                                                           decoration: BoxDecoration(
                                                                             color: Color(0xffF7F7F7),
                                                                             borderRadius: BorderRadius.circular(media.width * 0.02),
@@ -3099,9 +3092,13 @@ class _whereScreenState extends State<whereScreen>
                                                                                               _bottom = 0;
                                                                                             });
                                                                                           } else {
+
+                                                                                            print("drop::- ${addressList.where((element) => element.type == 'drop').isEmpty}");
+
                                                                                             setState(() {
                                                                                               if (addressList.where((element) => element.type == 'drop').isEmpty) {
                                                                                                 addressList.add(AddressList(id: '2', type: 'drop', address: favAddress[i]['pick_address'], pickup: false, latlng: LatLng(favAddress[i]['pick_lat'], favAddress[i]['pick_lng'])));
+                                                                                                print("addressList.length ${addressList.length}");
                                                                                               } else {
                                                                                                 addressList.firstWhere((element) => element.type == 'drop').address = favAddress[i]['pick_address'];
                                                                                                 addressList.firstWhere((element) => element.type == 'drop').latlng = LatLng(favAddress[i]['pick_lat'], favAddress[i]['pick_lng']);
@@ -3110,12 +3107,15 @@ class _whereScreenState extends State<whereScreen>
                                                                                               _height = media.width * 0.8;
                                                                                               _bottom = 0;
                                                                                             });
+                                                                                            print("addressList.length ${addressList.length}");
                                                                                             if (addressList.length == 2) {
+                                                                                              print("choosenTransportType ${choosenTransportType}");
                                                                                               if (choosenTransportType == 0) {
                                                                                                 ismulitipleride = false;
 
                                                                                                 Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => BookingConfirmation()), (route) => false);
                                                                                               } else {
+                                                                                                print("choosenTransportType::- ${choosenTransportType}");
                                                                                                 Navigator.push(context, MaterialPageRoute(builder: (context) => DropLocation()));
                                                                                               }
 

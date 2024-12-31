@@ -8,10 +8,11 @@ import 'package:flutter_user/pages/profile/profile_screen.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:uuid/uuid.dart';
 import '../../widgets/appbar.dart';
-import '../NavigatorPages/whereScreen.dart';
+
 import '../login/login.dart';
 import '../onTripPage/booking_confirmation.dart';
 
+import '../onTripPage/map_page.dart';
 import '../profile/HomeScreen.dart';
 import '../../styles/styles.dart';
 
@@ -314,7 +315,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
               GestureDetector(
                 onTap: (){
-                  Navigator.push(context, MaterialPageRoute(builder: (context)=>whereScreen()));
+                  Navigator.push(context, MaterialPageRoute(builder: (context)=>Maps()));
                 },
                 child: Container(
 
@@ -375,7 +376,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             myMarkers.clear();
                           });
                         }
-                        Navigator.push(context, MaterialPageRoute(builder: (context)=>whereScreen()));
+                        Navigator.push(context, MaterialPageRoute(builder: (context)=>Maps()));
 
                       }
                   ),
@@ -396,7 +397,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 // print('object ' + transportType.toString());
                               });
                             }
-                           Navigator.push(context, MaterialPageRoute(builder: (context)=>whereScreen()));
+                           Navigator.push(context, MaterialPageRoute(builder: (context)=>Maps()));
                       }
                   ),
                   _buildOptionCard(

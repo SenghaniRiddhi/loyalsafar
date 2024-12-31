@@ -61,6 +61,8 @@ Color buttonTextColors = const Color(0xff030303);
 Color whiteColors = const Color(0xffFFFFFF);
 Color dividerColors = const Color(0xffEBEBEB);
 
+
+double font12Size =12;
 double font13Size =13;
 double font14Size = 14;
 double font16Size = 16;

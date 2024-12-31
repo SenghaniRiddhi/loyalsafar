@@ -14,6 +14,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:table_calendar/table_calendar.dart';
 import 'package:vector_math/vector_math.dart' as vector;
 import 'dart:ui' as ui;
 import 'package:intl/intl.dart';
@@ -754,6 +755,8 @@ class _BookingConfirmationState extends State<BookingConfirmation>
       }
     }
 
+
+
     var media = MediaQuery.of(context).size;
     return PopScope(
       canPop: popFunction(),
@@ -1383,6 +1386,9 @@ class _BookingConfirmationState extends State<BookingConfirmation>
                                 : null,
                             builder:
                                 (context, AsyncSnapshot<DatabaseEvent> event) {
+
+                              print("isRentalRide::- ${isRentalRide} etaDetails.isNotEmpty::-  ${etaDetails
+                                  .isNotEmpty}");
                               if (event.hasData) {
                                 if (event.data!.snapshot.value != null) {
                                   if (userRequestData['accepted_at'] != null) {
@@ -2816,9 +2822,10 @@ class _BookingConfirmationState extends State<BookingConfirmation>
                                                                                 media.width * 0.9,
                                                                             child:
                                                                                 MyText(
-                                                                              text: languages[choosenLanguage]['text_availablerides'],
-                                                                              size: media.width * fourteen,
-                                                                              fontweight: FontWeight.bold,
+                                                                              text: "Ride Info",
+                                                                              color: headingColors,
+                                                                              size:font20Size,
+                                                                              fontweight: FontWeight.w700,
                                                                             ),
                                                                           ),
                                                                         ],
@@ -2921,173 +2928,137 @@ class _BookingConfirmationState extends State<BookingConfirmation>
                                                                                                                       });
                                                                                                                 }
                                                                                                               },
-                                                                                                              child: Container(
-                                                                                                                padding: EdgeInsets.all(media.width * 0.02),
-                                                                                                                height: media.width * 0.157,
-                                                                                                                decoration: BoxDecoration(
-                                                                                                                    borderRadius: BorderRadius.circular(media.width * 0.01),
-                                                                                                                    border: Border.all(
-                                                                                                                        color: (choosenVehicle != i)
-                                                                                                                            ? (isDarkTheme == true)
-                                                                                                                                ? Colors.white
-                                                                                                                                : hintColor
-                                                                                                                            : theme),
-                                                                                                                    color: choosenVehicle == i ? theme.withOpacity(0.2) : null),
-                                                                                                                child: Row(
-                                                                                                                  children: [
-                                                                                                                    SizedBox(
-                                                                                                                      width: media.width * 0.12,
-                                                                                                                      child: (etaDetails[i]['icon'] != null)
-                                                                                                                          ? Image.network(
-                                                                                                                              etaDetails[i]['icon'],
-                                                                                                                              fit: BoxFit.contain,
-                                                                                                                            )
-                                                                                                                          : Container(),
+                                                                                                              child: Column(
+                                                                                                                children: [
+                                                                                                                  Container(
+                                                                                                                    padding: EdgeInsets.all(media.width * 0.02),
+                                                                                                                    // height: media.width * 0.157,
+                                                                                                                    decoration: BoxDecoration(
+                                                                                                                        borderRadius: BorderRadius.circular(media.width * 0.01),
+                                                                                                                        // border: Border.all(
+                                                                                                                        //     color: (choosenVehicle != i)
+                                                                                                                        //         ? (isDarkTheme == true)
+                                                                                                                        //             ? Colors.white
+                                                                                                                        //             : hintColor
+                                                                                                                        //         : theme),
+                                                                                                                        // color: choosenVehicle == i ? theme.withOpacity(0.2) : null
                                                                                                                     ),
-                                                                                                                    SizedBox(
-                                                                                                                      width: media.width * 0.02,
-                                                                                                                    ),
-                                                                                                                    Column(
-                                                                                                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                                                                                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                                                                                                    child: Row(
                                                                                                                       children: [
-                                                                                                                        Row(
-                                                                                                                          children: [
-                                                                                                                            SizedBox(
-                                                                                                                              width: media.width * 0.3,
-                                                                                                                              child: Text(etaDetails[i]['name'],
-                                                                                                                                  style: GoogleFonts.notoSans(
-                                                                                                                                      fontSize: media.width * fourteen,
-                                                                                                                                      fontWeight: FontWeight.w600,
-                                                                                                                                      color: (choosenVehicle != i)
-                                                                                                                                          ? (isDarkTheme == true)
-                                                                                                                                              ? hintColor
-                                                                                                                                              : textColor
-                                                                                                                                          : textColor)),
-                                                                                                                            ),
-                                                                                                                          ],
+                                                                                                                        SizedBox(
+                                                                                                                          width: media.width * 0.12,
+                                                                                                                          child: (etaDetails[i]['icon'] != null)
+                                                                                                                              ? Image.network(
+                                                                                                                                  etaDetails[i]['icon'],
+                                                                                                                                  fit: BoxFit.contain,
+                                                                                                                                )
+                                                                                                                              : Container(),
                                                                                                                         ),
-                                                                                                                        Row(
+                                                                                                                        SizedBox(
+                                                                                                                          width: media.width * 0.04,
+                                                                                                                        ),
+                                                                                                                        Column(
+                                                                                                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                                                                                                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                                                                                                           children: [
+                                                                                                                            Container(
+                                                                                                                              width: media.width * 0.7,
+                                                                                                                              child: Row(
+                                                                                                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                                                                                children: [
+                                                                                                                                  Row(
+                                                                                                                                    children: [
+                                                                                                                                      SizedBox(
+                                                                                                                                        width: media.width * 0.20,
+                                                                                                                                        child:  MyText(text: etaDetails[i]['name'],
+                                                                                                                                          maxLines: 1,overflow: TextOverflow.ellipsis,
+                                                                                                                                          size: font18Size,fontweight: FontWeight.w600,color: Color(0xff1D1B20),),
+                                                                                                                                      ),
+                                                                                                                                      (minutes[etaDetails[i]['type_id']] != null && minutes[etaDetails[i]['type_id']] != '')
+                                                                                                                                          ?
+                                                                                                                                      Container(
+                                                                                                                                        padding: EdgeInsets.symmetric(horizontal: 15,vertical: 01),
+                                                                                                                                        decoration: BoxDecoration(
+                                                                                                                                            color: buttonColors,
+                                                                                                                                            borderRadius: BorderRadius.circular(10)
+                                                                                                                                        ),
+                                                                                                                                        child: MyText(size: font14Size,text: '${minutes[etaDetails[i]['type_id']].toString()}',
+                                                                                                                                            color:  Color(0xff303030))
+                                                                                                                                      )
+                                                                                                                                          :
+                                                                                                                                      SizedBox(),
+                                                                                                                                    ],
+                                                                                                                                  ),
+                                                                                                                                  (widget.type != 2)
+                                                                                                                                      ? (etaDetails[i]['has_discount'] != true || etaDetails[i]['enable_bidding'] == true)
+                                                                                                                                          ? (isOneWayTrip)
+                                                                                                                                          ? MyText(text:
+                                                                                                                                  '${etaDetails[i]['currency'] + etaDetails[i]['total'].toString()}',
+                                                                                                                                      size: font14Size,color: Color(0xff303030),fontweight: FontWeight.w600,)
+                                                                                                                                      : Container()
+                                                                                                                                          : Row(
+                                                                                                                                        mainAxisAlignment: MainAxisAlignment.end,
+                                                                                                                                        children: [
+                                                                                                                                          MyText(text:
+                                                                                                                                          '${etaDetails[i]['currency'] + ' '}',
+                                                                                                                                            size: font14Size,color: Color(0xff303030),fontweight: FontWeight.w600,),
+
+                                                                                                                                          Column(
+                                                                                                                                            children: [
+                                                                                                                                              MyText(text:
+                                                                                                                                              '${etaDetails[i]['currency'] + ' '}',
+
+                                                                                                                                                size: font14Size,color: Color(0xff303030),fontweight: FontWeight.w600,),
+                                                                                                                                              Text(
+                                                                                                                                                etaDetails[i]['total'].toString(),
+                                                                                                                                                style: GoogleFonts.inter(
+                                                                                                                                                    fontSize: font14Size,
+                                                                                                                                                    color: Color(0xff303030),
+                                                                                                                                                    fontWeight: FontWeight.w600,
+                                                                                                                                                    decoration: TextDecoration.lineThrough),
+                                                                                                                                              ),
+                                                                                                                                              MyText(text:
+                                                                                                                                              '${etaDetails[i]['discounted_totel'].toString()}',
+                                                                                                                                                size: font14Size,color: Color(0xff303030),fontweight: FontWeight.w600,),
+                                                                                                                                            ],
+                                                                                                                                          ),
+                                                                                                                                        ],
+                                                                                                                                      )
+                                                                                                                                      : Container()
+                                                                                                                                ],
+                                                                                                                              ),
+                                                                                                                            ),
                                                                                                                             Row(
                                                                                                                               children: [
-                                                                                                                                (minutes[etaDetails[i]['type_id']] != null && minutes[etaDetails[i]['type_id']] != '')
-                                                                                                                                    ? Text(
-                                                                                                                                        minutes[etaDetails[i]['type_id']].toString(),
-                                                                                                                                        style: GoogleFonts.notoSans(fontSize: media.width * twelve, color: const Color(0xff8A8A8A)),
-                                                                                                                                      )
-                                                                                                                                    : Text(
-                                                                                                                                        '--',
-                                                                                                                                        style: GoogleFonts.notoSans(
-                                                                                                                                            fontSize: media.width * twelve,
-                                                                                                                                            color: (choosenVehicle != i)
-                                                                                                                                                ? (isDarkTheme == true)
-                                                                                                                                                    ? hintColor
-                                                                                                                                                    : const Color(0xff8A8A8A)
-                                                                                                                                                : const Color(0xff8A8A8A)),
-                                                                                                                                      ),
-                                                                                                                                SizedBox(
-                                                                                                                                  width: media.width * 0.02,
-                                                                                                                                ),
+
                                                                                                                                 Icon(
-                                                                                                                                  (etaDetails[i]['transport_type'] == 'delivery') ? CupertinoIcons.bag : Icons.person,
+                                                                                                                                  (etaDetails[i]['transport_type'] == 'delivery') ? CupertinoIcons.bag : Icons.people,
                                                                                                                                   size: media.width * 0.04,
                                                                                                                                   color: const Color(0xff8A8A8A),
                                                                                                                                 ),
                                                                                                                                 SizedBox(
+                                                                                                                                  width: media.width * 0.02,
+                                                                                                                                ),
+                                                                                                                                SizedBox(
                                                                                                                                   width: media.width * 0.4,
-                                                                                                                                  child: Text(
-                                                                                                                                    (etaDetails[i]['transport_type'] == 'delivery') ? etaDetails[i]['size'].toString() : etaDetails[i]['capacity'].toString(),
+                                                                                                                                  child: MyText(size: font14Size,
+                                                                                                                                    fontweight: FontWeight.w400,
+                                                                                                                                    color: Color(0xff5E5E5E),
                                                                                                                                     maxLines: 1,
                                                                                                                                     overflow: TextOverflow.ellipsis,
-                                                                                                                                    style: GoogleFonts.notoSans(
-                                                                                                                                        fontSize: media.width * twelve,
-                                                                                                                                        color: (choosenVehicle != i)
-                                                                                                                                            ? (isDarkTheme == true)
-                                                                                                                                                ? hintColor
-                                                                                                                                                : const Color(0xff8A8A8A)
-                                                                                                                                            : const Color(0xff8A8A8A)),
-                                                                                                                                  ),
+                                                                                                                                    text: '${(etaDetails[i]['transport_type'] == 'delivery') ? etaDetails[i]['size'].toString()+" People" : etaDetails[i]['capacity'].toString()+" People"}',),
+
                                                                                                                                 ),
                                                                                                                               ],
-                                                                                                                            ),
+                                                                                                                            )
                                                                                                                           ],
-                                                                                                                        )
+                                                                                                                        ),
+
                                                                                                                       ],
                                                                                                                     ),
-                                                                                                                    (widget.type != 2)
-                                                                                                                        ? Expanded(
-                                                                                                                            child: (etaDetails[i]['has_discount'] != true || etaDetails[i]['enable_bidding'] == true)
-                                                                                                                                ? (isOneWayTrip)
-                                                                                                                                    ? Row(
-                                                                                                                                        mainAxisAlignment: MainAxisAlignment.end,
-                                                                                                                                        children: [
-                                                                                                                                          Text(
-                                                                                                                                            etaDetails[i]['currency'] + etaDetails[i]['total'].toString(),
-                                                                                                                                            style: GoogleFonts.notoSans(
-                                                                                                                                                fontSize: media.width * fourteen,
-                                                                                                                                                fontWeight: FontWeight.w700,
-                                                                                                                                                color: (choosenVehicle != i)
-                                                                                                                                                    ? (isDarkTheme == true)
-                                                                                                                                                        ? const Color(0xff8A8A8A)
-                                                                                                                                                        : textColor
-                                                                                                                                                    : textColor),
-                                                                                                                                          ),
-                                                                                                                                        ],
-                                                                                                                                      )
-                                                                                                                                    : Container()
-                                                                                                                                : Row(
-                                                                                                                                    mainAxisAlignment: MainAxisAlignment.end,
-                                                                                                                                    children: [
-                                                                                                                                      Text(
-                                                                                                                                        etaDetails[i]['currency'] + ' ',
-                                                                                                                                        style: GoogleFonts.notoSans(
-                                                                                                                                            fontSize: media.width * fourteen,
-                                                                                                                                            color: (choosenVehicle != i)
-                                                                                                                                                ? (isDarkTheme == true)
-                                                                                                                                                    ? const Color(0xff8A8A8A)
-                                                                                                                                                    : textColor
-                                                                                                                                                : (isDarkTheme == true)
-                                                                                                                                                    ? Colors.white
-                                                                                                                                                    : textColor,
-                                                                                                                                            fontWeight: FontWeight.w600),
-                                                                                                                                      ),
-                                                                                                                                      Column(
-                                                                                                                                        children: [
-                                                                                                                                          Text(
-                                                                                                                                            etaDetails[i]['total'].toString(),
-                                                                                                                                            style: GoogleFonts.notoSans(
-                                                                                                                                                fontSize: media.width * fourteen,
-                                                                                                                                                color: (choosenVehicle != i)
-                                                                                                                                                    ? (isDarkTheme == true)
-                                                                                                                                                        ? const Color(0xff8A8A8A)
-                                                                                                                                                        : textColor
-                                                                                                                                                    : (isDarkTheme == true)
-                                                                                                                                                        ? Colors.white
-                                                                                                                                                        : textColor,
-                                                                                                                                                fontWeight: FontWeight.w600,
-                                                                                                                                                decoration: TextDecoration.lineThrough),
-                                                                                                                                          ),
-                                                                                                                                          Text(
-                                                                                                                                            etaDetails[i]['discounted_totel'].toString(),
-                                                                                                                                            style: GoogleFonts.notoSans(
-                                                                                                                                                fontSize: media.width * fourteen,
-                                                                                                                                                color: (choosenVehicle != i)
-                                                                                                                                                    ? (isDarkTheme == true)
-                                                                                                                                                        ? const Color(0xff8A8A8A)
-                                                                                                                                                        : textColor
-                                                                                                                                                    : (isDarkTheme == true)
-                                                                                                                                                        ? Colors.white
-                                                                                                                                                        : textColor,
-                                                                                                                                                fontWeight: FontWeight.w700),
-                                                                                                                                          )
-                                                                                                                                        ],
-                                                                                                                                      ),
-                                                                                                                                    ],
-                                                                                                                                  ))
-                                                                                                                        : Container()
-                                                                                                                  ],
-                                                                                                                ),
+                                                                                                                  ),
+                                                                                                                  Divider(color: dividerColors,),
+                                                                                                                ],
                                                                                                               ),
                                                                                                             ),
                                                                                                           ),
@@ -3942,6 +3913,27 @@ class _BookingConfirmationState extends State<BookingConfirmation>
                                                                                                     choosenDateTime = DateTime.now().add(Duration(minutes: int.parse(userDetails['user_can_make_a_ride_after_x_miniutes'])));
                                                                                                     // _dateTimePicker = true;
                                                                                                   });
+
+
+                                                                                                  // showModalBottomSheet(
+                                                                                                  //   context: context,
+                                                                                                  //   isScrollControlled: true,
+                                                                                                  //   shape: const RoundedRectangleBorder(
+                                                                                                  //     borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                                                                                                  //   ),
+                                                                                                  //   builder: (BuildContext context) {
+                                                                                                  //     return SingleChildScrollView(
+                                                                                                  //       child: Container(
+                                                                                                  //         height: MediaQuery.of(context).size.height, // Full height of the screen
+                                                                                                  //         padding: EdgeInsets.only(
+                                                                                                  //           bottom: MediaQuery.of(context).viewInsets.bottom, // To handle keyboard overlap
+                                                                                                  //         ),
+                                                                                                  //         child: DateTimePickerScreen(),
+                                                                                                  //       ),
+                                                                                                  //     );
+                                                                                                  //   },
+                                                                                                  // );
+
 
                                                                                                   showModalBottomSheet(
                                                                                                       context: context,
@@ -4883,7 +4875,7 @@ class _BookingConfirmationState extends State<BookingConfirmation>
                                                                   ),
                                                                 ],
                                                               )
-                                                            : Container(),
+                                                            : Container(child: Text("good Morning::-"),),
                                               ))
                                           : Container()
                                       : Container(),
@@ -8731,107 +8723,107 @@ class _BookingConfirmationState extends State<BookingConfirmation>
                                                   SizedBox(
                                                     height: media.width * 0.025,
                                                   ),
-                                                  InkWell(
-                                                    onTap: () async {
-                                                      var nav =
-                                                          await Navigator.push(
-                                                              context,
-                                                              MaterialPageRoute(
-                                                                  builder:
-                                                                      (context) =>
-                                                                          DropLocation(
-                                                                            from:
-                                                                                0,
-                                                                          )));
-                                                      if (nav) {
-                                                        setState(() {});
-                                                        Future.delayed(
-                                                            const Duration(
-                                                                milliseconds:
-                                                                    500), () {
-                                                          addPickDropMarker();
-                                                        });
-                                                      }
-                                                    },
-                                                    child: Container(
-                                                      margin: EdgeInsets.only(
-                                                          bottom: media.width *
-                                                              0.025),
-                                                      padding:
-                                                          EdgeInsets.fromLTRB(
-                                                              media.width *
-                                                                  0.03,
-                                                              media.width *
-                                                                  0.02,
-                                                              media.width *
-                                                                  0.03,
-                                                              media.width *
-                                                                  0.02),
-                                                      decoration: BoxDecoration(
-                                                          border: Border.all(
-                                                            color: Color(0xffEFEFEF),
-                                                            width: 1.5,
-                                                          ),
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(
-                                                                      media.width *
-                                                                          0.03),
-                                                          color: page),
-                                                      alignment:
-                                                          Alignment.center,
-
-                                                      width: media.width * 0.9,
-                                                      child: Row(
-                                                        children: [
-                                                          Icon(Icons.location_on),
-                                                          SizedBox(
-                                                            width: media.width *
-                                                                0.02,
-                                                          ),
-                                                          Expanded(
-                                                            child: Text(
-                                                              addressList[0]
-                                                                  .address
-                                                                  .toString(),
-                                                              style: GoogleFonts.inter(
-                                                                  color:
-                                                                      textColor,
-                                                                  fontSize: media
-                                                                          .width *
-                                                                      twelve),
-                                                              maxLines: 2,
-                                                              overflow:
-                                                                  TextOverflow
-                                                                      .ellipsis,
-                                                            ),
-                                                          ),
-                                                          // SizedBox(
-                                                          //   width: media.width *
-                                                          //       0.02,
-                                                          // ),
-                                                          // SizedBox(
-                                                          //     height:
-                                                          //         media.width *
-                                                          //             0.07,
-                                                          //     child: Icon(
-                                                          //       Icons.edit,
-                                                          //       color:
-                                                          //           textColor,
-                                                          //       size: media
-                                                          //               .width *
-                                                          //           0.05,
-                                                          //     ))
-                                                        ],
-                                                      ),
-                                                    ),
-                                                  ),
+                                                  // InkWell(
+                                                  //   onTap: () async {
+                                                  //     var nav =
+                                                  //         await Navigator.push(
+                                                  //             context,
+                                                  //             MaterialPageRoute(
+                                                  //                 builder:
+                                                  //                     (context) =>
+                                                  //                         DropLocation(
+                                                  //                           from:
+                                                  //                               0,
+                                                  //                         )));
+                                                  //     if (nav) {
+                                                  //       setState(() {});
+                                                  //       Future.delayed(
+                                                  //           const Duration(
+                                                  //               milliseconds:
+                                                  //                   500), () {
+                                                  //         addPickDropMarker();
+                                                  //       });
+                                                  //     }
+                                                  //   },
+                                                  //   child: Container(
+                                                  //     margin: EdgeInsets.only(
+                                                  //         bottom: media.width *
+                                                  //             0.025),
+                                                  //     padding:
+                                                  //         EdgeInsets.fromLTRB(
+                                                  //             media.width *
+                                                  //                 0.03,
+                                                  //             media.width *
+                                                  //                 0.02,
+                                                  //             media.width *
+                                                  //                 0.03,
+                                                  //             media.width *
+                                                  //                 0.02),
+                                                  //     decoration: BoxDecoration(
+                                                  //         border: Border.all(
+                                                  //           color: Color(0xffEFEFEF),
+                                                  //           width: 1.5,
+                                                  //         ),
+                                                  //         borderRadius:
+                                                  //             BorderRadius
+                                                  //                 .circular(
+                                                  //                     media.width *
+                                                  //                         0.03),
+                                                  //         color: page),
+                                                  //     alignment:
+                                                  //         Alignment.center,
+                                                  //
+                                                  //     width: media.width * 0.9,
+                                                  //     child: Row(
+                                                  //       children: [
+                                                  //         Icon(Icons.location_on),
+                                                  //         SizedBox(
+                                                  //           width: media.width *
+                                                  //               0.02,
+                                                  //         ),
+                                                  //         Expanded(
+                                                  //           child: Text(
+                                                  //             addressList[0]
+                                                  //                 .address
+                                                  //                 .toString(),
+                                                  //             style: GoogleFonts.inter(
+                                                  //                 color:
+                                                  //                     textColor,
+                                                  //                 fontSize: media
+                                                  //                         .width *
+                                                  //                     twelve),
+                                                  //             maxLines: 2,
+                                                  //             overflow:
+                                                  //                 TextOverflow
+                                                  //                     .ellipsis,
+                                                  //           ),
+                                                  //         ),
+                                                  //         // SizedBox(
+                                                  //         //   width: media.width *
+                                                  //         //       0.02,
+                                                  //         // ),
+                                                  //         // SizedBox(
+                                                  //         //     height:
+                                                  //         //         media.width *
+                                                  //         //             0.07,
+                                                  //         //     child: Icon(
+                                                  //         //       Icons.edit,
+                                                  //         //       color:
+                                                  //         //           textColor,
+                                                  //         //       size: media
+                                                  //         //               .width *
+                                                  //         //           0.05,
+                                                  //         //     ))
+                                                  //       ],
+                                                  //     ),
+                                                  //   ),
+                                                  // ),
                                                   SizedBox(
                                                     height: (addressList
                                                                 .length <=
                                                             4)
                                                         ? media.width *
-                                                            0.125 *
+                                                            0.165 *
                                                             (addressList
                                                                     .length -
                                                                 1)
@@ -8843,15 +8835,12 @@ class _BookingConfirmationState extends State<BookingConfirmation>
                                                             newIndex) {
                                                           if (newIndex <
                                                               oldIndex) {
-                                                            var val1 =
-                                                                addressList[
+                                                            var val1 = addressList[
                                                                     oldIndex]; //1
-                                                            var id1 =
-                                                                addressList[
+                                                            var id1 = addressList[
                                                                         oldIndex]
                                                                     .id;
-                                                            var val2 =
-                                                                addressList[
+                                                            var val2 = addressList[
                                                                     oldIndex -
                                                                         1]; //2
                                                             var id2 = addressList[
@@ -8874,7 +8863,8 @@ class _BookingConfirmationState extends State<BookingConfirmation>
                                                                         1]
                                                                 .id = id2; //2
                                                             // GetMapData().addressMarkers(context);
-                                                          } else if (newIndex >
+                                                          }
+                                                          else if (newIndex >
                                                               oldIndex) {
                                                             // var newIndexEdit =
                                                             //     addressList
@@ -8919,6 +8909,8 @@ class _BookingConfirmationState extends State<BookingConfirmation>
                                                         children: addressList
                                                             .asMap()
                                                             .map((i, value) {
+                                                          print("addressList:- ${addressList.length}");
+                                                              print("iiiii:- ${i}");
                                                               return MapEntry(
                                                                 i,
                                                                 (i != 0)
@@ -8931,8 +8923,8 @@ class _BookingConfirmationState extends State<BookingConfirmation>
                                                                                 ValueKey(i),
                                                                             alignment:
                                                                                 Alignment.center,
-                                                                            height:
-                                                                                media.width * 0.1,
+                                                                            // height:
+                                                                            //     media.width * 0.1,
                                                                             color:
                                                                                 page,
                                                                             child:
@@ -8959,29 +8951,20 @@ class _BookingConfirmationState extends State<BookingConfirmation>
                                                                                     padding: EdgeInsets.fromLTRB(media.width * 0.03, media.width * 0.02, media.width * 0.03, media.width * 0.02),
                                                                                     decoration: BoxDecoration(
                                                                                         border: Border.all(
-                                                                                          color: Colors.grey,
+                                                                                          color: Color(0xffEFEFEF),
                                                                                           width: 1.5,
                                                                                         ),
                                                                                         borderRadius: BorderRadius.circular(media.width * 0.02),
                                                                                         color: page),
                                                                                     alignment: Alignment.center,
-                                                                                    height: media.width * 0.1,
+                                                                                    // height: media.width * 0.2,
                                                                                     width: (addressList.length > 2) ? media.width * 0.8 : media.width * 0.9,
                                                                                     child: Row(
                                                                                       children: [
-                                                                                        Container(
-                                                                                          height: media.width * 0.025,
-                                                                                          width: media.width * 0.025,
-                                                                                          alignment: Alignment.center,
-                                                                                          decoration: BoxDecoration(shape: BoxShape.circle, color: (i == 0) ? const Color(0xff319900).withOpacity(0.3) : const Color(0xffFF0000).withOpacity(0.3)),
-                                                                                          child: Container(
-                                                                                            height: media.width * 0.01,
-                                                                                            width: media.width * 0.01,
-                                                                                            decoration: BoxDecoration(shape: BoxShape.circle, color: (i == 0) ? const Color(0xff319900) : const Color(0xffFF0000)),
-                                                                                          ),
-                                                                                        ),
+                                                                                        Icon(Icons.location_on),
                                                                                         SizedBox(
-                                                                                          width: media.width * 0.05,
+                                                                                          width: media.width *
+                                                                                              0.02,
                                                                                         ),
                                                                                         Expanded(
                                                                                           child: Text(
@@ -8990,26 +8973,26 @@ class _BookingConfirmationState extends State<BookingConfirmation>
                                                                                               fontSize: media.width * twelve,
                                                                                               color: textColor,
                                                                                             ),
-                                                                                            maxLines: 1,
+                                                                                            maxLines: 2,
                                                                                             overflow: TextOverflow.ellipsis,
                                                                                           ),
                                                                                         ),
-                                                                                        SizedBox(
-                                                                                          width: media.width * 0.02,
-                                                                                        ),
-                                                                                        SizedBox(
-                                                                                            height: media.width * 0.07,
-                                                                                            child: (addressList.length > 2)
-                                                                                                ? Icon(
-                                                                                                    Icons.move_down_rounded,
-                                                                                                    size: media.width * 0.05,
-                                                                                                    color: textColor,
-                                                                                                  )
-                                                                                                : Icon(
-                                                                                                    Icons.edit,
-                                                                                                    color: textColor,
-                                                                                                    size: media.width * 0.05,
-                                                                                                  ))
+                                                                                        // SizedBox(
+                                                                                        //   width: media.width * 0.02,
+                                                                                        // ),
+                                                                                        // SizedBox(
+                                                                                        //     height: media.width * 0.07,
+                                                                                        //     child: (addressList.length > 2)
+                                                                                        //         ? Icon(
+                                                                                        //             Icons.move_down_rounded,
+                                                                                        //             size: media.width * 0.05,
+                                                                                        //             color: textColor,
+                                                                                        //           )
+                                                                                        //         : Icon(
+                                                                                        //             Icons.edit,
+                                                                                        //             color: textColor,
+                                                                                        //             size: media.width * 0.05,
+                                                                                        //           ))
                                                                                       ],
                                                                                     ),
                                                                                   ),
@@ -9058,8 +9041,8 @@ class _BookingConfirmationState extends State<BookingConfirmation>
                                                         setState(() {
                                                           isLoading = true;
                                                           dropStopList.clear();
-                                                          if (addressList
-                                                                  .length >
+                                                          print("addressList.length:- ${addressList.length}");
+                                                          if (addressList.length >
                                                               2) {
                                                             for (var i = 1;
                                                                 i <
@@ -9100,7 +9083,10 @@ class _BookingConfirmationState extends State<BookingConfirmation>
                                                           }
                                                         });
 
+                                                        print("widget.type:- ${widget.type}");
+
                                                         if (widget.type != 1) {
+                                                          print("hello eta request");
                                                           var val =
                                                               await etaRequest(
                                                                   outstation:
@@ -9109,14 +9095,16 @@ class _BookingConfirmationState extends State<BookingConfirmation>
                                                             navigateLogout();
                                                           }
                                                         } else {
+                                                          print("hello rental");
                                                           var val =
                                                               await rentalEta();
                                                           if (val == 'logout') {
                                                             navigateLogout();
                                                           }
                                                         }
-                                                        if (choosenTransportType ==
-                                                            0) {
+
+                                                        print("choosenTransportType type:- ${choosenTransportType}");
+                                                        if (choosenTransportType == 0) {
                                                           setState(() {
                                                             dropConfirmed =
                                                                 true;
@@ -10066,4 +10054,140 @@ List decodeEncodedPolyline(String encoded) {
     );
   }
   return fmpoly;
+}
+
+class DateTimePickerScreen extends StatefulWidget {
+  @override
+  _DateTimePickerScreenState createState() => _DateTimePickerScreenState();
+}
+
+class _DateTimePickerScreenState extends State<DateTimePickerScreen> {
+  DateTime _selectedDate = DateTime.now();
+  TimeOfDay _selectedTime = TimeOfDay.now();
+
+  void _selectDate(DateTime date) {
+    setState(() {
+      _selectedDate = date;
+    });
+  }
+
+  void _selectTime(BuildContext context) async {
+    final TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: _selectedTime,
+    );
+    if (picked != null && picked != _selectedTime) {
+      setState(() {
+        _selectedTime = picked;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            Text(
+              'Select date and time',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 16),
+            TableCalendar(
+              firstDay: DateTime(2020),
+              lastDay: DateTime(2030),
+              focusedDay: _selectedDate,
+              selectedDayPredicate: (day) => isSameDay(day, _selectedDate),
+              onDaySelected: (selectedDay, focusedDay) {
+                _selectDate(selectedDay);
+              },
+              calendarStyle: CalendarStyle(
+                weekendDecoration: BoxDecoration(
+                  border: Border.all(color: Color(0xffEEEEEE)),
+                  shape: BoxShape.circle,
+                ),
+                outsideDecoration:BoxDecoration(
+                  border: Border.all(color: Color(0xffEEEEEE)),
+                  shape: BoxShape.circle,
+                ),
+                  disabledDecoration:  BoxDecoration(
+                    border: Border.all(color: Color(0xffEEEEEE)),
+                    shape: BoxShape.circle,
+                  ),
+                defaultDecoration: BoxDecoration(
+                  border: Border.all(color: Color(0xffEEEEEE)),
+                  shape: BoxShape.circle,
+                ),
+                selectedDecoration: BoxDecoration(
+                  color:  Color(0xff646363),
+                  shape: BoxShape.circle,
+                ),
+                todayDecoration: BoxDecoration(
+                  color: Colors.green.shade200,
+                  shape: BoxShape.circle,
+                ),
+              ),
+            ),
+            SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Set Pickup Time',
+                  style: TextStyle(fontSize: 16),
+                ),
+                Row(
+                  children: [
+                    GestureDetector(
+                      onTap: () => _selectTime(context),
+                      child: Row(
+                        children: [
+                          Text(
+                            '${_selectedTime.format(context)}',
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.bold),
+                          ),
+                          Icon(Icons.arrow_drop_down),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            Spacer(),
+            ElevatedButton(
+              onPressed: () {
+                // Handle submission
+                print('Selected Date: $_selectedDate');
+                print('Selected Time: ${_selectedTime.format(context)}');
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                padding: EdgeInsets.symmetric(vertical: 16),
+              ),
+              child: Text(
+                'Done',
+                style: TextStyle(fontSize: 16, color: Colors.white),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }

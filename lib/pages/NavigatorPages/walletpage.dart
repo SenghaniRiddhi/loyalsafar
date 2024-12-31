@@ -32,6 +32,7 @@ class _WalletPageState extends State<WalletPage> {
   bool _addPayment = false;
   int ischeckmoneytransfer = 0;
   ScrollController custom = ScrollController();
+  ScrollController custom2 = ScrollController();
   bool addPaymentSelect= false;
   String? selectedGateway; // Track selected payment gateway
   bool isLoading = false;
@@ -44,6 +45,9 @@ class _WalletPageState extends State<WalletPage> {
     _shimmer = AnimationController.unbounded(vsync: MyTickerProvider())
       ..repeat(min: -0.5, max: 1.5, period: const Duration(milliseconds: 1000));
     custom.addListener(() {
+      setState(() {});
+    });
+    custom2.addListener(() {
       setState(() {});
     });
     super.initState();
@@ -1343,342 +1347,358 @@ class _WalletPageState extends State<WalletPage> {
                                                     ),),
                                                 ),
                                               ],
-                                            )
+                                            ),
+
+
                                           ],
                                         ),
                                       ),
       
                                     ),
                                   ),
-      
-      
+
+
+                                  SliverList(delegate: SliverChildBuilderDelegate((context, i){
+                                    return Padding(
+                                      padding:  EdgeInsets.only(left: media
+                                          .width *
+                                          0.03,top: media
+                                          .width *
+                                          0.03),
+                                      child: MyText(text: "Transactions", size: font18Size,
+                                        fontweight: FontWeight.w700,color: Color(0xff303030),),
+                                    );
+
+                                  }, childCount: 1)),
                                   (walletHistory.isNotEmpty)
-                                      ? SliverList(
-                                          delegate: SliverChildBuilderDelegate(
-                                              (context, i) {
-                                            return Column(
-                                              children: [
-      
-                                                // SizedBox(
-                                                //   // color: Colors.red,
-                                                //   width: (custom.hasClients &&
-                                                //       custom.offset < media.width * 0.4)
-                                                //       ? media.width * 0.4
-                                                //       : media.width,
-                                                //   child: MyText(
-                                                //     text: languages[choosenLanguage]
-                                                //     ['text_recenttransactions'],
-                                                //     size: (custom.hasClients &&
-                                                //         custom.offset <
-                                                //             media.width * 0.4)
-                                                //         ? media.width * twelve
-                                                //         : media.width * sixteen,
-                                                //     textAlign: (custom.hasClients &&
-                                                //         custom.offset <
-                                                //             media.width * 0.4)
-                                                //         ? TextAlign.center
-                                                //         : null,
-                                                //   ),
-                                                // ),
-      
-                                                (walletHistory[i].isEmpty)
-                                                    ? AnimatedBuilder(
-                                                        animation: _shimmer,
-                                                        builder:
-                                                            (context, widget) {
-                                                          return ShaderMask(
-                                                              blendMode: BlendMode
-                                                                  .srcATop,
-                                                              shaderCallback:
-                                                                  (bounds) {
-                                                                return LinearGradient(
-                                                                        colors:
-                                                                            shaderColor,
-                                                                        stops:
-                                                                            shaderStops,
-                                                                        begin:
-                                                                            shaderBegin,
-                                                                        end:
-                                                                            shaderEnd,
-                                                                        tileMode:
-                                                                            TileMode
-                                                                                .clamp,
-                                                                        transform: SlidingGradientTransform(
-                                                                            slidePercent: _shimmer
-                                                                                .value))
-                                                                    .createShader(
-                                                                        bounds);
-                                                              },
-                                                              child: Container(
-                                                                margin: EdgeInsets
-                                                                    .all(media
-                                                                            .width *
-                                                                        0.03),
-                                                                padding: EdgeInsets
-                                                                    .all(media
-                                                                            .width *
-                                                                        0.03),
-                                                                decoration: BoxDecoration(
-                                                                    color: page,
-                                                                    borderRadius:
-                                                                        BorderRadius.circular(
-                                                                            media.width *
-                                                                                0.02)),
-                                                                child: Column(
-                                                                  crossAxisAlignment:
-                                                                      CrossAxisAlignment
-                                                                          .start,
-                                                                  children: [
-                                                                    SizedBox(
-                                                                      height: media
-                                                                              .width *
-                                                                          0.02,
-                                                                    ),
-                                                                    Row(
-                                                                      mainAxisAlignment:
-                                                                          MainAxisAlignment
-                                                                              .start,
+                                      ?  SliverList(
+                                    delegate: SliverChildBuilderDelegate(
+                                            (context, i) {
+                                          return Column(
+                                            children: [
+                                              (walletHistory[i].isEmpty)
+                                                  ? AnimatedBuilder(
+                                                  animation: _shimmer,
+                                                  builder:
+                                                      (context, widget) {
+                                                    return ShaderMask(
+                                                        blendMode: BlendMode
+                                                            .srcATop,
+                                                        shaderCallback:
+                                                            (bounds) {
+                                                          return LinearGradient(
+                                                              colors:
+                                                              shaderColor,
+                                                              stops:
+                                                              shaderStops,
+                                                              begin:
+                                                              shaderBegin,
+                                                              end:
+                                                              shaderEnd,
+                                                              tileMode:
+                                                              TileMode
+                                                                  .clamp,
+                                                              transform: SlidingGradientTransform(
+                                                                  slidePercent: _shimmer
+                                                                      .value))
+                                                              .createShader(
+                                                              bounds);
+                                                        },
+                                                        child: Container(
+                                                          margin: EdgeInsets
+                                                              .all(media
+                                                              .width *
+                                                              0.03),
+                                                          padding: EdgeInsets
+                                                              .all(media
+                                                              .width *
+                                                              0.03),
+                                                          decoration: BoxDecoration(
+                                                              color: page,
+                                                              borderRadius:
+                                                              BorderRadius.circular(
+                                                                  media.width *
+                                                                      0.02)),
+                                                          child: Column(
+                                                            crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                            children: [
+                                                              SizedBox(
+                                                                height: media
+                                                                    .width *
+                                                                    0.02,
+                                                              ),
+                                                              Row(
+                                                                mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .start,
+                                                                children: [
+                                                                  Container(
+                                                                    height: media.width *
+                                                                        0.05,
+                                                                    width: media.width *
+                                                                        0.05,
+                                                                    decoration: BoxDecoration(
+                                                                        shape:
+                                                                        BoxShape.circle,
+                                                                        color: hintColor.withOpacity(0.5)),
+                                                                  ),
+                                                                  SizedBox(
+                                                                    width: media.width *
+                                                                        0.05,
+                                                                  ),
+                                                                  Expanded(
+                                                                    child:
+                                                                    Column(
                                                                       children: [
                                                                         Container(
-                                                                          height: media.width *
-                                                                              0.05,
-                                                                          width: media.width *
-                                                                              0.05,
-                                                                          decoration: BoxDecoration(
-                                                                              shape:
-                                                                                  BoxShape.circle,
-                                                                              color: hintColor.withOpacity(0.5)),
+                                                                          height: media.width * 0.05,
+                                                                          color: hintColor.withOpacity(0.5),
                                                                         ),
-                                                                        SizedBox(
-                                                                          width: media.width *
-                                                                              0.05,
-                                                                        ),
-                                                                        Expanded(
-                                                                          child:
-                                                                              Column(
-                                                                            children: [
-                                                                              Container(
-                                                                                height: media.width * 0.05,
-                                                                                color: hintColor.withOpacity(0.5),
-                                                                              ),
-                                                                              const SizedBox(
-                                                                                height: 5,
-                                                                              ),
-                                                                              Container(
-                                                                                height: media.width * 0.03,
-                                                                                color: hintColor.withOpacity(0.5),
-                                                                              ),
-                                                                            ],
-                                                                          ),
-                                                                        ),
-                                                                        SizedBox(
-                                                                          width: media.width *
-                                                                              0.05,
+                                                                        const SizedBox(
+                                                                          height: 5,
                                                                         ),
                                                                         Container(
-                                                                          height: media.width *
-                                                                              0.05,
-                                                                          width: media.width *
-                                                                              0.05,
-                                                                          decoration: BoxDecoration(
-                                                                              shape:
-                                                                                  BoxShape.circle,
-                                                                              color: hintColor.withOpacity(0.5)),
+                                                                          height: media.width * 0.03,
+                                                                          color: hintColor.withOpacity(0.5),
                                                                         ),
                                                                       ],
                                                                     ),
-                                                                  ],
-                                                                ),
-                                                              ));
-                                                        })
-                                                    : Container(
-                                                        margin: EdgeInsets.only(
-                                                            top: media.width *
-                                                                0.02,
-                                                            bottom: media.width *
-                                                                0.02),
-                                                        width: media.width * 0.9,
-                                                        padding: EdgeInsets.all(
-                                                            media.width * 0.025),
-                                                        decoration: BoxDecoration(
-                                                            border: Border.all(
-                                                                color:
-                                                                    borderLines,
-                                                                width: 1.2),
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(12),
-                                                            color: Colors.grey
-                                                                .withOpacity(
-                                                                    0.1)),
-                                                        child: Row(
-                                                          children: [
-                                                            Container(
-                                                              height:
-                                                                  media.width *
-                                                                      0.1067,
-                                                              width: media.width *
-                                                                  0.1067,
-                                                              decoration: BoxDecoration(
-                                                                  borderRadius:
-                                                                      BorderRadius
-                                                                          .circular(
-                                                                              10),
-                                                                  color: topBar),
-                                                              alignment: Alignment
-                                                                  .center,
-                                                              child: Text(
-                                                                (walletHistory[i][
-                                                                            'is_credit'] ==
-                                                                        1)
-                                                                    ? '+'
-                                                                    : '-',
-                                                                style: TextStyle(
-                                                                    fontSize: media
-                                                                            .width *
-                                                                        twentyfour),
+                                                                  ),
+                                                                  SizedBox(
+                                                                    width: media.width *
+                                                                        0.05,
+                                                                  ),
+                                                                  Container(
+                                                                    height: media.width *
+                                                                        0.05,
+                                                                    width: media.width *
+                                                                        0.05,
+                                                                    decoration: BoxDecoration(
+                                                                        shape:
+                                                                        BoxShape.circle,
+                                                                        color: hintColor.withOpacity(0.5)),
+                                                                  ),
+                                                                ],
                                                               ),
+                                                            ],
+                                                          ),
+                                                        ));
+                                                  })
+                                                  : Container(
+                                                margin: EdgeInsets.only(
+                                                    top: media.width *
+                                                        0.02,
+                                                    bottom: media.width *
+                                                        0.02),
+                                                width: media.width ,
+                                                padding: EdgeInsets.symmetric(horizontal:  media.width * 0.03,vertical: media.width * 0.02),
+                                                decoration: BoxDecoration(
+                                                  // border: Border.all(
+                                                  //     color:
+                                                  //         borderLines,
+                                                  //     width: 1.2),
+                                                  // borderRadius:
+                                                  //     BorderRadius
+                                                  //         .circular(12),
+                                                  // color: Colors.grey
+                                                  //     .withOpacity(
+                                                  //         0.1)
+                                                ),
+                                                child: Column(
+
+                                                  children: [
+                                                    Row(
+                                                      crossAxisAlignment:
+                                                      CrossAxisAlignment
+                                                          .start,
+                                                      children: [
+                                                        Container(
+                                                            height:
+                                                            media.width *
+                                                                0.1067,
+                                                            width: media.width *
+                                                                0.1067,
+                                                            decoration: BoxDecoration(
+                                                                border: Border.all(color: walletHistory[i][
+                                                                'is_credit'] ==
+                                                                    1
+                                                                    ?Color(0xff009821):Color(0xffFF176B)),
+                                                                borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                    20),
+                                                                color: topBar),
+                                                            alignment: Alignment
+                                                                .center,
+                                                            child: Icon(walletHistory[i][
+                                                            'is_credit'] ==
+                                                                1
+                                                                ?Icons.transit_enterexit:Icons.subdirectory_arrow_left,size: 25,color:walletHistory[i][
+                                                            'is_credit'] ==
+                                                                1
+                                                                ?Color(0xff009821):Color(0xffFF176B) ,)
+                                                          // Text(
+                                                          //   (walletHistory[i][
+                                                          //               'is_credit'] ==
+                                                          //           1)
+                                                          //       ? '+'
+                                                          //       : '-',
+                                                          //   style: TextStyle(
+                                                          //       fontSize: media
+                                                          //               .width *
+                                                          //           twentyfour),
+                                                          // ),
+                                                        ),
+                                                        SizedBox(
+                                                          width: media.width *
+                                                              0.025,
+                                                        ),
+                                                        Column(
+                                                          crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                          children: [
+                                                            Row(
+                                                              mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .spaceBetween,
+                                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                                              children: [
+                                                                Container(
+                                                                  width:media.width*0.62,
+                                                                  child: MyText(
+                                                                    text: walletHistory[
+                                                                    i][
+                                                                    'remarks']
+                                                                        .toString(),
+                                                                    size: font15Size,
+                                                                    maxLines: 2,
+                                                                    color: Color(0xff303030),
+                                                                    overflow: TextOverflow.ellipsis,
+                                                                    fontweight: FontWeight.w500,
+                                                                  ),
+                                                                ),
+                                                                Container(
+                                                                  width:media.width*0.17,
+                                                                  alignment: Alignment.centerRight,
+                                                                  child: MyText(
+                                                                    text: walletHistory[
+                                                                    i][
+                                                                    'currency_symbol'] +
+                                                                        ' ' +
+                                                                        walletHistory[i]
+                                                                        [
+                                                                        'amount']
+                                                                            .toString(),
+                                                                    size: font14Size,
+                                                                    maxLines: 1,
+                                                                    fontweight: FontWeight.w700,
+                                                                    overflow: TextOverflow.ellipsis,
+                                                                    color: walletHistory[i][
+                                                                    'is_credit'] ==
+                                                                        1
+                                                                        ?Color(0xff009821):Color(0xffFF176B),
+                                                                  ),
+                                                                )
+                                                              ],
                                                             ),
                                                             SizedBox(
-                                                              width: media.width *
-                                                                  0.025,
+                                                              height: media
+                                                                  .width *
+                                                                  0.02,
                                                             ),
-                                                            Column(
-                                                              crossAxisAlignment:
-                                                                  CrossAxisAlignment
-                                                                      .start,
-                                                              children: [
-                                                                MyText(
-                                                                  text: walletHistory[
-                                                                              i][
-                                                                          'remarks']
-                                                                      .toString(),
-                                                                  size: media
-                                                                          .width *
-                                                                      fourteen,
-                                                                  fontweight:
-                                                                      FontWeight
-                                                                          .w600,
-                                                                ),
-                                                                SizedBox(
-                                                                  height: media
-                                                                          .width *
-                                                                      0.02,
-                                                                ),
-                                                                MyText(
-                                                                  text: walletHistory[
-                                                                          i][
-                                                                      'created_at'],
-                                                                  size: media
-                                                                          .width *
-                                                                      ten,
-                                                                  color: textColor
-                                                                      .withOpacity(
-                                                                          0.4),
-                                                                )
-                                                              ],
-                                                            ),
-                                                            Expanded(
-                                                                child: Row(
-                                                              mainAxisAlignment:
-                                                                  MainAxisAlignment
-                                                                      .end,
-                                                              children: [
-                                                                MyText(
-                                                                  text: walletHistory[
-                                                                              i][
-                                                                          'currency_symbol'] +
-                                                                      ' ' +
-                                                                      walletHistory[i]
-                                                                              [
-                                                                              'amount']
-                                                                          .toString(),
-                                                                  size: media
-                                                                          .width *
-                                                                      twelve,
-                                                                  color: (walletHistory[i]
-                                                                              [
-                                                                              'is_credit'] ==
-                                                                          1)
-                                                                      ? online
-                                                                      : verifyDeclined,
-                                                                )
-                                                              ],
-                                                            ))
+                                                            MyText(
+                                                              text: walletHistory[
+                                                              i][
+                                                              'created_at'],
+                                                              size: font12Size,
+                                                              fontweight: FontWeight.w400,
+                                                              color: Color(0xff919191),
+                                                            )
                                                           ],
                                                         ),
-                                                      ),
-                                                //load more button
-                                                (walletPages.isNotEmpty &&
-                                                        i ==
-                                                            walletHistory.length -
-                                                                1)
-                                                    ? (walletPages[
-                                                                'current_page'] <
-                                                            walletPages[
-                                                                'total_pages'])
-                                                        ? InkWell(
-                                                            onTap: () async {
-                                                              setState(() {
-                                                                for (var i = 0;
-                                                                    i < 10;
-                                                                    i++) {
-                                                                  walletHistory
-                                                                      .add({});
-                                                                }
-                                                              });
-      
-                                                              var val = await getWalletHistoryPage(
-                                                                  (walletPages[
-                                                                              'current_page'] +
-                                                                          1)
-                                                                      .toString());
-                                                              if (val ==
-                                                                  'logout') {
-                                                                navigateLogout();
-                                                              }
-      
-                                                              setState(() {
-                                                                isLoading = false;
-                                                              });
-                                                            },
-                                                            child: Container(
-                                                              padding: EdgeInsets
-                                                                  .all(media
-                                                                          .width *
-                                                                      0.025),
-                                                              margin: EdgeInsets.only(
-                                                                  bottom: media
-                                                                          .width *
-                                                                      0.05),
-                                                              decoration: BoxDecoration(
-                                                                  borderRadius:
-                                                                      BorderRadius
-                                                                          .circular(
-                                                                              10),
-                                                                  color: page,
-                                                                  border: Border.all(
-                                                                      color:
-                                                                          borderLines,
-                                                                      width:
-                                                                          1.2)),
-                                                              child: MyText(
-                                                                text: languages[
-                                                                        choosenLanguage]
-                                                                    [
-                                                                    'text_loadmore'],
-                                                                size:
-                                                                    media.width *
-                                                                        sixteen,
-                                                              ),
-                                                            ),
-                                                          )
-                                                        : Container()
-                                                    : Container()
-                                              ],
-                                            );
-                                          }, childCount: walletHistory.length),
-                                        )
+
+
+                                                      ],
+                                                    ),
+                                                    SizedBox(height: 10,),
+                                                    Divider(color: dividerColors,)
+                                                  ],
+                                                ),
+                                              ),
+                                              //load more button
+                                              (walletPages.isNotEmpty &&
+                                                  i ==
+                                                      walletHistory.length -
+                                                          1)
+                                                  ? (walletPages[
+                                              'current_page'] <
+                                                  walletPages[
+                                                  'total_pages'])
+                                                  ? InkWell(
+                                                onTap: () async {
+                                                  setState(() {
+                                                    for (var i = 0;
+                                                    i < 10;
+                                                    i++) {
+                                                      walletHistory
+                                                          .add({});
+                                                    }
+                                                  });
+
+                                                  var val = await getWalletHistoryPage(
+                                                      (walletPages[
+                                                      'current_page'] +
+                                                          1)
+                                                          .toString());
+                                                  if (val ==
+                                                      'logout') {
+                                                    navigateLogout();
+                                                  }
+
+                                                  setState(() {
+                                                    isLoading = false;
+                                                  });
+                                                },
+                                                child: Container(
+                                                  padding: EdgeInsets
+                                                      .all(media
+                                                      .width *
+                                                      0.025),
+                                                  margin: EdgeInsets.only(
+                                                      bottom: media
+                                                          .width *
+                                                          0.05),
+                                                  decoration: BoxDecoration(
+                                                      borderRadius:
+                                                      BorderRadius
+                                                          .circular(
+                                                          10),
+                                                      color: page,
+                                                      border: Border.all(
+                                                          color:
+                                                          borderLines,
+                                                          width:
+                                                          1.2)),
+                                                  child: MyText(
+                                                    text: languages[
+                                                    choosenLanguage]
+                                                    [
+                                                    'text_loadmore'],
+                                                    size:
+                                                    media.width *
+                                                        sixteen,
+                                                  ),
+                                                ),
+                                              )
+                                                  : Container()
+                                                  : Container()
+                                            ],
+                                          );
+                                        }, childCount: walletHistory.length),
+                                  )
                                       : SliverList(
                                           delegate: SliverChildBuilderDelegate(
                                               (context, i) {

@@ -42,30 +42,38 @@ class _ApplyCouponsContainerState extends State<ApplyCouponsContainer> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: MyText(
-                textAlign: TextAlign.center,
-                text: (languages[choosenLanguage]['text_apply'] +
-                    ' ' +
-                    languages[choosenLanguage]['text_coupons']),
-                size: media.width * sixteen,
-                fontweight: FontWeight.w600,
-                color: textColor,
-              ),
+            SizedBox(
+              height: media.width * 0.025,
+            ),
+            MyText(
+              textAlign: TextAlign.start,
+              text: "Promocode",
+              size: font20Size,
+              fontweight: FontWeight.w700,
+              color: headingColors,
+            ),
+            SizedBox(
+              height: media.width * 0.01,
+            ),
+            MyText(
+              textAlign: TextAlign.start,
+              text: "Apply promocode to get discount.",
+              size: font15Size,
+              fontweight: FontWeight.w400,
+              color: Color(0xff5E5E5E),
             ),
             SizedBox(
               height: media.width * 0.06,
             ),
             Container(
               width: media.width * 0.8,
-              height: media.width * 0.12,
+              // height: media.width * 0.12,
               padding: EdgeInsets.fromLTRB(media.width * 0.025,
-                  media.width * 0.01, media.width * 0.025, media.width * 0.01),
+                  media.width * 0.009, media.width * 0.025, media.width * 0.009),
               alignment: Alignment.centerLeft,
               decoration: BoxDecoration(
-                  border: Border.all(color: textColor.withOpacity(0.4)),
-                  borderRadius: BorderRadius.circular(media.width * 0.02)),
+                  border: Border.all(color: Color(0xffEEEEEE)),
+                  borderRadius: BorderRadius.circular(media.width * 0.025)),
               child: Row(
                 children: [
                   Expanded(
@@ -73,11 +81,15 @@ class _ApplyCouponsContainerState extends State<ApplyCouponsContainer> {
                       controller: promoKey,
                       decoration: InputDecoration(
                         border: InputBorder.none,
-                        hintText: languages[choosenLanguage]['text_enterpromo'],
-                        hintStyle: GoogleFonts.notoSans(
-                            color: hintColor, fontSize: media.width * fourteen),
+                        prefixIcon: Icon(Icons.confirmation_num_sharp,size: 25,
+                          color: Color(0xff5E5E5E),),
+                        hintText: "Enter a promocode",
+                        contentPadding: EdgeInsets.symmetric(vertical: 15.0),
+                        hintStyle: GoogleFonts.inter(
+                            color: Color(0xff5E5E5E), fontSize: font15Size,fontWeight: FontWeight.w500),
                       ),
-                      style: GoogleFonts.notoSans(color: textColor),
+
+                      style: GoogleFonts.inter(color: Color(0xff5E5E5E)),
                       onChanged: (val) {
                         setState(() {
                           promoCode = val;
@@ -90,15 +102,16 @@ class _ApplyCouponsContainerState extends State<ApplyCouponsContainer> {
                       ? MyText(
                           text: languages[choosenLanguage]
                               ['text_promoaccepted'],
-                          size: media.width * twelve,
-                          color: online,
+                          size: font15Size,
+                            fontweight: FontWeight.w500,
+                          color: Color(0xff5E5E5E),
                         )
                       : Container(),
                 ],
               ),
             ),
             SizedBox(
-              height: media.width * 0.04,
+              height: media.width * 0.06,
             ),
             SizedBox(
               // width: media.width * 0.8,
@@ -107,7 +120,8 @@ class _ApplyCouponsContainerState extends State<ApplyCouponsContainer> {
                 text: (promoStatus == 1)
                     ? languages[choosenLanguage]['text_remove']
                     : languages[choosenLanguage]['text_apply'],
-                fontweight: FontWeight.w500,
+                fontweight: FontWeight.w600,
+
                 onTap: () async {
                   FocusScope.of(context).unfocus();
                   setState(() {
@@ -150,15 +164,13 @@ class _ApplyCouponsContainerState extends State<ApplyCouponsContainer> {
                     isLoading = false;
                   });
                 },
-                color: (promoKey.text == '')
-                    ? Colors.grey
-                    : (isDarkTheme)
-                        ? Colors.white
-                        : Colors.black,
-                textcolor: (!isDarkTheme) ? Colors.white : Colors.black,
+                color: buttonColors,
+                borcolor: buttonColors,
+                textcolor: buttonTextColors,
                 borderRadius: 12.0,
               ),
             ),
+
             if (promoStatus != null && promoStatus == 2 && couponerror == true)
               Container(
                 width: media.width * 0.9,
@@ -175,36 +187,36 @@ class _ApplyCouponsContainerState extends State<ApplyCouponsContainer> {
                   )
                 : Container(),
             SizedBox(
-              height: media.width * 0.04,
+              height: media.width * 0.08,
             ),
-            InkWell(
-                onTap: () {
-                  if (widget.type == 1
-                      ? (rentalOption[choosenVehicle]['has_discount'] == true)
-                      : etaDetails[choosenVehicle]['has_discount'] == true) {
-                    setState(() {
-                      promoStatus = 1;
-                      addCoupon = false;
-                      // promoKey.clear();
-                    });
-                  } else {
-                    setState(() {
-                      promoStatus = null;
-                      addCoupon = false;
-                      promoKey.clear();
-                    });
-                  }
-                  Navigator.pop(context);
-                },
-                child: Container(
-                  alignment: Alignment.center,
-                  // width: media.width * 0.8,
-                  child: MyText(
-                    text: languages[choosenLanguage]['text_cancel'],
-                    size: media.width * sixteen,
-                    color: verifyDeclined,
-                  ),
-                )),
+            // InkWell(
+            //     onTap: () {
+            //       if (widget.type == 1
+            //           ? (rentalOption[choosenVehicle]['has_discount'] == true)
+            //           : etaDetails[choosenVehicle]['has_discount'] == true) {
+            //         setState(() {
+            //           promoStatus = 1;
+            //           addCoupon = false;
+            //           // promoKey.clear();
+            //         });
+            //       } else {
+            //         setState(() {
+            //           promoStatus = null;
+            //           addCoupon = false;
+            //           promoKey.clear();
+            //         });
+            //       }
+            //       Navigator.pop(context);
+            //     },
+            //     child: Container(
+            //       alignment: Alignment.center,
+            //       // width: media.width * 0.8,
+            //       child: MyText(
+            //         text: languages[choosenLanguage]['text_cancel'],
+            //         size: media.width * sixteen,
+            //         color: verifyDeclined,
+            //       ),
+            //     )),
           ],
         ),
       ),
