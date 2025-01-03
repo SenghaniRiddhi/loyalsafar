@@ -8,6 +8,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_user/functions/notifications.dart';
+import 'package:flutter_user/pages/login/registerScreen.dart';
 import 'package:flutter_user/pages/onTripPage/invoice.dart';
 import 'package:flutter_user/pages/onTripPage/map_page.dart';
 import 'package:flutter_user/translations/translation.dart';
@@ -252,10 +253,12 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
         //     (route) => false);
       }
     } else if (verify == false) {
-      setState(() {
-        _error =
-            'User Doesn\'t exists with this number, please Signup to continue';
-      });
+      Navigator.push(context,
+          MaterialPageRoute(builder: (context)=>Registerscreen(countryCode: "",numbers: _email.text,)));
+      // setState(() {
+      //   _error =
+      //       'User Doesn\'t exists with this number, please Signup to continue';
+      // });
     } else {
       _error = verify.toString();
     }
@@ -878,6 +881,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                                 } else {
                                   var exist = true;
                                   if (forgotPassword == true) {
+                                    print("register 1");
                                     var ver = await verifyUser(
                                         _email.text,
                                         (isLoginemail == true)
@@ -1155,6 +1159,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                                               _error = val;
                                             }
                                           } else {
+                                            print("register 2");
                                             var val =
                                             await verifyUser(
                                                 _email.text,
@@ -1193,7 +1198,8 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                                                   .instance
                                                   .currentUser!
                                                   .getIdToken();
-        
+
+                                              print("register 3");
                                               var verify =
                                               await verifyUser(
                                                   _email.text,
@@ -1238,6 +1244,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                                                     .text,
                                                 _password.text);
                                             if (val == 'success') {
+                                              print("register 4");
                                               var verify =
                                               await verifyUser(
                                                   _email.text,
@@ -1270,6 +1277,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                                     if (_formKey.currentState!.validate()) {
                                       if (_password.text ==
                                           '123456') {
+                                        print("register 5");
                                         var val =
                                         await verifyUser(
                                             _email.text,
@@ -1314,6 +1322,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                                   } else if (withOtp == true) {
                                     var exist = true;
                                     if (forgotPassword == true) {
+                                      print("register 6");
                                       var ver = await verifyUser(
                                           _email.text,
                                           (isLoginemail == true)
@@ -1464,6 +1473,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                                         (isLoginemail == true &&
                                             regex.hasMatch(
                                                 _email.text))) {
+                                      print("register 7");
                                       var val = await verifyUser(
                                           _email.text,
                                           (isLoginemail == true)
@@ -1494,6 +1504,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                                 if (mobileVerified == true) {
                                   dynamic val;
                                   if (email != _email.text) {
+                                    print("register 8");
                                     val = await verifyUser(
                                         _mobile.text,
                                         0,
@@ -1544,6 +1555,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                                         email = _email.text;
                                         password = _password.text;
                                         phnumber = _mobile.text;
+                                        print("register 9");
                                         var verify =
                                         await verifyUser(
                                             _mobile.text,
@@ -1647,6 +1659,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                                       _otp.text.length == 6) {
                                     dynamic val;
                                     if (email != _email.text) {
+                                      print("register 10");
                                       val = await verifyUser(
                                           _mobile.text,
                                           0,

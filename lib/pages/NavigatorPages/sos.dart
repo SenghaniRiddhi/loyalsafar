@@ -60,7 +60,7 @@ class _SosState extends State<Sos> {
                   children: [
                     Container(
                       padding: EdgeInsets.only(
-                          left: media.width * 0.05, right: media.width * 0.05),
+                          left: media.width * 0.03, right: media.width * 0.03),
                       height: media.height * 1,
                       width: media.width * 1,
                       color: (isDarkTheme)
@@ -75,7 +75,7 @@ class _SosState extends State<Sos> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           SizedBox(
-                              height: media.width * 0.01),
+                              height: media.width * 0.12),
                           Stack(
                             children: [
                               // Container(
@@ -90,7 +90,7 @@ class _SosState extends State<Sos> {
                               //   ),
                               // ),
                               Positioned(
-                                  child: appBarWidget(context: context,
+                                  child: appBarWithoutHeightWidget(context: context,
                                       onTaps: (){
                                         Navigator.pop(context, true);
                                       },

@@ -140,7 +140,7 @@ class _PickContactState extends State<PickContact> {
                 width: media.width * 1,
                 color: page,
                 padding: EdgeInsets.only(
-                    left: media.width * 0.04, right: media.width * 0.04),
+                    left: media.width * 0.03, right: media.width * 0.03),
                 child: Column(children: [
                   // SizedBox(
                   //     height: MediaQuery.of(context).padding.top +
@@ -150,7 +150,7 @@ class _PickContactState extends State<PickContact> {
 
                       Positioned(
                           child: Padding(
-                            padding:  EdgeInsets.only(top: media.height * 0.05),
+                            padding:  EdgeInsets.only(top: media.width * 0.12),
                             child: Row(
                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                              children: [

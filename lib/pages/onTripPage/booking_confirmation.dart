@@ -526,11 +526,13 @@ class _BookingConfirmationState extends State<BookingConfirmation>
     if (mapType == 'google') {
       addMarker();
       // Future.delayed(const Duration(milliseconds: 200), () async {
+      print("hello::-");
       if (userRequestData.isNotEmpty &&
           userRequestData['is_rental'] != true &&
           userRequestData['drop_address'] != null) {
         addDropMarker();
 
+        print("userRequestData.isEmpty 1 add::-  ${userRequestData.isEmpty}");
         if (userRequestData.isEmpty) {
           polyline.add(
             Polyline(
@@ -551,9 +553,27 @@ class _BookingConfirmationState extends State<BookingConfirmation>
         } else {
           polyGot = false;
         }
-      } else if (widget.type == null) {
+      }
+      else if (widget.type == null) {
+        print("hello::- 2");
+        print("userRequestData.isEmpty::-  ${userRequestData.isEmpty}");
         addDropMarker();
         if (userRequestData.isEmpty) {
+          // polyline.add(
+          //   Polyline(
+          //       polylineId: const PolylineId('1'),
+          //       color: buttonColor,
+          //       points: [
+          //         addressList
+          //             .firstWhere((element) => element.type == 'pickup')
+          //             .latlng,
+          //         addressList
+          //             .firstWhere((element) => element.type == 'pickup')
+          //             .latlng
+          //       ],
+          //       geodesic: false,
+          //       width: 5),
+          // );
           polyline.add(
             Polyline(
                 polylineId: const PolylineId('1'),
@@ -563,7 +583,7 @@ class _BookingConfirmationState extends State<BookingConfirmation>
                       .firstWhere((element) => element.type == 'pickup')
                       .latlng,
                   addressList
-                      .firstWhere((element) => element.type == 'pickup')
+                      .firstWhere((element) => element.type == 'drop')
                       .latlng
                 ],
                 geodesic: false,
@@ -574,6 +594,7 @@ class _BookingConfirmationState extends State<BookingConfirmation>
           polyGot = false;
         }
       } else {
+        print("hello::- 3");
         if (userRequestData.isNotEmpty) {
           CameraUpdate cameraUpdate = CameraUpdate.newLatLng(
               LatLng(userRequestData['pick_lat'], userRequestData['pick_lng']));
@@ -833,13 +854,13 @@ class _BookingConfirmationState extends State<BookingConfirmation>
                       addressList.length > 1 &&
                       userRequestData.isEmpty &&
                       requestCancelledByDriver == false) {
-                    polyline.clear();
+                   polyline.clear();
                     polyGot = true;
                     getPolylines('', '', '', '');
                   }
                   if (cancelRequestByUser == true) {
                     myMarker.clear();
-                    polyline.clear();
+                   polyline.clear();
 
                     addressList
                         .removeWhere((element) => element.type == 'drop');
@@ -1610,7 +1631,8 @@ class _BookingConfirmationState extends State<BookingConfirmation>
                                                     i++) {
                                                   polyList.removeAt(0);
                                                 }
-                                                polyline.clear();
+                                               polyline.clear();
+                                                print("polyline add");
                                                 polyline.add(
                                                   Polyline(
                                                       polylineId:

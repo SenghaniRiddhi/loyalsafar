@@ -55,9 +55,11 @@ class _LanguagesState extends State<Languages> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
 
+              SizedBox(height: media.width * 0.12,),
+
               Container(
-                margin: EdgeInsets.symmetric(horizontal: media.width * 0.05),
-                child: appBarWidget(context: context,
+                margin: EdgeInsets.symmetric(horizontal: media.width * 0.03),
+                child: appBarWithoutHeightWidget(context: context,
                     onTaps: (){
                       Navigator.pop(context);
                     },
@@ -114,8 +116,8 @@ class _LanguagesState extends State<Languages> {
                       //languages list
                       Expanded(
                         child: Padding(
-                          padding: EdgeInsets.fromLTRB(media.width * 0.05, 0,
-                              media.width * 0.05, 0),
+                          padding: EdgeInsets.fromLTRB(media.width * 0.03, 0,
+                              media.width * 0.03, 0),
                           child: Column(
                             children: languages
                                 .map((i, value) => MapEntry(

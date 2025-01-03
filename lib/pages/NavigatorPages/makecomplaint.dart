@@ -77,14 +77,13 @@ class _MakeComplaintState extends State<MakeComplaint> {
                 width: media.width * 1,
                 color: page,
                 padding: EdgeInsets.only(
-                    left: media.width * 0.05, right: media.width * 0.05),
+                    left: media.width * 0.03, right: media.width * 0.03),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // SizedBox(
-                    //     height: MediaQuery.of(context).padding.top +
-                    //         media.width * 0.0),
-                    appBarWidget(
+                    SizedBox(
+                        height: media.width * 0.12),
+                    appBarWithoutHeightWidget(
                       onTaps: (){
                         Navigator.pop(context);
                       },
@@ -285,7 +284,7 @@ class _MakeComplaintState extends State<MakeComplaint> {
                                   height: media.width * 0.05,
                                 ),
                                 Container(
-                                  width: media.width * 0.9,
+                                  width: media.width ,
                                   padding: EdgeInsets.symmetric(
                                       vertical: media.width * 0.01,
                                       horizontal: media.width * 0.05),
@@ -338,6 +337,7 @@ class _MakeComplaintState extends State<MakeComplaint> {
                                   height: media.width * 0.5,
                                 ),
                                 Button(
+                                  width: media.width,
                                   color: buttonColors,
                                   textcolor: Colors.black,
                                   borcolor: Colors.white,

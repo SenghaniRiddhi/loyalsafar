@@ -324,7 +324,7 @@ import '../NavigatorPages/referral.dart';
 import '../NavigatorPages/sos.dart';
 import '../NavigatorPages/walletpage.dart';
 import '../language/languages.dart';
-import 'AlertsPage.dart';
+
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -347,7 +347,7 @@ class ProfileScreen extends StatelessWidget {
               child: Column(
                 children: [
         
-                  SizedBox(height: media.width*0.06,),
+                  SizedBox(height: media.width*0.055,),
         
                   appBarProfileWidget(context: context),
         

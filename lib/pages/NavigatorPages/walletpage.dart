@@ -176,7 +176,7 @@ class _WalletPageState extends State<WalletPage> {
                                               mainAxisAlignment: MainAxisAlignment.center,
                                               children: [
                                                 MyText(
-                                                  text: "Wallent Balance",
+                                                  text: "Wallet Balance",
                                                   color: whiteColors,
                                                   size: font18Size,
                                                   fontweight: FontWeight.w500,
@@ -2326,13 +2326,12 @@ class _WalletPageState extends State<WalletPage> {
                       ),
       
                       Positioned(
-                        top: media.width * 0.055 +
-                            MediaQuery.of(context).padding.top,
+                        top: media.width * 0.12 ,
                         left: (languageDirection == 'ltr')
-                            ? media.width * 0.05
+                            ? media.width * 0.03
                             : null,
                         right: (languageDirection == 'rtl')
-                            ? media.width * 0.05
+                            ? media.width * 0.03
                             : null,
                         child: appBarWithoutHeightWidget(context: context,
                             onTaps: (){

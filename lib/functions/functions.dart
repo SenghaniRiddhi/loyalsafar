@@ -522,10 +522,13 @@ registerData({required String name ,required String lastName ,
     http.MultipartRequest('POST', Uri.parse('${url}api/v1/user/register'));
 
     response.headers.addAll({'Content-Type': 'application/json'});
-    // if (proImageFile1 != null) {
-    //   response.files.add(
-    //       await http.MultipartFile.fromPath('profile_picture', proImageFile1));
-    // }
+
+
+    if (proImageFile1 != null) {
+      response.files.add(
+          await http.MultipartFile.fromPath('profile_picture', proImageFile1));
+      print("proImageFile1::- ${proImageFile1}");
+    }
     response.fields.addAll({
       "name": name,
       "last_name":lastName,
@@ -542,6 +545,7 @@ registerData({required String name ,required String lastName ,
       //     ? 'female'
       //     : 'others',
     });
+
     var request = await response.send();
     var respon = await http.Response.fromStream(request);
     // print(choosenLanguage.toString());
@@ -659,7 +663,7 @@ verifyUser(String number, int login, String password, String email, isOtp,
     print("validate-mobile-for-login::- ${Uri.parse('${url}api/v1/user/validate-mobile-for-login')} "
         " statusCode:- ${response.statusCode}");
     if (response.statusCode == 200) {
-      val = jsonDecode(response.body)['success'];
+      val = jsonDecode(response.body)['message'];
       print("val::- ${val} ");
       if (val == true) {
         if ((number != '' && email != '') || forgot == true) {
@@ -683,8 +687,8 @@ verifyUser(String number, int login, String password, String email, isOtp,
         }
       } else {
         val = false;
-        Navigator.push(context,
-            MaterialPageRoute(builder: (context)=>Registerscreen(countryCode: "",numbers: number,)));
+        // Navigator.push(context,
+        //     MaterialPageRoute(builder: (context)=>Registerscreen(countryCode: "",numbers: number,)));
         print("hello");
       }
     } else if (response.statusCode == 422) {
@@ -1633,6 +1637,38 @@ class PointLatLng {
   String toString() {
     return "lat: $latitude / longitude: $longitude";
   }
+}
+
+String terms="";
+String aboutAs="";
+String privacyPolicy="";
+
+getCommonCMS() async {
+  dynamic result;
+
+  try {
+    var response = await http.get(Uri.parse('${url}api/v1/cms/common-cms'));
+    print("getCommonCMS::- ${Uri.parse('${url}api/v1/cms/common-cms')}"
+        "statusCode:- ${response.statusCode}");
+    if (response.statusCode == 200) {
+     var goodsTypeList = jsonDecode(response.body)['data'];
+      terms = goodsTypeList["terms"];
+     privacyPolicy= goodsTypeList["privacy"];
+     aboutAs= goodsTypeList["about_us"];
+      print("terms::- ${terms}");
+      // valueNotifierBook.incrementNotifier();
+      result = 'success';
+    } else {
+      debugPrint(response.body);
+      result = 'false';
+    }
+  } catch (e) {
+    if (e is SocketException) {
+      internet = false;
+      result = 'no internet';
+    }
+  }
+  return result;
 }
 
 //get goods list

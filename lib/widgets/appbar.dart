@@ -71,7 +71,7 @@ appBarTitleWidget(
     }){
   var media = MediaQuery.of(context).size;
   return Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 20),
+    padding:  EdgeInsets.symmetric(horizontal: media.width*0.04),
     child: Row(
       children: [
         GestureDetector(

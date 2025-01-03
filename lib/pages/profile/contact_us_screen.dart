@@ -41,8 +41,9 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(padding: EdgeInsets.symmetric(horizontal: media.width * 0.04),
-              child: appBarWidget(context: context,
+            SizedBox(height: media.width*0.12,),
+            Padding(padding: EdgeInsets.symmetric(horizontal: media.width * 0.03),
+              child: appBarWithoutHeightWidget(context: context,
                   onTaps: (){
                     Navigator.pop(context, true);
                   },
@@ -78,7 +79,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
             SizedBox(height: media.height * 0.04),
         
             Padding(
-              padding:  EdgeInsets.symmetric(horizontal: media.width * 0.04),
+              padding:  EdgeInsets.symmetric(horizontal: media.width * 0.03),
               child: Column(children: [
         
                 Container(
@@ -246,6 +247,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                       top: media.width * 0.05,
                       bottom: media.width * 0.05),
                   child: Button(
+                    width: media.width,
                     color: buttonColors,
                     borcolor: buttonColors,
                     textcolor: Color(0xff030303),

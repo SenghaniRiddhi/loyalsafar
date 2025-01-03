@@ -45,6 +45,7 @@ class _LoadingPageState extends State<LoadingPage> {
     getemailmodule();
     getLandingImages();
 
+
     super.initState();
   }
 

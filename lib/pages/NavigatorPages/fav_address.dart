@@ -66,22 +66,19 @@ class _FavAddressPageState extends State<FavAddressPage> {
                   children: [
                     SingleChildScrollView(
                       child: Padding(
-                        padding: EdgeInsets.fromLTRB(media.width * 0.05,
-                            0, media.width * 0.05, 0),
+                        padding: EdgeInsets.symmetric(horizontal: media.width * 0.03),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            SizedBox(height: media.width*0.04,),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                appBarWidget(context: context,
+                                appBarWithoutHeightWidget(context: context,
                                     onTaps: (){
                                       Navigator.pop(context);
                                     },
                                     backgroundIcon: Color(0xffECECEC), title: "",iconColors: iconGrayColors),
-
-
-
                               ],
                             ),
                             SizedBox(

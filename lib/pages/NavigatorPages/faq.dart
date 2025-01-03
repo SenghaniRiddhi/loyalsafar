@@ -84,9 +84,9 @@ class _FaqState extends State<Faq> {
                           color: Colors.white,
                           child: Column(
                             children: [
-                              SizedBox(height: media.width*0.08,),
+                              SizedBox(height: media.width*0.12,),
                               Container(
-                                padding:  EdgeInsets.symmetric(horizontal: media.width*0.04, ),
+                                padding:  EdgeInsets.symmetric(horizontal: media.width*0.03, ),
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
@@ -117,7 +117,7 @@ class _FaqState extends State<Faq> {
 
                               SizedBox(width: media.width*0.05,),
                               Padding(
-                                padding:  EdgeInsets.symmetric(horizontal: media.width*0.04,vertical:media.width*0.05 ),
+                                padding:  EdgeInsets.symmetric(horizontal: media.width*0.03,vertical:media.width*0.05 ),
                                 child: TextField(
                                   decoration: InputDecoration(
                                     labelText: 'Search',
@@ -144,7 +144,7 @@ class _FaqState extends State<Faq> {
                                               
                                 SizedBox(height: 16),
                                 (faqData.isNotEmpty)? Padding(
-                                  padding:  EdgeInsets.symmetric(horizontal: media.width*0.04,vertical:media.width*0.02 ),
+                                  padding:  EdgeInsets.symmetric(horizontal: media.width*0.03,vertical:media.width*0.02 ),
                                   child: Text(
                                     'How can we help you?',
                                     style: TextStyle(
@@ -181,8 +181,8 @@ class _FaqState extends State<Faq> {
                                                               color: Colors.white,
                                                               borderRadius: BorderRadius.circular(07),
                                                             ),
-                                                            padding: EdgeInsets.symmetric(horizontal: media.width*0.04,vertical: media.width*0.04),
-                                                            margin: EdgeInsets.symmetric(horizontal: media.width*0.04,vertical: media.width*0.02),
+                                                            padding: EdgeInsets.symmetric(horizontal: media.width*0.03,vertical: media.width*0.04),
+                                                            margin: EdgeInsets.symmetric(horizontal: media.width*0.03,vertical: media.width*0.02),
                                                             child: Row(
                                                               crossAxisAlignment:
                                                                   CrossAxisAlignment

@@ -9,6 +9,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:uuid/uuid.dart';
 import '../../widgets/appbar.dart';
 
+import '../NavigatorPages/activitiesScreen.dart';
 import '../login/login.dart';
 import '../onTripPage/booking_confirmation.dart';
 
@@ -51,7 +52,7 @@ class _CustomBottomNavExampleState extends State<CustomBottomNavExample> {
 
   final List<Widget> _pages = [
     HomeScreen(),
-    Center(child: Text('Activity Page')),
+    ActivitiesScreen(),
     NotificationPage(),
     Center(child: Text('Help Page')),
   ];

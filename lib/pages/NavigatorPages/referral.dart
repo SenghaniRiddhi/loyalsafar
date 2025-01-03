@@ -72,7 +72,7 @@ class _ReferralPageState extends State<ReferralPage> {
                 alignment: Alignment.center,
                 children: [
                   Container(
-                    padding: EdgeInsets.all(media.width * 0.05),
+                    padding: EdgeInsets.all(media.width * 0.03),
                     height: media.height * 1,
                     width: media.width * 1,
                     color: page,
@@ -84,7 +84,7 @@ class _ReferralPageState extends State<ReferralPage> {
                                   children: [
                                     SizedBox(
                                         height:
-                                            MediaQuery.of(context).padding.top),
+                                        media.width * 0.09),
                                     Stack(
                                       children: [
                                         Container(
@@ -97,6 +97,7 @@ class _ReferralPageState extends State<ReferralPage> {
                                             size: media.width * twenty,
                                           ),
                                         ),
+
                                         Positioned(
                                             child:appBarWithoutHeightWidget(context: context,
                                                 onTaps: (){
@@ -148,7 +149,7 @@ class _ReferralPageState extends State<ReferralPage> {
                                       height: media.width * 0.05,
                                     ),
                                     Container(
-                                        width: media.width * 0.9,
+                                        width: media.width ,
                                         padding:
                                             EdgeInsets.all(media.width * 0.03),
                                         decoration: BoxDecoration(
@@ -188,6 +189,7 @@ class _ReferralPageState extends State<ReferralPage> {
                                     top: media.width * 0.05,
                                     bottom: media.width * 0.05),
                                 child: Button(
+                                  width: media.width,
                                   color: buttonColors,
                                     borcolor: buttonColors,
                                     textcolor: Color(0xff030303),

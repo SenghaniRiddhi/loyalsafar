@@ -95,7 +95,7 @@ class _NotificationPageState extends State<NotificationPage> {
 
                     child: Column(
                       children: [
-                        SizedBox(height: MediaQuery.of(context).padding.top),
+                        SizedBox(height:media.width * 0.06,),
                         Stack(
                           children: [
                             Container(

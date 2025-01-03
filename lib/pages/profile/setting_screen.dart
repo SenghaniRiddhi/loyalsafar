@@ -9,6 +9,7 @@ import '../../widgets/success_dialog_content.dart';
 import '../../widgets/widgets.dart';
 import '../NavigatorPages/contactus.dart';
 import '../NavigatorPages/faq.dart';
+import '../NavigatorPages/serviceScreen.dart';
 import '../login/login.dart';
 import '../login/loginScreen.dart';
 import '../onTripPage/map_page.dart';
@@ -39,11 +40,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height:media.width * 0.01 ,),
+            SizedBox(height:media.width*0.12 ,),
 
             Container(
-              margin: EdgeInsets.symmetric(horizontal: 14),
-              child: appBarWidget(context: context,
+              margin: EdgeInsets.symmetric(horizontal: media.width*0.03),
+              child: appBarWithoutHeightWidget(context: context,
                   onTaps: (){
                     Navigator.pop(context);
                   },
@@ -52,7 +53,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
             SizedBox(height:media.width * 0.04,),
             Container(
-                margin: EdgeInsets.symmetric(horizontal: 16),
+                margin: EdgeInsets.symmetric(horizontal: media.width*0.03),
                 child: MyText(
                   text: "Settings",
                   size: font26Size,
@@ -63,8 +64,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
             SizedBox(height:media.width * 0.01,),
             Container(
-              margin: EdgeInsets.all(16.0),
-              padding: EdgeInsets.symmetric(horizontal: 16,vertical: 05),
+              margin: EdgeInsets.symmetric(horizontal: media.width*0.03,vertical: media.width*0.04),
+              padding: EdgeInsets.symmetric(horizontal: media.width*0.03,vertical: media.width*0.03),
               decoration: BoxDecoration(
                 color: whiteColors,
                 borderRadius: BorderRadius.circular(12),
@@ -77,9 +78,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     icon: Icons.info_outline,
                     title: 'About Us',
                     onTap: () {
-
-                      openBrowser('https://loyalsafar.com/terms');
-
+                      Navigator.push(context, MaterialPageRoute(builder: (context)=>Servicescreen(serviceData: 'aboutAs',)));
                       // Navigate to About Us
                     },
                   ),
@@ -101,6 +100,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     icon: Icons.description_outlined,
                     title: 'Terms & Conditions',
                     onTap: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context)=>Servicescreen(serviceData:'terms')));
                       // Navigate to Terms & Conditions
                     },
                   ),
@@ -110,6 +110,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     icon: Icons.contact_page_outlined,
                     title: 'Privacy Policy',
                     onTap: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context)=>Servicescreen(serviceData: '',)));
                       // Navigate to Privacy Policy
                     },
                   ),
@@ -150,8 +151,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
 
             Container(
-              margin: EdgeInsets.all(16.0),
-              padding: EdgeInsets.symmetric(horizontal: 16),
+              margin: EdgeInsets.symmetric(horizontal: media.width*0.03,vertical: media.width*0.03),
+              padding: EdgeInsets.symmetric(horizontal: media.width*0.03),
               decoration: BoxDecoration(
                 color: whiteColors,
                 borderRadius: BorderRadius.circular(12),
@@ -272,10 +273,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     });
                   }
                 },
-                child: const Text(
-                  'Sign out',
-                  style: TextStyle(color: Colors.red, fontSize: 16.0),
-                ),
+                child: MyText(size: font16Size,text: "Sign out",fontweight: FontWeight.w500,color:Color(0xffE84A4A) ,)
               ),
             ),
             SizedBox(height:media.width * 0.03,),

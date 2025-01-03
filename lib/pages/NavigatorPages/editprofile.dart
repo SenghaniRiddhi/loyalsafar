@@ -501,20 +501,16 @@ class _EditProfileState extends State<EditProfile> {
                     alignment: Alignment.topLeft,
                     child: Column(
                       children: [
-                        SizedBox(height: media.height*0.07),
+                        SizedBox(height: media.height*0.06),
 
-                        Positioned(
-                          top: 0,
-                          left: 0,
-                          child:  appBarTitleWidget(
-                              onTaps: (){
-                                Navigator.pop(context);
-                              },
-                              context: context,
-                              backgroundIcon: whiteColors,
-                              title: "Edit Profile",
-                              iconColors: iconGrayColors)
-                          ,),
+                        appBarTitleWidget(
+                            onTaps: (){
+                              Navigator.pop(context);
+                            },
+                            context: context,
+                            backgroundIcon: whiteColors,
+                            title: "Edit Profile",
+                            iconColors: iconGrayColors),
                         SizedBox(height: media.height*0.07), // Spacing from top
 
                         Stack(
